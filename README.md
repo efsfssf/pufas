@@ -2,6 +2,9 @@
 # Json List
 Introducing a Material You Android application for previewing JSON from a file or URL in a user-friendly list format.
 
+[<img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
+     alt="Get it on Google Play"
+     height="80">](https://play.google.com/store/apps/details?id=com.sjapps.jsonlist)
 [<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
      alt="Get it on F-Droid"
      height="80">](https://slavce14.github.io/redirect?link=jsonlist-fdroid)
