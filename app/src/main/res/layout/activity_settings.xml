@@ -134,14 +134,14 @@
 
             </LinearLayout>
 
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:background="@drawable/ripple_list2"
                 android:paddingBottom="15dp"
-                android:paddingHorizontal="20dp">
+                android:paddingHorizontal="20dp"
+                android:layout_marginBottom="10dp">
 
                 <TextView
                     android:layout_width="match_parent"
@@ -171,7 +171,47 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/ripple_list2"
+                android:layout_marginBottom="10dp">
 
+                <TextView
+                    android:id="@+id/btnLoadDatabase"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="20dp"
+                    android:text="Загрузить базу данных"
+                    android:textSize="20sp"
+                    android:textColor="?colorOnSurfaceVariant"
+                    android:clickable="true"
+                    android:focusable="true"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/ripple_list2"
+                android:layout_marginBottom="10dp">
+
+                <TextView
+                    android:id="@+id/btnViewDatabase"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="20dp"
+                    android:text="Открыть базу данных"
+                    android:textSize="20sp"
+                    android:textColor="?colorOnSurfaceVariant"
+                    android:clickable="true"
+                    android:focusable="true"/>
+
+            </LinearLayout>
         </LinearLayout>
 
     </ScrollView>

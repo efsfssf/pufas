@@ -25,7 +25,7 @@
             android:name="com.sjapps.logs.LogActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".ImportDatabaseActivity"
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|density"
             android:exported="true">
             <meta-data

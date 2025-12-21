@@ -10,7 +10,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import com.sjapps.jsonlist.MainActivity;
+import com.sjapps.jsonlist.ImportDatabaseActivity;
 import com.sjapps.jsonlist.R;
 import com.sj14apps.jsonlist.core.JsonData;
 import com.sj14apps.jsonlist.core.controllers.JsonLoader;
@@ -20,9 +20,9 @@ import java.util.ArrayList;
 
 public class AndroidJsonLoader implements JsonLoader {
 
-    MainActivity activity;
+    ImportDatabaseActivity activity;
 
-    public AndroidJsonLoader(MainActivity activity){
+    public AndroidJsonLoader(ImportDatabaseActivity activity){
         this.activity = activity;
     }
 

@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.sjapps.jsonlist.functions;
 import com.sj14apps.jsonlist.core.JsonData;
 import com.sj14apps.jsonlist.core.ListItem;
-import com.sjapps.jsonlist.MainActivity;
+import com.sjapps.jsonlist.ImportDatabaseActivity;
 import com.sjapps.jsonlist.R;
 
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     ArrayList<ListItem> list;
     Context context;
-    MainActivity activity;
+    ImportDatabaseActivity activity;
     String path;
     public int selectedItem = -1;
     public int highlightedItem = -1;
@@ -92,7 +92,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public ListAdapter(ArrayList<ListItem> list, Context context,String path){
         this.list = list;
         this.context = context;
-        this.activity = (MainActivity) context;
+        this.activity = (ImportDatabaseActivity) context;
         this.path = path;
     }
 

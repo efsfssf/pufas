@@ -1,0 +1,19 @@
+package com.sjapps.db;
+
+import androidx.room.Dao;
+import androidx.room.Delete;
+import androidx.room.Insert;
+import androidx.room.Query;
+
+@Dao
+public interface FormulaDao {
+
+    @Query("SELECT CNTINFORMULA, ABASEID FROM formula WHERE FORMULAID = :formulaId LIMIT 1")
+    FormulaCnt getFormula(int formulaId);
+
+    @Insert
+    void insertFormula(Formula... formula);
+
+    @Delete
+    void delete(Formula formula);
+}

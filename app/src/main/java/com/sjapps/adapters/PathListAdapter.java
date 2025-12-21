@@ -9,14 +9,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.sjapps.jsonlist.MainActivity;
+import com.sjapps.jsonlist.ImportDatabaseActivity;
 import com.sjapps.jsonlist.R;
 
 public class PathListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     String[] list;
     Context context;
-    MainActivity activity;
+    ImportDatabaseActivity activity;
     String path;
 
 
@@ -45,7 +45,7 @@ public class PathListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     public PathListAdapter(Context context, String path){
         this.context = context;
-        this.activity = (MainActivity) context;
+        this.activity = (ImportDatabaseActivity) context;
         this.path = path;
         this.list = path.split("///");
     }

@@ -10,19 +10,19 @@ import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.sjapps.jsonlist.MainActivity;
+import com.sjapps.jsonlist.ImportDatabaseActivity;
 import com.sjapps.jsonlist.R;
 import com.sjapps.jsonlist.functions;
 
 public class AndroidDragAndDrop {
 
-    MainActivity activity;
+    ImportDatabaseActivity activity;
     TextView dropTargetTxt;
     View dropTargetBackground;
     RelativeLayout dropTarget;
     DragAndDropCallback callback;
 
-    public AndroidDragAndDrop(MainActivity activity, DragAndDropCallback callback){
+    public AndroidDragAndDrop(ImportDatabaseActivity activity, DragAndDropCallback callback){
         this.activity = activity;
 
         dropTarget = activity.findViewById(R.id.dropTarget);

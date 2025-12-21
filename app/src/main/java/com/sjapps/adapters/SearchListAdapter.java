@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.sj14apps.jsonlist.core.JsonData;
 import com.sj14apps.jsonlist.core.SearchItem;
-import com.sjapps.jsonlist.MainActivity;
+import com.sjapps.jsonlist.ImportDatabaseActivity;
 import com.sjapps.jsonlist.R;
 
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ public class SearchListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     ArrayList<SearchItem> searchItems;
     Context context;
-    MainActivity activity;
+    ImportDatabaseActivity activity;
 
 
     static class ViewHolder extends RecyclerView.ViewHolder{
@@ -53,7 +53,7 @@ public class SearchListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     public SearchListAdapter(Context context, ArrayList<SearchItem> searchItems){
         this.context = context;
-        this.activity = (MainActivity) context;
+        this.activity = (ImportDatabaseActivity) context;
         this.searchItems = searchItems;
     }
 

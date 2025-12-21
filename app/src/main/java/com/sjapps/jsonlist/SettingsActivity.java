@@ -1,6 +1,7 @@
 package com.sjapps.jsonlist;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,8 @@ import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.graphics.Insets;
@@ -26,6 +29,8 @@ public class SettingsActivity extends AppCompatActivity {
     Spinner ThemeSpinner;
     ArrayAdapter<CharSequence> Themes;
     AppState state;
+    TextView btnLoadDb;
+    TextView btnViewDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +92,13 @@ public class SettingsActivity extends AppCompatActivity {
             SaveData();
         });
 
+        btnLoadDb.setOnClickListener(v -> {
+            Intent intent = new Intent(this, ImportDatabaseActivity.class);
+            startActivity(intent);
+        });
+
+
+
     }
 
     private void setLayoutBounds() {
@@ -121,6 +133,8 @@ public class SettingsActivity extends AppCompatActivity {
         Themes = ArrayAdapter.createFromResource(this, R.array.Themes, android.R.layout.simple_spinner_item);
         Themes.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         ThemeSpinner.setAdapter(Themes);
+        btnLoadDb = findViewById(R.id.btnLoadDatabase);
+        btnViewDb = findViewById(R.id.btnViewDatabase);
 
     }
 

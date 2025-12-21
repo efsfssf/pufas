@@ -2,7 +2,7 @@ package com.sjapps.jsonlist.controllers;
 
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
-import com.sjapps.jsonlist.MainActivity;
+import com.sjapps.jsonlist.ImportDatabaseActivity;
 import com.sjapps.jsonlist.R;
 import com.sj14apps.jsonlist.core.controllers.FileManager;
 
@@ -22,10 +22,10 @@ import android.provider.OpenableColumns;
 
 public class AndroidFileManager implements FileManager {
 
-    private final MainActivity activity;
+    private final ImportDatabaseActivity activity;
     private final Handler handler;
 
-    public AndroidFileManager(MainActivity activity, Handler handler) {
+    public AndroidFileManager(ImportDatabaseActivity activity, Handler handler) {
         this.activity = activity;
         this.handler = handler;
     }

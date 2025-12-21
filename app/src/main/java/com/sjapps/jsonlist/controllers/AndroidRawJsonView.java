@@ -6,24 +6,24 @@ import android.webkit.WebSettings;
 
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
-import com.sjapps.jsonlist.MainActivity;
+import com.sjapps.jsonlist.ImportDatabaseActivity;
 import com.sjapps.jsonlist.R;
 import com.sj14apps.jsonlist.core.JsonFunctions;
 import com.sj14apps.jsonlist.core.controllers.RawJsonView;
 
 public class AndroidRawJsonView extends RawJsonView {
 
-    MainActivity mainActivity;
+    ImportDatabaseActivity importDatabaseActivity;
 
 
-    public AndroidRawJsonView(MainActivity mainActivity, int textColor, int keyColor, int numberColor, int booleanAndNullColor, int bgColor) {
+    public AndroidRawJsonView(ImportDatabaseActivity importDatabaseActivity, int textColor, int keyColor, int numberColor, int booleanAndNullColor, int bgColor) {
         super(textColor, keyColor, numberColor, booleanAndNullColor, bgColor);
-        this.mainActivity = mainActivity;
+        this.importDatabaseActivity = importDatabaseActivity;
         setup();
     }
 
     private void setup(){
-        WebSettings webSettings = mainActivity.rawJsonWV.getSettings();
+        WebSettings webSettings = importDatabaseActivity.rawJsonWV.getSettings();
         webSettings.setBuiltInZoomControls(true);
         webSettings.setDisplayZoomControls(false);
         webSettings.setSupportZoom(true);
@@ -31,52 +31,52 @@ public class AndroidRawJsonView extends RawJsonView {
 
     @Override
     public void toggleSplitView() {
-        TransitionManager.endTransitions(mainActivity.viewGroup);
-        TransitionManager.beginDelayedTransition(mainActivity.viewGroup, mainActivity.autoTransition);
+        TransitionManager.endTransitions(importDatabaseActivity.viewGroup);
+        TransitionManager.beginDelayedTransition(importDatabaseActivity.viewGroup, importDatabaseActivity.autoTransition);
 
         if (showJson){
-            if (mainActivity.isVertical)
-                mainActivity.rawJsonRL.animate()
-                        .translationY(mainActivity.rawJsonRL.getHeight())
+            if (importDatabaseActivity.isVertical)
+                importDatabaseActivity.rawJsonRL.animate()
+                        .translationY(importDatabaseActivity.rawJsonRL.getHeight())
                         .setDuration(400)
-                        .withEndAction(()-> mainActivity.rawJsonRL.setVisibility(View.GONE))
+                        .withEndAction(()-> importDatabaseActivity.rawJsonRL.setVisibility(View.GONE))
                         .start();
-            else mainActivity.rawJsonRL.animate()
-                    .translationX(mainActivity.rawJsonRL.getWidth())
+            else importDatabaseActivity.rawJsonRL.animate()
+                    .translationX(importDatabaseActivity.rawJsonRL.getWidth())
                     .setDuration(400)
-                    .withEndAction(()-> mainActivity.rawJsonRL.setVisibility(View.GONE))
+                    .withEndAction(()-> importDatabaseActivity.rawJsonRL.setVisibility(View.GONE))
                     .start();
 
 
-            mainActivity.resizeSplitViewBtn.animate()
+            importDatabaseActivity.resizeSplitViewBtn.animate()
                     .scaleX(.5f)
                     .scaleY(.5f)
-                    .withEndAction(() -> mainActivity.resizeSplitViewBtn.setVisibility(View.GONE))
+                    .withEndAction(() -> importDatabaseActivity.resizeSplitViewBtn.setVisibility(View.GONE))
                     .setDuration(150)
                     .start();
             showJson = false;
-            if (mainActivity.listRL.getVisibility() == View.GONE)
-                mainActivity.listRL.setVisibility(View.VISIBLE);
+            if (importDatabaseActivity.listRL.getVisibility() == View.GONE)
+                importDatabaseActivity.listRL.setVisibility(View.VISIBLE);
 
-            mainActivity.guideLine.setGuidelinePercent(1f);
+            importDatabaseActivity.guideLine.setGuidelinePercent(1f);
             return;
         }
         showJson = true;
-        mainActivity.rawJsonRL.setVisibility(View.VISIBLE);
+        importDatabaseActivity.rawJsonRL.setVisibility(View.VISIBLE);
 
-        mainActivity.guideLine.setGuidelinePercent(0.5f);
-        mainActivity.handler.postDelayed(()->{
-                    mainActivity.resizeSplitViewBtn.setVisibility(View.VISIBLE);
-                    mainActivity.resizeSplitViewBtn.animate()
+        importDatabaseActivity.guideLine.setGuidelinePercent(0.5f);
+        importDatabaseActivity.handler.postDelayed(()->{
+                    importDatabaseActivity.resizeSplitViewBtn.setVisibility(View.VISIBLE);
+                    importDatabaseActivity.resizeSplitViewBtn.animate()
                             .scaleX(1)
                             .scaleY(1)
                             .setDuration(150)
                             .start();
                 },
                 350);
-        mainActivity.rawJsonRL.animate().cancel();
+        importDatabaseActivity.rawJsonRL.animate().cancel();
 
-        mainActivity.rawJsonRL.animate()
+        importDatabaseActivity.rawJsonRL.animate()
                 .translationY(0)
                 .translationX(0)
                 .setDuration(400)
@@ -88,24 +88,24 @@ public class AndroidRawJsonView extends RawJsonView {
 
     @Override
     public void ShowJSON() {
-        if (mainActivity.data.getRawData().equals("-1")) {
-            Snackbar.make(mainActivity.getWindow().getDecorView(), R.string.file_is_to_large_to_be_shown_in_a_split_screen, BaseTransientBottomBar.LENGTH_SHORT).show();
-            if (mainActivity.progressView.getVisibility() == View.VISIBLE)
-                mainActivity.loadingFinished(true);
+        if (importDatabaseActivity.data.getRawData().equals("-1")) {
+            Snackbar.make(importDatabaseActivity.getWindow().getDecorView(), R.string.file_is_to_large_to_be_shown_in_a_split_screen, BaseTransientBottomBar.LENGTH_SHORT).show();
+            if (importDatabaseActivity.progressView.getVisibility() == View.VISIBLE)
+                importDatabaseActivity.loadingFinished(true);
             if (showJson)
                 toggleSplitView();
             return;
         }
-        if (mainActivity.data.getRawData().equals(""))
+        if (importDatabaseActivity.data.getRawData().equals(""))
             return;
 
-        mainActivity.loadingStarted(mainActivity.getString(R.string.displaying_json));
+        importDatabaseActivity.loadingStarted(importDatabaseActivity.getString(R.string.displaying_json));
 
         Thread thread = new Thread(() -> {
-            String dataStr = JsonFunctions.getAsPrettyPrint(mainActivity.data.getRawData());
-            mainActivity.handler.post(()-> {
+            String dataStr = JsonFunctions.getAsPrettyPrint(importDatabaseActivity.data.getRawData());
+            importDatabaseActivity.handler.post(()-> {
                 updateRawJson(dataStr);
-                mainActivity.loadingFinished(true);
+                importDatabaseActivity.loadingFinished(true);
                 isRawJsonLoaded = true;
             });
         });
@@ -114,8 +114,8 @@ public class AndroidRawJsonView extends RawJsonView {
     }
 
     public void updateRawJson(String json) {
-        String htmlData = generateHtml(json,mainActivity.state);
-        mainActivity.rawJsonWV.loadDataWithBaseURL(null, htmlData, "text/html", "UTF-8", null);
+        String htmlData = generateHtml(json, importDatabaseActivity.state);
+        importDatabaseActivity.rawJsonWV.loadDataWithBaseURL(null, htmlData, "text/html", "UTF-8", null);
     }
 
 }

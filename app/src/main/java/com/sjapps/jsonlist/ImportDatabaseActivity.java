@@ -95,9 +95,9 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class MainActivity extends AppCompatActivity {
+public class ImportDatabaseActivity extends AppCompatActivity {
 
-    final String TAG = "MainActivity";
+    final String TAG = "ImportDatabaseActivity";
     ImageButton backBtn, menuBtn, splitViewBtn, filterBtn, searchBtn;
     View editBtn;
     ImageView fileImg;
@@ -559,7 +559,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if (unsavedChanges){
                     BasicDialog dialog = new BasicDialog();
-                    dialog.Builder(MainActivity.this, true)
+                    dialog.Builder(ImportDatabaseActivity.this, true)
                             .setTitle(getString(R.string.save_changes))
                             .setMessage(getString(R.string.unsaved_changes_msg))
                             .setLeftButtonText(getString(R.string.dismiss))
@@ -569,7 +569,7 @@ public class MainActivity extends AppCompatActivity {
                                 @Override
                                 public void onLeftButtonClick() {
                                     dialog.dismiss();
-                                    MainActivity.this.finish();
+                                    ImportDatabaseActivity.this.finish();
                                 }
 
                                 @Override
@@ -583,13 +583,13 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 BasicDialog dialog = new BasicDialog();
-                dialog.Builder(MainActivity.this, true)
+                dialog.Builder(ImportDatabaseActivity.this, true)
                         .setTitle(getString(R.string.exit))
                         .setLeftButtonText(getString(R.string.no))
                         .setRightButtonText(getString(R.string.yes))
                         .onButtonClick(() ->{
                             dialog.dismiss();
-                            MainActivity.this.finish();
+                            ImportDatabaseActivity.this.finish();
                         })
                         .show();
                 return;
@@ -645,15 +645,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void OpenSettings() {
-        startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+        startActivity(new Intent(ImportDatabaseActivity.this, SettingsActivity.class));
     }
 
     private void OpenAbout() {
-        startActivity(new Intent(MainActivity.this, AboutActivity.class));
+        startActivity(new Intent(ImportDatabaseActivity.this, AboutActivity.class));
     }
 
     private void OpenLogPage() {
-        startActivity(new Intent(MainActivity.this, LogActivity.class));
+        startActivity(new Intent(ImportDatabaseActivity.this, LogActivity.class));
     }
 
     private void showToolbar() {
@@ -1117,7 +1117,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onFileLoadFailed() {
-            Toast.makeText(MainActivity.this, R.string.fail_to_load_file, Toast.LENGTH_SHORT).show();
+            Toast.makeText(ImportDatabaseActivity.this, R.string.fail_to_load_file, Toast.LENGTH_SHORT).show();
         }
 
         @Override
@@ -1139,7 +1139,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onFileWriteFail() {
             loadingFinished(false);
-            Toast.makeText(MainActivity.this, getString(R.string.fail_to_save), Toast.LENGTH_SHORT).show();
+            Toast.makeText(ImportDatabaseActivity.this, getString(R.string.fail_to_save), Toast.LENGTH_SHORT).show();
         }
 
         @Override
@@ -1178,8 +1178,8 @@ public class MainActivity extends AppCompatActivity {
 
                 data.setCurrentList(data.getRootList());
                 updateFilterList(data.getRootList());
-                adapter = new ListAdapter(data.getRootList(), MainActivity.this, "");
-                pathAdapter = new PathListAdapter(MainActivity.this,data.getPath());
+                adapter = new ListAdapter(data.getRootList(), ImportDatabaseActivity.this, "");
+                pathAdapter = new PathListAdapter(ImportDatabaseActivity.this,data.getPath());
                 list.setAdapter(adapter);
                 pathList.setAdapter(pathAdapter);
                 fileImg.clearAnimation();
@@ -1187,7 +1187,7 @@ public class MainActivity extends AppCompatActivity {
                 fileImg.setVisibility(GONE);
                 openFileBtn.setVisibility(GONE);
                 openUrlBtn.setVisibility(GONE);
-                functions.setAnimation(MainActivity.this,list,R.anim.scale_in2,new DecelerateInterpolator());
+                functions.setAnimation(ImportDatabaseActivity.this,list,R.anim.scale_in2,new DecelerateInterpolator());
                 list.setVisibility(VISIBLE);
                 backBtn.setVisibility(GONE);
                 saveBtn.setVisibility(GONE);
@@ -1219,7 +1219,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onInvalidURL() {
-            Toast.makeText(MainActivity.this, getString(R.string.invalid_url), Toast.LENGTH_SHORT).show();
+            Toast.makeText(ImportDatabaseActivity.this, getString(R.string.invalid_url), Toast.LENGTH_SHORT).show();
         }
 
         @Override
@@ -1233,14 +1233,14 @@ public class MainActivity extends AppCompatActivity {
         public void onFailure() {
             handler.post(()-> loadingFinished(false));
             isUrlSearching = false;
-            handler.post(()-> Toast.makeText(MainActivity.this,"Fail",Toast.LENGTH_SHORT).show());
+            handler.post(()-> Toast.makeText(ImportDatabaseActivity.this,"Fail",Toast.LENGTH_SHORT).show());
         }
 
         @Override
         public void onFailure(int code) {
             handler.post(()-> loadingFinished(false));
             isUrlSearching = false;
-            handler.post(()->Toast.makeText(MainActivity.this, "Fail, Code:" + code, Toast.LENGTH_SHORT).show());
+            handler.post(()->Toast.makeText(ImportDatabaseActivity.this, "Fail, Code:" + code, Toast.LENGTH_SHORT).show());
         }
     };
 
@@ -1270,7 +1270,7 @@ public class MainActivity extends AppCompatActivity {
             result -> {
                 if (result.getResultCode() != Activity.RESULT_OK) {
                     if(result.getResultCode() == Activity.RESULT_CANCELED){
-                        Toast.makeText(MainActivity.this, R.string.import_data_canceled,Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ImportDatabaseActivity.this, R.string.import_data_canceled,Toast.LENGTH_SHORT).show();
                     }
                     return;
                 }
