@@ -252,72 +252,93 @@
                 android:visibility="gone"
                 />
 
-            <com.google.android.material.floatingtoolbar.FloatingToolbarLayout
-                android:id="@+id/floating_toolbar"
-                android:layout_width="wrap_content"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
                 android:layout_alignParentBottom="true"
-                android:visibility="gone"
-                style="?attr/floatingToolbarVibrantStyle"
-                android:elevation="4dp"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="16dp"
+                android:clipChildren="false">
 
-                <LinearLayout
+                <!-- Floating Toolbar -->
+                <com.google.android.material.floatingtoolbar.FloatingToolbarLayout
+                    android:id="@+id/floating_toolbar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginVertical="5dp"
-                    android:gravity="center"
-                    android:layout_alignParentEnd="true"
+                    android:visibility="gone"
+                    style="?attr/floatingToolbarVibrantStyle"
+                    android:elevation="4dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/importFab"
+                    app:layout_constraintHorizontal_chainStyle="packed">
 
-                    >
-                    <ImageButton
-                        android:id="@+id/searchBtn"
-                        android:layout_width="60dp"
-                        android:layout_height="40dp"
-                        android:background="@drawable/ripple2"
-                        app:tint="?colorOnPrimaryContainer"
+                    <LinearLayout android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="5dp"
+                        android:gravity="center"
+                        android:layout_alignParentEnd="true">
 
-                        android:src="@drawable/ic_search" />
-                    <RelativeLayout
-                        android:id="@+id/editBtn"
-                        android:layout_width="60dp"
-                        android:layout_height="40dp"
-                        android:background="@drawable/ripple2"
-                        >
-                        <ImageView
-                            android:layout_width="25dp"
-                            android:layout_height="25dp"
-                            android:layout_centerHorizontal="true"
-                            android:layout_marginTop="4dp"
+                        <ImageButton
+                            android:id="@+id/searchBtn"
+                            android:layout_width="60dp"
+                            android:layout_height="40dp"
+                            android:background="@drawable/ripple2"
+                            android:contentDescription="Search Button"
                             app:tint="?colorOnPrimaryContainer"
-                            android:src="@drawable/ic_edit" >
-                        </ImageView>
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/beta"
-                            android:paddingHorizontal="10dp"
-                            android:background="@drawable/ripple_red"
-                            android:textColor="?colorOnError"
-                            android:textSize="8dp"
-                            android:layout_alignParentBottom="true"
-                            android:layout_marginBottom="3dp"
-                            android:layout_centerHorizontal="true"
-                            />
+                            android:src="@drawable/ic_search"/>
+                        <RelativeLayout
+                            android:id="@+id/editBtn"
+                            android:layout_width="60dp"
+                            android:layout_height="40dp"
+                            android:background="@drawable/ripple2" >
+                            <ImageView android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:layout_centerHorizontal="true"
+                                android:layout_marginTop="4dp"
+                                app:tint="?colorOnPrimaryContainer"
+                                android:src="@drawable/ic_edit">
+                            </ImageView>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/beta"
+                                android:paddingHorizontal="10dp"
+                                android:background="@drawable/ripple_red"
+                                android:textColor="?colorOnError"
+                                android:textSize="8dp"
+                                android:layout_alignParentBottom="true"
+                                android:layout_marginBottom="3dp"
+                                android:layout_centerHorizontal="true"/>
+                        </RelativeLayout>
+                        <ImageButton
+                            android:id="@+id/filterBtn"
+                            android:layout_width="60dp"
+                            android:layout_height="40dp"
+                            android:background="@drawable/ripple2"
+                            app:tint="?colorOnPrimaryContainer"
+                            android:src="@drawable/ic_filter"/>
+                    </LinearLayout>
+                </com.google.android.material.floatingtoolbar.FloatingToolbarLayout>
 
-                    </RelativeLayout>
-                    <ImageButton
-                        android:id="@+id/filterBtn"
-                        android:layout_width="60dp"
-                        android:layout_height="40dp"
-                        android:background="@drawable/ripple2"
-                        app:tint="?colorOnPrimaryContainer"
-                        android:src="@drawable/ic_filter" />
+                <!-- КНОПКА ЗАГРУЗКИ -->
+                <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+                    android:id="@+id/importFab"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/import_db"
+                    android:icon="@drawable/database_upload_24px"
+                    android:visibility="gone"
+                    app:backgroundTint="?colorPrimary"
+                    app:iconTint="?colorOnPrimary"
+                    android:textColor="?colorOnPrimary"
+                    app:layout_constraintBottom_toBottomOf="@id/floating_toolbar"
+                    app:layout_constraintTop_toTopOf="@id/floating_toolbar"
+                    app:layout_constraintStart_toEndOf="@id/floating_toolbar"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginStart="12dp"/>
 
-                </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            </com.google.android.material.floatingtoolbar.FloatingToolbarLayout>
 
             <TextView
                 android:id="@+id/emptyListTxt"

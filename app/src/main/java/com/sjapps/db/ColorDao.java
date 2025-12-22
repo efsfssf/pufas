@@ -10,7 +10,7 @@ import java.util.List;
 @Dao
 public interface ColorDao {
 
-    @Query("SELECT COLORID, COLORCODE FROM color ORDER BY COLORCODE")
+    @Query("SELECT * FROM color ORDER BY COLORCODE")
     List<Color> getAllColors();
 
     @Insert
@@ -18,4 +18,7 @@ public interface ColorDao {
 
     @Delete
     void delete(Color color);
+
+    @Query("DELETE FROM color")
+    void clear();
 }

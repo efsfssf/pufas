@@ -23,5 +23,5 @@ public class Colorant {
     public int rgb;
 
     @ColumnInfo(name = "SPECIFICGRAVITY")
-    public Integer SPECIFICGRAVITY;
+    public Float SPECIFICGRAVITY;
 }

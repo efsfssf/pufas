@@ -20,6 +20,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -58,6 +59,7 @@ import android.widget.Toast;
 
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingtoolbar.FloatingToolbarLayout;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
@@ -69,6 +71,12 @@ import com.sjapps.about.AboutActivity;
 import com.sjapps.adapters.ListAdapter;
 import com.sjapps.adapters.PathListAdapter;
 import com.sjapps.adapters.SearchListAdapter;
+import com.sjapps.db.AppDatabase;
+import com.sjapps.db.Color;
+import com.sjapps.db.ColorInProduct;
+import com.sjapps.db.Colorant;
+import com.sjapps.db.Formula;
+import com.sjapps.db.Product;
 import com.sjapps.jsonlist.controllers.AndroidDragAndDrop;
 import com.sjapps.jsonlist.controllers.AndroidFileManager;
 import com.sjapps.jsonlist.controllers.AndroidJsonLoader;
@@ -93,7 +101,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ImportDatabaseActivity extends AppCompatActivity {
 
@@ -129,6 +142,7 @@ public class ImportDatabaseActivity extends AppCompatActivity {
     public AppState state;
     public View resizeSplitViewBtn;
     FloatingToolbarLayout toolbar;
+    ExtendedFloatingActionButton importBar;
     int listPrevDx = 0;
     RawJsonView rawJsonView;
     FileManager fileManager;
@@ -226,6 +240,7 @@ public class ImportDatabaseActivity extends AppCompatActivity {
         menuBtn.bringToFront();
         resizeSplitViewBtn = findViewById(R.id.resizeSplitViewBtn);
         toolbar = findViewById(R.id.floating_toolbar);
+        importBar = findViewById(R.id.importFab);
         saveBtn = findViewById(R.id.saveBtn);
         guideLine = findViewById(R.id.guideline);
 
@@ -357,10 +372,16 @@ public class ImportDatabaseActivity extends AppCompatActivity {
 
             }
 
+            Handler searchHandler = new Handler();
+            Runnable searchRunnable;
+
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (searchLL.getVisibility() == VISIBLE)
-                    search(s.toString());
+                if (searchLL.getVisibility() == VISIBLE) {
+                    searchHandler.removeCallbacks(searchRunnable);
+                    searchRunnable = () -> search(s.toString());
+                    searchHandler.postDelayed(searchRunnable, 300);
+                }
             }
 
             @Override
@@ -409,6 +430,7 @@ public class ImportDatabaseActivity extends AppCompatActivity {
         searchBtn.setOnClickListener(view -> showSearchView());
         editBtn.setOnClickListener(view -> toggleEdit());
         saveBtn.setOnClickListener(view -> saveChanges());
+        importBar.setOnClickListener(view -> importDb());
 
         resizeSplitViewBtn.setOnTouchListener(new View.OnTouchListener() {
 
@@ -455,6 +477,277 @@ public class ImportDatabaseActivity extends AppCompatActivity {
         });
     }
 
+    private static final Set<String> REQUIRED_KEYS = new HashSet<>(
+            Arrays.asList(
+                    "Color",
+                    "Colorant",
+                    "ColorInProduct",
+                    "Formula",
+                    "Product"
+            )
+    );
+
+    private boolean isValidDatabaseStructure(JsonData data) {
+
+        if (data == null || data.getRootList() == null)
+            return false;
+
+        Set<String> foundKeys = new HashSet<>();
+
+        for (ListItem item : data.getRootList()) {
+
+            if (item.isSpace())
+                continue;
+
+            String name = item.getName();
+            if (name == null)
+                return false;
+
+            if (!item.isObject() && !item.isArray())
+                return false;
+
+            foundKeys.add(name);
+        }
+
+        return REQUIRED_KEYS.equals(foundKeys);
+    }
+
+    private void importDb() {
+
+        if(!isValidDatabaseStructure(data)) {
+            Snackbar.make(getWindow().getDecorView(), R.string.incorrect_database_structure, BaseTransientBottomBar.LENGTH_SHORT).show();
+            return;
+        }
+
+        // 1. Показываем загрузку В UI
+        loadingStarted(getString(R.string.importing_database));
+
+        // 2. Запускаем импорт В ФОНЕ
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            try {
+                importToRoom(data);
+
+                // 3. Завершение — обратно в UI
+                runOnUiThread(() -> {
+                    loadingFinished(true);
+                    Snackbar.make(getWindow().getDecorView(),
+                            R.string.finished,
+                            BaseTransientBottomBar.LENGTH_SHORT).show();
+                });
+            } catch (Exception e) {
+                Log.e(TAG, "Import failed", e);
+
+                runOnUiThread(() -> {
+                    loadingFinished(false);
+                    Snackbar.make(getWindow().getDecorView(),
+                            R.string.fail_to_load_data,
+                            BaseTransientBottomBar.LENGTH_SHORT).show();
+                });
+            } finally {
+                executor.shutdown();
+            }
+        });
+    }
+
+    private int countItems(JsonData data) {
+        int total = 0;
+        for (String key : REQUIRED_KEYS) {
+            ListItem arr = getRootArray(data, key);
+            if (arr != null && arr.getObjects() != null)
+                total += arr.getObjects().size();
+        }
+        return total;
+    }
+
+    private void importToRoom(@NonNull JsonData data) {
+
+        AppDatabase db = AppDatabase.getDbInstance(this);
+
+        int total = countItems(data);
+        int[] progress = {0};
+
+        db.runInTransaction(() -> {
+
+            db.colorInProductDao().clear();
+            db.formulaDao().clear();
+            db.productDao().clear();
+            db.colorantDao().clear();
+            db.colorDao().clear();
+
+            // 1️⃣ Color
+            ListItem colors = getRootArray(data, "Color");
+            if (colors != null)
+            {
+                for (ArrayList<ListItem> obj : colors.getListObjects()) {
+                    Color c = new Color();
+                    c.colorId = getInt(obj, "COLORID");
+                    c.colorCode = getString(obj, "COLORCODE");
+                    c.rgb = getInt(obj, "RGB", true);
+
+                    db.colorDao().insertColor(c);
+
+                    updateProgress(++progress[0], total);
+                }
+            }
+
+            // 2️⃣ Colorant
+            ListItem colorant = getRootArray(data, "Colorant");
+            if (colorant != null) {
+                for (ArrayList<ListItem> obj : colorant.getListObjects()) {
+                    Colorant c = new Colorant();
+                    c.CNTID = getInt(obj, "CNTID");
+                    c.LIQUIDID = getInt(obj, "LIQUIDID");
+                    c.CNTCODE = getString(obj, "CNTCODE");
+                    c.rgb = getInt(obj, "RGB");
+                    c.SPECIFICGRAVITY = getFloat(obj, "SPECIFICGRAVITY");
+
+                    db.colorantDao().insertColorant(c);
+
+                    updateProgress(++progress[0], total);
+                }
+            }
+
+            // 3️⃣ Product
+            ListItem products = getRootArray(data, "Product");
+            if (products != null) {
+                for (ArrayList<ListItem> obj : products.getListObjects()) {
+                    Product p = new Product();
+                    p.productId = getInt(obj, "PRODUCTID");
+                    p.parentProductId = null;
+                    p.productName = getString(obj, "PRODUCTNAME");
+                    p.primerCardId = getInt(obj, "PRIMERCARDID", true);
+
+                    db.productDao().insertProduct(p);
+
+                    updateProgress(++progress[0], total);
+                }
+
+                for (ArrayList<ListItem> obj : products.getListObjects()) {
+                    Integer parentId = getInt(obj, "PARENTPRODUCTID", true);
+                    Integer productId = getInt(obj, "PRODUCTID");
+
+                    if (parentId != null) {
+                        db.productDao().updateParent(productId, parentId);
+                    }
+                }
+
+            }
+
+            // 4️⃣ Formula
+            ListItem formulas = getRootArray(data, "Formula");
+            if (formulas != null) {
+                for (ArrayList<ListItem> obj : formulas.getListObjects()) {
+                    Formula f = new Formula();
+                    f.formulaId = getInt(obj, "FORMULAID");
+                    f.aBaseId = getInt(obj, "ABASEID");
+                    f.colorId = getInt(obj, "COLORID");
+                    f.cntInFormula = getString(obj, "CNTINFORMULA");
+
+                    db.formulaDao().insertFormula(f);
+
+                    updateProgress(++progress[0], total);
+                }
+            }
+
+            // 5️⃣ ColorInProduct
+            ListItem cip = getRootArray(data, "ColorInProduct");
+            if (cip != null) {
+                for (ArrayList<ListItem> obj : cip.getListObjects())
+                {
+                    ColorInProduct rel = new ColorInProduct();
+                    rel.colorInProductId = getInt(obj, "COLORINPRODUCTID");
+                    rel.colorId = getInt(obj, "COLORID");
+                    rel.productId = getInt(obj, "PRODUCTID");
+                    rel.version = getInt(obj, "VERSION");
+                    rel.formulaId = getInt(obj, "FORMULAID");
+                    
+                    db.colorInProductDao().insertColorInProduct(rel);
+
+                    updateProgress(++progress[0], total);
+                }
+            }
+
+        });
+
+        runOnUiThread(() -> {
+            Snackbar.make(getWindow().getDecorView(), R.string.incorrect_database_structure, BaseTransientBottomBar.LENGTH_SHORT).show();
+        });
+    }
+
+    private void updateProgress(int current, int total) {
+        int percent = (int) ((current * 100f) / total);
+
+        handler.post(() -> {
+            progressBar.setIndeterminate(false);
+            progressBar.setProgressCompat(percent, true);
+        });
+    }
+
+    private Integer getInt(ArrayList<ListItem> object, String field)
+    {
+        return getInt(object, field, false);
+    }
+
+    private Integer getInt(ArrayList<ListItem> fields, String key, boolean allowNull) {
+        String v = getString(fields, key);
+        if (v == null || v.equalsIgnoreCase("null") || v.isEmpty()) {
+            if (allowNull) {
+                return null;
+            } else {
+                throw new IllegalArgumentException("Required field '" + key + "' is null");
+            }
+        }
+        try {
+            return Integer.parseInt(v);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Error parsing field '" + key + "': '" + v + "'", e);
+        }
+    }
+
+    private Float getFloat(ArrayList<ListItem> object, String field)
+    {
+        return getFloat(object, field, false);
+    }
+
+    private Float getFloat(ArrayList<ListItem> fields, String key, boolean allowNull) {
+        String v = getString(fields, key);
+        if (v == null || v.equalsIgnoreCase("null") || v.isEmpty()) {
+            if (allowNull) {
+                return null;
+            } else {
+                throw new IllegalArgumentException("Required field '" + key + "' is null");
+            }
+        }
+        try {
+            return Float.parseFloat(v);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Error parsing field '" + key + "': '" + v + "'", e);
+        }
+    }
+
+    private String getString(ArrayList<ListItem> fields, String key) {
+
+        if (fields.isEmpty())
+            return null;
+
+        for (ListItem item : fields) {
+            if (key.equals(item.getName())) {
+                return item.getValue();
+            }
+        }
+        return null;
+    }
+
+    private ListItem getRootArray(JsonData data, String name) {
+        for (ListItem item : data.getRootList()) {
+            if (name.equals(item.getName()) && item.isArray()) {
+                return item;
+            }
+        }
+        return null;
+    }
+
     private void search(String string) {
 
         if (searchAdapter == null){
@@ -484,6 +777,7 @@ public class ImportDatabaseActivity extends AppCompatActivity {
             splitViewBtn.setVisibility(INVISIBLE);
         }
         else {
+            showToolbar();
             menuBtn.setVisibility(VISIBLE);
             splitViewBtn.setVisibility(VISIBLE);
             hideBackBtnIfNotNeeded();
@@ -597,7 +891,7 @@ public class ImportDatabaseActivity extends AppCompatActivity {
             TransitionManager.endTransitions(viewGroup);
             TransitionManager.beginDelayedTransition(viewGroup, autoTransition);
             data.goBack();
-            open(JsonData.getPathFormat(data.getPath()), data.getPath(),-1);
+            openAsync(JsonData.getPathFormat(data.getPath()), data.getPath(),-1);
         }
     };
 
@@ -661,6 +955,7 @@ public class ImportDatabaseActivity extends AppCompatActivity {
             return;
 
         toolbar.animate().cancel();
+        importBar.animate().cancel();
 
         isTopMenuVisible = true;
         toolbar.setVisibility(VISIBLE);
@@ -673,10 +968,21 @@ public class ImportDatabaseActivity extends AppCompatActivity {
                 .setDuration(500)
                 .start();
 
+        importBar.setVisibility(VISIBLE);
+        importBar.animate()
+                .translationY(0)
+                .scaleX(1)
+                .scaleY(1)
+                .alpha(1)
+                .setInterpolator(new OvershootInterpolator(1.1f))
+                .setDuration(500)
+                .start();
+
     }
 
     private void hideToolbar() {
         toolbar.animate().cancel();
+        importBar.animate().cancel();
 
         isTopMenuVisible = false;
         toolbar.animate()
@@ -686,6 +992,14 @@ public class ImportDatabaseActivity extends AppCompatActivity {
                 .scaleY(.5f)
                 .alpha(0)
                 .withEndAction(()-> toolbar.setVisibility(GONE))
+                .start();
+        importBar.animate()
+                .translationY(importBar.getHeight()+50)
+                .setDuration(300)
+                .scaleX(.5f)
+                .scaleY(.5f)
+                .alpha(0)
+                .withEndAction(()-> importBar.setVisibility(GONE))
                 .start();
     }
 
@@ -776,7 +1090,62 @@ public class ImportDatabaseActivity extends AppCompatActivity {
 
     }
 
-    public void open(String Title, String path, int previousPosition) {
+    public void openAsync(String title, String path, int previousPosition) {
+
+        loadingStarted(getString(R.string.loading));
+        Executors.newSingleThreadExecutor().execute(() -> {
+            ArrayList<ListItem> list = getListFromPath(path, data.getRootList());
+
+            handler.post(() -> {
+                loadingFinished(false);
+
+                openUI(title, path, previousPosition, list);
+            });
+        });
+//        TransitionManager.endTransitions(viewGroup);
+//        TransitionManager.beginDelayedTransition(viewGroup, autoTransition);
+//
+//        if (isMenuOpen)
+//            open_closeMenu();
+//
+//        if (emptyListTxt.getVisibility() == VISIBLE)
+//            emptyListTxt.setVisibility(GONE);
+//
+//
+//
+//        pathAdapter = new PathListAdapter(this,path);
+//        pathList.setAdapter(pathAdapter);
+//        data.setPath(path);
+//        titleTxt.setText(Title);
+//        ArrayList<ListItem> arrayList = getListFromPath(path,data.getRootList());
+//        data.setCurrentList(arrayList);
+//        updateFilterList(arrayList);
+//        adapter = new ListAdapter(arrayList, this, path);
+//        list.setAdapter(adapter);
+//
+//        if (previousPosition == -1) {
+//            handler.postDelayed(() -> {
+//                list.smoothScrollToPosition(data.getPreviousPos()+2);
+//                adapter.setHighlightItem(data.getPreviousPos());
+//            }, 500);
+//            handler.postDelayed(() -> {
+//                adapter.notifyItemChanged(data.getPreviousPos());
+//            }, 600);
+//        }
+//        else data.addPreviousPos(previousPosition);
+//
+//        if (arrayList.isEmpty()) {
+//            emptyListTxt.setVisibility(VISIBLE);
+//        }
+//        System.out.println("path = " + path);
+//        if (!path.isEmpty()) {
+//            backBtn.setVisibility(VISIBLE);
+//        } else backBtn.setVisibility(GONE);
+
+    }
+
+    private void openUI(String title, String path, int previousPosition, ArrayList<ListItem> arrayList) {
+
         TransitionManager.endTransitions(viewGroup);
         TransitionManager.beginDelayedTransition(viewGroup, autoTransition);
 
@@ -786,16 +1155,12 @@ public class ImportDatabaseActivity extends AppCompatActivity {
         if (emptyListTxt.getVisibility() == VISIBLE)
             emptyListTxt.setVisibility(GONE);
 
-
-
-        pathAdapter = new PathListAdapter(this,path);
-        pathList.setAdapter(pathAdapter);
         data.setPath(path);
-        titleTxt.setText(Title);
-        ArrayList<ListItem> arrayList = getListFromPath(path,data.getRootList());
+        titleTxt.setText(title);
         data.setCurrentList(arrayList);
         updateFilterList(arrayList);
-        adapter = new ListAdapter(arrayList, this, path);
+
+        adapter.submitList(arrayList);
         list.setAdapter(adapter);
 
         if (previousPosition == -1) {
@@ -816,7 +1181,6 @@ public class ImportDatabaseActivity extends AppCompatActivity {
         if (!path.isEmpty()) {
             backBtn.setVisibility(VISIBLE);
         } else backBtn.setVisibility(GONE);
-
     }
 
     public void highlightItem(int id){
@@ -834,7 +1198,7 @@ public class ImportDatabaseActivity extends AppCompatActivity {
             showHidePathList();
         for (int i = 0; i<n; i++)
             data.goBack();
-        open(JsonData.getPathFormat(data.getPath()), data.getPath(),-1);
+        openAsync(JsonData.getPathFormat(data.getPath()), data.getPath(),-1);
 
     }
 

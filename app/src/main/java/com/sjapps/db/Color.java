@@ -15,5 +15,5 @@ public class Color {
     public String colorCode;
 
     @ColumnInfo(name = "RGB")
-    public int rgb;
+    public Integer rgb;
 }

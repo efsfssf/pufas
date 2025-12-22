@@ -10,7 +10,7 @@ import java.util.List;
 @Dao
 public interface ProductDao {
 
-    @Query("SELECT PRODUCTID, PRODUCTNAME\n" +
+    @Query("SELECT *\n" +
           "FROM product\n" +
        "ORDER BY PRODUCTNAME")
     List<Product> getAllProducts();
@@ -20,4 +20,10 @@ public interface ProductDao {
 
     @Delete
     void delete(Product product);
+
+    @Query("DELETE FROM product")
+    void clear();
+
+    @Query("UPDATE Product SET PARENTPRODUCTID = :parentId WHERE PRODUCTID = :productId ")
+    void updateParent(Integer productId, Integer parentId);
 }

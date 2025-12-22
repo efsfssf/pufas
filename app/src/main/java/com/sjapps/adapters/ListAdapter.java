@@ -32,6 +32,11 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     boolean isEditMode = false;
     public int itemCountInJSONList = 0;
 
+    public void submitList(ArrayList<ListItem> newList) {
+        this.list = newList;
+        notifyDataSetChanged();
+    }
+
 
     static class ViewHolderShort extends RecyclerView.ViewHolder{
 
@@ -162,7 +167,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
             String newPath = path + (path.equals("") ? "": "///" + (item.getId()!=-1?"{" + item.getId() + "}":"")) + item.getName();
 
-            view.findViewById(R.id.btn).setOnClickListener(view1 -> activity.open(JsonData.getPathFormat(newPath),newPath,item.getPosition()!=-1?item.getPosition():position));
+            view.findViewById(R.id.btn).setOnClickListener(view1 -> activity.openAsync(JsonData.getPathFormat(newPath),newPath,item.getPosition()!=-1?item.getPosition():position));
             view.findViewById(R.id.copyBtn).setOnClickListener(v -> {
                 ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
                 ClipData clipData = ClipData.newPlainText("Text",item.getName());

@@ -10,33 +10,33 @@ import androidx.room.PrimaryKey;
         foreignKeys = {
                 @ForeignKey(
                         entity = Color.class,
-                        parentColumns = "colorId",
-                        childColumns = "colorId",
+                        parentColumns = "COLORID",
+                        childColumns = "COLORID",
                         onDelete = ForeignKey.CASCADE
                 ),
                 @ForeignKey(
                         entity = Product.class,
-                        parentColumns = "productId",
-                        childColumns = "productId",
+                        parentColumns = "PRODUCTID",
+                        childColumns = "PRODUCTID",
                         onDelete = ForeignKey.CASCADE
                 ),
                 @ForeignKey(
                         entity = Formula.class,
-                        parentColumns = "formulaId",
-                        childColumns = "formulaId",
+                        parentColumns = "FORMULAID",
+                        childColumns = "FORMULAID",
                         onDelete = ForeignKey.SET_NULL
                 )
         },
         indices = {
-                @Index("colorId"),
-                @Index("productId"),
-                @Index("formulaId")
+                @Index("COLORID"),
+                @Index("PRODUCTID"),
+                @Index("FORMULAID")
         }
 )
 public class ColorInProduct {
 
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "COLOURINPRODUCTID")
+    @ColumnInfo(name = "COLORINPRODUCTID")
     public int colorInProductId;
 
     @ColumnInfo(name = "COLORID")

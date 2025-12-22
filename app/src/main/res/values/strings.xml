@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Json List</string>
+    <string name="app_name">Pufas 2.0</string>
 
     <string name="back">Back</string>
     <string name="yes">Yes</string>
@@ -62,11 +62,13 @@
     <string name="displaying_json">Displaying json…</string>
     <string name="reading_file">Reading file</string>
     <string name="finished">finished</string>
+    <string name="importing_database">Importing database…</string>
 
 
     <string name="fail_to_load_data">Fail to load data</string>
     <string name="file_is_too_large">File is too large</string>
     <string name="fail_to_load_file">Fail to load file!</string>
+    <string name="incorrect_database_structure">Incorrect database structure</string>
     <string name="fail_to_create_list">Fail to create list!</string>
     <string name="loading_file_in_progress">Loading file in progress, try again later</string>
     <string name="file_is_to_large_to_be_shown_in_a_split_screen">File is to large to be shown in a split screen!</string>
@@ -82,6 +84,7 @@
     <string name="file_saved">File saved!</string>
     <string name="fail_to_save">Fail to save a file</string>
     <string name="saving_file">Saving file...</string>
+    <string name="db_saved">Database saved!</string>
 
     <!--  Release Notes  -->
     <string name="release_notes">Release Notes</string>
@@ -101,6 +104,7 @@
 
     <!--  Themes  -->
     <string name="theme">Theme</string>
+    <string name="import_db">Import</string>
 
 
     <string-array name="Themes">

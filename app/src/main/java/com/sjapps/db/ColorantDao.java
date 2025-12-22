@@ -8,14 +8,17 @@ import androidx.room.Query;
 @Dao
 public interface ColorantDao {
 
-    @Query("SELECT CNTID, CNTCODE\n" +
+    @Query("SELECT *\n" +
             "\t   FROM colorant\n" +
             "\t   WHERE CNTID IN (:colorantId)")
-    Integer getColorant(int colorantId);
+    Colorant getColorant(int colorantId);
 
     @Insert
     void insertColorant(Colorant... colorant);
 
     @Delete
     void delete(Colorant colorant);
+
+    @Query("DELETE FROM colorant")
+    void clear();
 }

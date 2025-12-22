@@ -20,4 +20,7 @@ public interface ColorInProductDao {
 
     @Delete
     void delete(ColorInProduct colorInProduct);
+
+    @Query("DELETE FROM colorInProduct")
+    void clear();
 }

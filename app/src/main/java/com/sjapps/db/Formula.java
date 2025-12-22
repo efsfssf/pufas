@@ -9,11 +9,11 @@ import androidx.room.PrimaryKey;
 @Entity(
         foreignKeys = @ForeignKey(
                 entity = Color.class,
-                parentColumns = "colorId",
-                childColumns = "colorId",
+                parentColumns = "COLORID",
+                childColumns = "COLORID",
                 onDelete = ForeignKey.CASCADE
         ),
-        indices = {@Index("colorId")}
+        indices = {@Index("COLORID")}
 )
 public class Formula {
 

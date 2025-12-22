@@ -9,11 +9,11 @@ import androidx.room.PrimaryKey;
 @Entity(
         foreignKeys = @ForeignKey(
                 entity = Product.class,
-                parentColumns = "productId",
-                childColumns = "parentProductId",
+                parentColumns = "PRODUCTID",
+                childColumns = "PARENTPRODUCTID",
                 onDelete = ForeignKey.SET_NULL
         ),
-        indices = {@Index("parentProductId")}
+        indices = {@Index("PARENTPRODUCTID")}
 )
 public class Product {
 
@@ -22,11 +22,11 @@ public class Product {
     public int productId;
 
     @ColumnInfo(name = "PARENTPRODUCTID")
-    public int parentProductId;
+    public Integer parentProductId;
 
     @ColumnInfo(name = "PRODUCTNAME")
     public String productName;
 
     @ColumnInfo(name = "PRIMERCARDID")
-    public int primerId;
+    public Integer primerCardId;
 }

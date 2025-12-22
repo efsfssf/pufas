@@ -16,4 +16,7 @@ public interface FormulaDao {
 
     @Delete
     void delete(Formula formula);
+
+    @Query("DELETE FROM formula")
+    void clear();
 }

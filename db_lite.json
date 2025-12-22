@@ -1,0 +1,43 @@
+{
+    "Color": [
+        {
+            "COLORID": 180928,
+            "COLORCODE": "506 ABB Motor Blue",
+            "RGB": 5864328
+        }
+    ],
+    "Colorant": [
+        {
+            "CNTID": 83,
+            "LIQUIDID": 90,
+            "CNTCODE": "BH",
+            "RGB": 82546,
+            "SPECIFICGRAVITY": 1.348
+        }
+    ],
+    "Product": [
+        {
+            "PRODUCTID": 1366,
+            "PARENTPRODUCTID": null,
+            "PRODUCTNAME": "010 Interior/Exterior [A C] (13)",
+            "PRIMERCARDID": null
+        }
+    ],
+    "Formula": [
+        {
+            "FORMULAID": 203879,
+            "ABASEID": 108,
+            "COLORID": 180929,
+            "CNTINFORMULA": "[[84, 86], [7.0, 0.755556]]"
+        }
+    ],
+    "ColorInProduct": [
+        {
+            "COLORINPRODUCTID": 246080,
+            "COLORID": 180929,
+            "PRODUCTID": 1366,
+            "VERSION": 0,
+            "FORMULAID": 203879
+        }
+    ]
+}
