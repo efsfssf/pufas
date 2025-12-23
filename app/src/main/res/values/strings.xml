@@ -105,6 +105,17 @@
     <!--  Themes  -->
     <string name="theme">Theme</string>
     <string name="import_db">Import</string>
+    <string name="no_data">-</string>
+    <string name="Product">Product</string>
+    <string name="color_code">Color code</string>
+    <string name="Container">Container (l/kg)</string>
+    <string name="Calculate">Calculate</string>
+    <string name="Base">Base</string>
+    <string name="Base_C">Base C (Transparent)</string>
+    <string name="Colorants">Colorants</string>
+    <string name="Code">Code</string>
+    <string name="Values_1L">Values (1L)</string>
+    <string name="Result">Result</string>
 
 
     <string-array name="Themes">

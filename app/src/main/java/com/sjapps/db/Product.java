@@ -1,5 +1,6 @@
 package com.sjapps.db;
 
+import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
@@ -29,4 +30,10 @@ public class Product {
 
     @ColumnInfo(name = "PRIMERCARDID")
     public Integer primerCardId;
+
+    @NonNull
+    @Override
+    public String toString() {
+        return productName;
+    }
 }

@@ -1,5 +1,6 @@
 package com.sjapps.db;
 
+import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -16,4 +17,11 @@ public class Color {
 
     @ColumnInfo(name = "RGB")
     public Integer rgb;
+
+    @NonNull
+    @Override
+    public String toString() {
+        return colorCode;
+    }
+
 }

@@ -20,7 +20,6 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -176,7 +175,7 @@ public class ImportDatabaseActivity extends AppCompatActivity {
         if (!(Thread.getDefaultUncaughtExceptionHandler() instanceof CustomExceptionHandler))
             Thread.setDefaultUncaughtExceptionHandler(new CustomExceptionHandler(this));
 
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_import);
         initialize();
         setLayoutBounds();
         setEvents();
