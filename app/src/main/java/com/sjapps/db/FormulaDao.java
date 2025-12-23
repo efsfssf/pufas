@@ -19,4 +19,7 @@ public interface FormulaDao {
 
     @Query("DELETE FROM formula")
     void clear();
+
+    @Query("SELECT * FROM Formula WHERE FORMULAID = :id")
+    Formula getById(int id);
 }

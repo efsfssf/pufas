@@ -1,21 +1,20 @@
 package com.sjapps.jsonlist;
-
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-import com.sjapps.db.AppDatabase;
 import com.sjapps.db.Color;
 import com.sjapps.db.Product;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
@@ -25,6 +24,10 @@ public class MainActivity extends AppCompatActivity {
 
     TextInputLayout colorInput;
     AutoCompleteTextView colorDropdown;
+    TextInputEditText canSizeInput;
+
+
+    MaterialButton calcButton;
 
     private MainViewModel viewModel;
 
@@ -76,6 +79,35 @@ public class MainActivity extends AppCompatActivity {
             Color c = (Color) parent.getItemAtPosition(pos);
             Log.d("MainActivity", "colorId=" + c.colorId);
         });
+
+        calcButton.setOnClickListener(v -> {
+
+
+
+            int productId = Integer.parseInt(productDropdown.getText().toString());
+            int colorId = Integer.parseInt(colorDropdown.getText().toString());
+            int canSize = Integer.parseInt(canSizeInput.getText().toString());
+
+            if (productDropdown.getText().toString().isEmpty() ||
+                    colorDropdown.getText().toString().isEmpty() || canSizeInput.getText().toString().isEmpty()) {
+                Toast.makeText(this, "Заполните все поля", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Executors.newSingleThreadExecutor().execute(() -> {
+
+                List<MainViewModel.FormulaItem> result =
+                        viewModel.calculateFormula(productId, colorId, canSize);
+
+                runOnUiThread(() -> {
+                    if (result == null) {
+                        return;
+                    } else {
+                        return;
+                    }
+                });
+            });
+        });
     }
 
     private void initViews() {
@@ -83,6 +115,10 @@ public class MainActivity extends AppCompatActivity {
         productDropdown = (AutoCompleteTextView) productInput.getEditText();
         colorInput = findViewById(R.id.colorInput);
         colorDropdown = (AutoCompleteTextView) colorInput.getEditText();
+        canSizeInput = findViewById(R.id.canSizeEditText);
+        calcButton = findViewById(R.id.calcButton);
+
+        canSizeInput.setText("10");
     }
 
 

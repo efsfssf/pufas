@@ -26,4 +26,7 @@ public interface ProductDao {
 
     @Query("UPDATE Product SET PARENTPRODUCTID = :parentId WHERE PRODUCTID = :productId ")
     void updateParent(Integer productId, Integer parentId);
+
+    @Query("SELECT * FROM Product WHERE PRODUCTID = :id")
+    Product getById(int id);
 }

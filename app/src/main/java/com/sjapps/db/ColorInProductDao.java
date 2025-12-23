@@ -21,6 +21,13 @@ public interface ColorInProductDao {
     @Delete
     void delete(ColorInProduct colorInProduct);
 
+    @Query("SELECT * FROM ColorInProduct\n" +
+        "WHERE PRODUCTID = :productId\n" +
+          "AND COLORID = :colorId\n" +
+        "ORDER BY VERSION ASC\n" +
+        "LIMIT 1")
+    ColorInProduct find(int productId, int colorId);
+
     @Query("DELETE FROM colorInProduct")
     void clear();
 }
