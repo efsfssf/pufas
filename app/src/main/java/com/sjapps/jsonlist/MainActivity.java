@@ -19,7 +19,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.Executors;
 
@@ -79,8 +80,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         initViews();
-        setupQuickSizeButtons();
         setupListeners();
+
+        setupQuickSizeButtons();
+        setupStepperButtons();
 
         viewModel = new ViewModelProvider(this)
                 .get(MainViewModel.class);
@@ -457,15 +460,61 @@ public class MainActivity extends AppCompatActivity {
             chip.setTextAppearanceResource(com.google.android.material.R.style.TextAppearance_Material3_LabelLarge);
             chip.setCheckable(false);
 
+            double value = Double.parseDouble(size);
+            String clear_size = "";
+            if (value == (long) value) {
+                clear_size = String.format(Locale.US, "%d", (long) value);
+            } else {
+                clear_size = String.format(Locale.US, "%.1f", value);
+            }
+
             chip.setText(size);
 
+            String finalClear_size = clear_size;
             chip.setOnClickListener(v -> {
-                canSizeEdit.setText(size);
-                canSizeEdit.setSelection(size.length());
+                canSizeEdit.setText(finalClear_size);
+                canSizeEdit.setSelection(finalClear_size.length());
             });
 
             chipGroup.addView(chip);
         }
+    }
+
+    private void setupStepperButtons() {
+        MaterialButton btnMinus = findViewById(R.id.btn_minus);
+        MaterialButton btnPlus = findViewById(R.id.btn_plus);
+
+        btnMinus.setOnClickListener(v -> changeValue(canSizeEdit, -1));
+        btnPlus.setOnClickListener(v -> changeValue(canSizeEdit, 1));
+    }
+
+    private void changeValue(TextInputEditText canSizeEdit, int step) {
+        String currentText = canSizeEdit.getText().toString();
+        double value = 0.0;
+
+        if (!TextUtils.isEmpty(currentText)) {
+            try {
+                value = Double.parseDouble(currentText.replace(",", "."));
+            } catch (NumberFormatException e) {
+                value = 0.0;
+            }
+        }
+
+        if (step >= 0 || value > 1)
+            value += step;
+
+        if (value <= 0) value = 1;
+
+        if (value > 200) value = 200;
+
+        if (value == (long) value) {
+            canSizeEdit.setText(String.format(Locale.US, "%d", (long) value));
+        } else {
+            canSizeEdit.setText(String.format(Locale.US, "%.1f", value));
+        }
+
+        canSizeEdit.setSelection(canSizeEdit.getText().length());
+
     }
 
     private void initViews() {
