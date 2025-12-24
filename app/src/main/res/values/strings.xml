@@ -127,6 +127,8 @@
     <string name="menu">Menu</string>
     <string name="history">History</string>
     <string name="open_db">Open database</string>
+    <string name="often_used">Frequently used</string>
+    <string name="other">Other</string>
 
 
     <string-array name="Themes">

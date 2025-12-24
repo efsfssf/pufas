@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.sjapps.db.Color;
-import com.sjapps.jsonlist.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +21,12 @@ public class ColorAdapter extends ArrayAdapter<Color> {
     private List<Color> itemsAll;
 
     private static final int TYPE_COLOR = 0;
-    private static final int TYPE_DIVIDER = 1;
+    private static final int TYPE_DIVIDER_RECENT = 1;
+    private static final int TYPE_DIVIDER_OTHER = 2;
+
+    public static final Color DIVIDER_RECENT = new Color();
+    public static final Color DIVIDER_OTHER  = new Color();
+
 
     public ColorAdapter(Context context, List<Color> items) {
         super(context, 0, items);
@@ -33,8 +37,26 @@ public class ColorAdapter extends ArrayAdapter<Color> {
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         // Если view еще не создана, "надуваем" её из нашего XML
+        if (getItemViewType(position) == TYPE_DIVIDER_RECENT) {
+            if (convertView == null) {
+                convertView = LayoutInflater.from(getContext())
+                        .inflate(R.layout.item_dropdown_divider, parent, false);
+            }
+            return convertView;
+        }
+
+        if (getItemViewType(position) == TYPE_DIVIDER_OTHER) {
+            if (convertView == null) {
+                convertView = LayoutInflater.from(getContext())
+                        .inflate(R.layout.item_dropdown_divider_other, parent, false);
+            }
+            return convertView;
+        }
+
+        // обычный цвет
         if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_dropdown_color, parent, false);
+            convertView = LayoutInflater.from(getContext())
+                    .inflate(R.layout.item_dropdown_color, parent, false);
         }
 
         // Получаем текущий элемент
@@ -69,6 +91,7 @@ public class ColorAdapter extends ArrayAdapter<Color> {
                 } else {
                     String filterPattern = constraint.toString().toLowerCase().trim();
                     for (Color item : itemsAll) {
+                        if (item == DIVIDER_RECENT || item == DIVIDER_OTHER) continue;
                         if (item.toString().toLowerCase().contains(filterPattern)) {
                             suggestions.add(item);
                         }
@@ -90,4 +113,20 @@ public class ColorAdapter extends ArrayAdapter<Color> {
             }
         };
     }
+
+    @Override
+    public int getItemViewType(int position) {
+        Color item = getItem(position);
+
+        if (item == DIVIDER_RECENT) return TYPE_DIVIDER_RECENT;
+        if (item == DIVIDER_OTHER)  return TYPE_DIVIDER_OTHER;
+
+        return TYPE_COLOR;
+    }
+
+    @Override
+    public int getViewTypeCount() {
+        return 3;
+    }
+
 }

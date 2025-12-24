@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.navigation.NavigationView;
 import android.widget.TableLayout;
@@ -32,6 +34,9 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import com.sjapps.db.Product;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -64,9 +69,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String PREFS = "recent_items";
     private static final String KEY_RECENT_COLORS = "recent_colors";
     private static final String KEY_RECENT_PRODUCTS = "recent_products";
-    private static final int MAX_RECENT = 5;
-
-    public static final Color DIVIDER = new Color();
+    private static final String KEY_MAX_RECENT = "max_recent";
+    private static final int DEFAULT_MAX_RECENT = 5;
 
 
     @Override
@@ -75,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         initViews();
+        setupQuickSizeButtons();
         setupListeners();
 
         viewModel = new ViewModelProvider(this)
@@ -96,19 +101,22 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private int getMaxRecent() {
+        SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
+        return prefs.getInt(KEY_MAX_RECENT, DEFAULT_MAX_RECENT);
+    }
+
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
 
-        // Связываем ID из вашего XML (action_menu) с методом показа
         if (id == R.id.action_menu) {
-            showExpressiveMenu(); // <--- ВОТ ЗДЕСЬ вызываем метод
+            showExpressiveMenu();
             return true;
         }
-
-        // Обработка кнопки "Скрыть баллы"
         else if (id == R.id.action_hide_points) {
-            // Ваша логика скрытия
+
             return true;
         }
 
@@ -144,13 +152,42 @@ public class MainActivity extends AppCompatActivity {
 
     private void observeData() {
         viewModel.getProducts().observe(this, products -> {
+
+            SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
+            Set<String> recentProducts = prefs.getStringSet(KEY_RECENT_PRODUCTS, new LinkedHashSet<>());
+
             productDropdown.setAdapter(
                     new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, products)
             );
         });
 
         viewModel.getColors().observe(this, colors -> {
-            ColorAdapter adapter = new ColorAdapter(this, colors);
+
+            SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
+            Set<String> recentColors = prefs.getStringSet(KEY_RECENT_COLORS, new LinkedHashSet<>());
+
+            List<Color> recent = new ArrayList<>();
+            List<Color> others = new ArrayList<>();
+
+            for (Color color : colors) {
+                if (recentColors.contains(color.colorCode)) {
+                    recent.add(color);
+                } else {
+                    others.add(color);
+                }
+            }
+
+            List<Color> finalColors = new ArrayList<>();
+
+            if (!recent.isEmpty()) {
+                finalColors.add(ColorAdapter.DIVIDER_RECENT);
+                finalColors.addAll(recent);
+                finalColors.add(ColorAdapter.DIVIDER_OTHER);
+            }
+
+            finalColors.addAll(others);
+
+            ColorAdapter adapter = new ColorAdapter(this, finalColors);
 
             MaterialAutoCompleteTextView actv = findViewById(R.id.actv_color);
 
@@ -171,7 +208,8 @@ public class MainActivity extends AppCompatActivity {
         set.add(colorCode);      // добавляем в конец (самый свежий)
 
         // ограничиваем размер
-        while (set.size() > MAX_RECENT) {
+        int maxRecent = getMaxRecent();
+        while (set.size() > maxRecent) {
             String first = set.iterator().next();
             set.remove(first);
         }
@@ -179,6 +217,24 @@ public class MainActivity extends AppCompatActivity {
         prefs.edit().putStringSet(KEY_RECENT_COLORS, set).apply();
     }
 
+    private void saveRecentProduct(String product) {
+        SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
+        Set<String> set = new LinkedHashSet<>(
+                prefs.getStringSet(KEY_RECENT_PRODUCTS, new LinkedHashSet<>())
+        );
+
+        set.remove(product);   // чтобы не было дублей
+        set.add(product);      // добавляем в конец (самый свежий)
+
+        // ограничиваем размер
+        int maxRecent = getMaxRecent();
+        while (set.size() > maxRecent) {
+            String first = set.iterator().next();
+            set.remove(first);
+        }
+
+        prefs.edit().putStringSet(KEY_RECENT_PRODUCTS, set).apply();
+    }
 
     private void setupListeners() {
         productDropdown.setOnFocusChangeListener((v, hasFocus) -> {
@@ -188,6 +244,7 @@ public class MainActivity extends AppCompatActivity {
         productDropdown.setOnItemClickListener((parent, view, pos, id) -> {
             selectedProduct = (Product) parent.getItemAtPosition(pos);
             Log.d("MainActivity", "productId=" + selectedProduct .productId);
+            saveRecentProduct(selectedProduct.productName);
         });
 
         colorDropdown.setOnFocusChangeListener((v, hasFocus) -> {
@@ -386,6 +443,30 @@ public class MainActivity extends AppCompatActivity {
         return (int) (dp * getResources().getDisplayMetrics().density);
     }
 
+    private void setupQuickSizeButtons() {
+        ChipGroup chipGroup = findViewById(R.id.chipGroupQuickSizes);
+
+        // 1. Список значений (в будущем будете брать его из UserSettings)
+        List<String> sizes = Arrays.asList("0.5", "1.0", "2.5", "5.0", "10.0", "10.0", "20.0");
+
+        // Очищаем группу перед заполнением (на случай перезагрузки настроек)
+        chipGroup.removeAllViews();
+
+        for (String size : sizes) {
+            Chip chip = new Chip(this);
+            chip.setTextAppearanceResource(com.google.android.material.R.style.TextAppearance_Material3_LabelLarge);
+            chip.setCheckable(false);
+
+            chip.setText(size);
+
+            chip.setOnClickListener(v -> {
+                canSizeEdit.setText(size);
+                canSizeEdit.setSelection(size.length());
+            });
+
+            chipGroup.addView(chip);
+        }
+    }
 
     private void initViews() {
         productInput = findViewById(R.id.productInput);
