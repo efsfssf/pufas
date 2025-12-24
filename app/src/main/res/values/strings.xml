@@ -107,7 +107,9 @@
     <string name="import_db">Import</string>
     <string name="no_data">-</string>
     <string name="Product">Product</string>
-    <string name="color_code">Color code</string>
+    <string name="color">Color</string>
+    <string name="color_name">There will be a selected color here</string>
+    <string name="color_name_description">I\'m sure he\'ll be great!💫</string>
     <string name="Container">Container (l/kg)</string>
     <string name="Calculate">Calculate</string>
     <string name="Base">Base</string>
@@ -116,6 +118,8 @@
     <string name="Code">Code</string>
     <string name="Values_1L">Values (1L)</string>
     <string name="Result">Result</string>
+    <string name="default_value_size">10</string>
+    <string name="liters">L</string>
 
 
     <string-array name="Themes">

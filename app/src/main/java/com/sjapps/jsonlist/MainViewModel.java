@@ -77,10 +77,12 @@ public class MainViewModel extends AndroidViewModel {
 
     public static class FormulaItem {
         public int colorantId;
+        public double amount1L;
         public double amount;
 
-        public FormulaItem(int colorantId, double amount) {
+        public FormulaItem(int colorantId, double amount1L, double amount) {
             this.colorantId = colorantId;
+            this.amount1L = amount1L;
             this.amount = amount;
         }
     }
@@ -115,7 +117,7 @@ public class MainViewModel extends AndroidViewModel {
             int id = Integer.parseInt(ids[i].trim());
             double amount = Double.parseDouble(amounts[i].trim());
 
-            result.add(new FormulaItem(id, amount));
+            result.add(new FormulaItem(id, amount, amount));
         }
 
         return result;

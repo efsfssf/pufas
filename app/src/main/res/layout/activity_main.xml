@@ -67,7 +67,7 @@
                             android:layout_width="56dp"
                             android:layout_height="56dp"
                             android:background="@drawable/format_color_reset_24px"
-                            android:backgroundTint="#2196F3" />
+                            android:backgroundTint="#018CFF" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -76,14 +76,16 @@
                             android:layout_marginStart="16dp">
 
                             <TextView
-                                android:text="@string/color_code"
+                                android:id="@+id/colorName"
+                                android:text="@string/color_name"
                                 android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
                                 android:textStyle="bold"
                                 android:textColor="?attr/colorOnSurface"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"/>
                             <TextView
-                                android:text="@string/color_code"
+                                android:id="@+id/colorData"
+                                android:text="@string/color_name_description"
                                 android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                                 android:textColor="?attr/colorOnSurfaceVariant"
                                 android:layout_width="wrap_content"
@@ -135,11 +137,10 @@
 
                             <TextView
                                 android:id="@+id/baseWeight"
-                                android:text="940 л"
-                                android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
-                                android:textColor="?attr/colorPrimary"
                                 android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"/>
+                                android:layout_height="wrap_content"
+                                android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+                                android:textColor="?attr/colorPrimary" />
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
@@ -152,6 +153,7 @@
                         android:textColor="?attr/colorOnSurfaceVariant"/>
 
                     <TableLayout
+                        android:id="@+id/resultTable"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:stretchColumns="0,1,2">
@@ -175,46 +177,46 @@
                                 android:textColor="?attr/colorOutline"/>
                         </TableRow>
 
-                        <TableRow android:paddingVertical="6dp">
-                            <TextView android:text="@string/no_data" style="@style/DataCell.Text"/>
-                            <TextView android:text="@string/no_data" style="@style/DataCell.Num"/>
-                            <TextView android:text="@string/no_data" style="@style/DataCell.Num"/>
-                        </TableRow>
-                        <View android:layout_height="1dp" android:background="?attr/colorOutlineVariant" android:alpha="0.2"/>
+<!--                        <TableRow android:paddingVertical="6dp">-->
+<!--                            <TextView android:text="@string/no_data" style="@style/DataCell.Text"/>-->
+<!--                            <TextView android:text="@string/no_data" style="@style/DataCell.Num"/>-->
+<!--                            <TextView android:text="@string/no_data" style="@style/DataCell.Num"/>-->
+<!--                        </TableRow>-->
+<!--                        <View android:layout_height="1dp" android:background="?attr/colorOutlineVariant" android:alpha="0.2"/>-->
 
-                        <TableRow android:paddingVertical="6dp">
-                            <TextView android:text="@string/no_data" style="@style/DataCell.Text"/>
-                            <TextView android:text="@string/no_data" style="@style/DataCell.Num"/>
-                            <TextView android:text="@string/no_data" style="@style/DataCell.Num"/>
-                        </TableRow>
-                        <View android:layout_height="1dp" android:background="?attr/colorOutlineVariant" android:alpha="0.2"/>
+<!--                        <TableRow android:paddingVertical="6dp">-->
+<!--                            <TextView android:text="@string/no_data" style="@style/DataCell.Text"/>-->
+<!--                            <TextView android:text="@string/no_data" style="@style/DataCell.Num"/>-->
+<!--                            <TextView android:text="@string/no_data" style="@style/DataCell.Num"/>-->
+<!--                        </TableRow>-->
+<!--                        <View android:layout_height="1dp" android:background="?attr/colorOutlineVariant" android:alpha="0.2"/>-->
 
-                        <TableRow android:paddingVertical="6dp">
-                            <TextView android:text="@string/no_data" style="@style/DataCell.Text" android:textColor="?attr/colorOutline"/>
-                            <TextView android:text="@string/no_data" style="@style/DataCell.Num" android:textColor="?attr/colorOutline"/>
-                            <TextView android:text="@string/no_data" style="@style/DataCell.Num" android:textColor="?attr/colorOutline"/>
-                        </TableRow>
-                        <View android:layout_height="1dp" android:background="?attr/colorOutlineVariant" android:alpha="0.2"/>
+<!--                        <TableRow android:paddingVertical="6dp">-->
+<!--                            <TextView android:text="@string/no_data" style="@style/DataCell.Text" android:textColor="?attr/colorOutline"/>-->
+<!--                            <TextView android:text="@string/no_data" style="@style/DataCell.Num" android:textColor="?attr/colorOutline"/>-->
+<!--                            <TextView android:text="@string/no_data" style="@style/DataCell.Num" android:textColor="?attr/colorOutline"/>-->
+<!--                        </TableRow>-->
+<!--                        <View android:layout_height="1dp" android:background="?attr/colorOutlineVariant" android:alpha="0.2"/>-->
 
-                        <TableRow android:paddingVertical="6dp">
-                            <TextView android:text="@string/no_data" style="@style/DataCell.Text" android:textColor="?attr/colorOutline"/>
-                            <TextView android:text="@string/no_data" style="@style/DataCell.Num" android:textColor="?attr/colorOutline"/>
-                            <TextView android:text="@string/no_data" style="@style/DataCell.Num" android:textColor="?attr/colorOutline"/>
-                        </TableRow>
-                        <View android:layout_height="1dp" android:background="?attr/colorOutlineVariant" android:alpha="0.2"/>
+<!--                        <TableRow android:paddingVertical="6dp">-->
+<!--                            <TextView android:text="@string/no_data" style="@style/DataCell.Text" android:textColor="?attr/colorOutline"/>-->
+<!--                            <TextView android:text="@string/no_data" style="@style/DataCell.Num" android:textColor="?attr/colorOutline"/>-->
+<!--                            <TextView android:text="@string/no_data" style="@style/DataCell.Num" android:textColor="?attr/colorOutline"/>-->
+<!--                        </TableRow>-->
+<!--                        <View android:layout_height="1dp" android:background="?attr/colorOutlineVariant" android:alpha="0.2"/>-->
 
-                        <TableRow android:paddingVertical="6dp">
-                            <TextView android:text="@string/no_data" style="@style/DataCell.Text" android:textColor="?attr/colorOutline"/>
-                            <TextView android:text="@string/no_data" style="@style/DataCell.Num" android:textColor="?attr/colorOutline"/>
-                            <TextView android:text="@string/no_data" style="@style/DataCell.Num" android:textColor="?attr/colorOutline"/>
-                        </TableRow>
-                        <View android:layout_height="1dp" android:background="?attr/colorOutlineVariant" android:alpha="0.2"/>
+<!--                        <TableRow android:paddingVertical="6dp">-->
+<!--                            <TextView android:text="@string/no_data" style="@style/DataCell.Text" android:textColor="?attr/colorOutline"/>-->
+<!--                            <TextView android:text="@string/no_data" style="@style/DataCell.Num" android:textColor="?attr/colorOutline"/>-->
+<!--                            <TextView android:text="@string/no_data" style="@style/DataCell.Num" android:textColor="?attr/colorOutline"/>-->
+<!--                        </TableRow>-->
+<!--                        <View android:layout_height="1dp" android:background="?attr/colorOutlineVariant" android:alpha="0.2"/>-->
 
-                        <TableRow android:paddingVertical="6dp">
-                            <TextView android:text="@string/no_data" style="@style/DataCell.Text" android:textColor="?attr/colorOutline"/>
-                            <TextView android:text="@string/no_data" style="@style/DataCell.Num" android:textColor="?attr/colorOutline"/>
-                            <TextView android:text="@string/no_data" style="@style/DataCell.Num" android:textColor="?attr/colorOutline"/>
-                        </TableRow>
+<!--                        <TableRow android:paddingVertical="6dp">-->
+<!--                            <TextView android:text="@string/no_data" style="@style/DataCell.Text" android:textColor="?attr/colorOutline"/>-->
+<!--                            <TextView android:text="@string/no_data" style="@style/DataCell.Num" android:textColor="?attr/colorOutline"/>-->
+<!--                            <TextView android:text="@string/no_data" style="@style/DataCell.Num" android:textColor="?attr/colorOutline"/>-->
+<!--                        </TableRow>-->
 
                     </TableLayout>
                 </LinearLayout>
@@ -234,7 +236,7 @@
                 <com.google.android.material.textfield.MaterialAutoCompleteTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="none"/>
+                    android:inputType="text"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -242,7 +244,7 @@
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/color_code"
+                android:hint="@string/color"
                 app:startIconDrawable="@drawable/colors_24px"
                 app:boxCornerRadiusTopStart="4dp"
                 app:boxCornerRadiusTopEnd="4dp"
@@ -251,7 +253,7 @@
                 <com.google.android.material.textfield.MaterialAutoCompleteTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="none"/>
+                    android:inputType="text"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
