@@ -105,6 +105,7 @@
     <!--  Themes  -->
     <string name="theme">Theme</string>
     <string name="import_db">Import</string>
+    <string name="import_database">Import database</string>
     <string name="no_data">-</string>
     <string name="Product">Product</string>
     <string name="color">Color</string>
@@ -120,6 +121,12 @@
     <string name="Result">Result</string>
     <string name="default_value_size">10</string>
     <string name="liters">L</string>
+    <string name="formula_calculation">Formula calculation</string>
+    <string name="paint_icon">The paint jar icon</string>
+    <string name="hide_points">Hide/show points</string>
+    <string name="menu">Menu</string>
+    <string name="history">History</string>
+    <string name="open_db">Open database</string>
 
 
     <string-array name="Themes">

@@ -20,9 +20,8 @@
                 android:id="@+id/topAppBar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:title="Расчет формулы"
-                app:layout_collapseMode="pin"
-                app:navigationIcon="@drawable/ic_back" />
+                app:title="@string/formula_calculation"
+                app:layout_collapseMode="pin" />
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -62,12 +61,15 @@
                         android:gravity="center_vertical"
                         android:layout_marginBottom="24dp">
 
-                        <View
+                        <com.google.android.material.imageview.ShapeableImageView
                             android:id="@+id/colorDot"
                             android:layout_width="56dp"
                             android:layout_height="56dp"
-                            android:background="@drawable/format_color_reset_24px"
-                            android:backgroundTint="#018CFF" />
+                            android:scaleType="center"
+                            app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full"
+                            android:background="#018CFF"
+                            android:src="@drawable/format_color_reset_24px"
+                            app:tint="@android:color/white" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -111,6 +113,7 @@
                             <ImageView
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
+                                android:contentDescription="@string/paint_icon"
                                 android:src="@drawable/format_color_fill_24px"
                                 app:tint="?attr/colorPrimary"/>
 
@@ -144,13 +147,41 @@
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
-                    <TextView
-                        android:text="@string/Colorants"
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
-                        android:textColor="?attr/colorOnSurfaceVariant"/>
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="8dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Colorants"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                            android:textColor="?attr/colorOnSurfaceVariant" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_toggle_points"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+                            android:padding="0dp"
+                            android:insetLeft="0dp"
+                            android:insetRight="0dp"
+                            android:insetTop="0dp"
+                            android:insetBottom="0dp"
+                            android:minWidth="0dp"
+                            android:minHeight="0dp"
+                            app:icon="@drawable/visibility_off_24px"
+                            app:iconGravity="textStart"
+                            app:iconPadding="0dp"
+                            app:iconSize="20dp"
+                            app:iconTint="?attr/colorOnSecondaryContainer"
+                            android:contentDescription="@string/hide_points" />
+
+                    </LinearLayout>
 
                     <TableLayout
                         android:id="@+id/resultTable"
@@ -251,6 +282,7 @@
                 app:boxCornerRadiusBottomStart="4dp"
                 app:boxCornerRadiusBottomEnd="4dp">
                 <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/actv_color"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="text"/>

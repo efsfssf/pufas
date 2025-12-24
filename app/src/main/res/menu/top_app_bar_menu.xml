@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_hide_points"
+        android:icon="@drawable/visibility_off_24px"
+        android:title="@string/hide_points"
+        android:contentDescription="@string/hide_points"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_menu"
+        android:icon="@drawable/menu_24px"
+        android:title="@string/menu"
+        android:contentDescription="@string/menu"
+        app:showAsAction="always">
+
+    </item>
+
+</menu>

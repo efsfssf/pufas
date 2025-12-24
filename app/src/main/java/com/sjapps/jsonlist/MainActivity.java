@@ -1,30 +1,40 @@
 package com.sjapps.jsonlist;
 import android.annotation.SuppressLint;
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.imageview.ShapeableImageView;
+import com.google.android.material.navigation.NavigationView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.color.MaterialColors;
+import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.sjapps.db.Color;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import com.sjapps.db.Product;
 
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
@@ -39,9 +49,10 @@ public class MainActivity extends AppCompatActivity {
 
     MaterialButton calcButton;
     TextView baseWeight;
-    View colorDot;
+    ShapeableImageView colorDot;
     TextView colorName;
     TextView colorData;
+    MaterialToolbar topAppBar;
 
     private TableLayout resultTable;
 
@@ -50,6 +61,12 @@ public class MainActivity extends AppCompatActivity {
     private Product selectedProduct = null;
     private Color selectedColor = null;
 
+    private static final String PREFS = "recent_items";
+    private static final String KEY_RECENT_COLORS = "recent_colors";
+    private static final String KEY_RECENT_PRODUCTS = "recent_products";
+    private static final int MAX_RECENT = 5;
+
+    public static final Color DIVIDER = new Color();
 
 
     @Override
@@ -65,6 +82,63 @@ public class MainActivity extends AppCompatActivity {
 
         observeData();
 
+        // Находим тулбар (убедитесь, что он есть в layout activity_main)
+        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.topAppBar);
+        setSupportActionBar(toolbar);
+
+        // 1. Устанавливаем иконку бургера СЛЕВА
+        toolbar.setNavigationIcon(R.drawable.menu_24px);
+
+        // 2. Вешаем слушатель нажатия именно на эту левую иконку
+        toolbar.setNavigationOnClickListener(v -> {
+            showExpressiveMenu(); // <--- Вызываем меню отсюда
+        });
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        // Связываем ID из вашего XML (action_menu) с методом показа
+        if (id == R.id.action_menu) {
+            showExpressiveMenu(); // <--- ВОТ ЗДЕСЬ вызываем метод
+            return true;
+        }
+
+        // Обработка кнопки "Скрыть баллы"
+        else if (id == R.id.action_hide_points) {
+            // Ваша логика скрытия
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void showExpressiveMenu() {
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
+        bottomSheetDialog.setContentView(R.layout.layout_bottom_sheet_menu);
+
+        NavigationView navigationView = bottomSheetDialog.findViewById(R.id.navigation_view);
+
+        if (navigationView != null) {
+            navigationView.setNavigationItemSelectedListener(item -> {
+                int itemId = item.getItemId();
+
+                if (itemId == R.id.nav_history) {
+                    Toast.makeText(this, "История", Toast.LENGTH_SHORT).show();
+                } else if (itemId == R.id.nav_settings) {
+                    Toast.makeText(this, "Настройки", Toast.LENGTH_SHORT).show();
+                } else if (itemId == R.id.nav_about) {
+                    Toast.makeText(this, "О приложении", Toast.LENGTH_SHORT).show();
+                }
+
+                bottomSheetDialog.dismiss();
+                return true;
+            });
+        }
+
+        bottomSheetDialog.show();
 
     }
 
@@ -76,11 +150,35 @@ public class MainActivity extends AppCompatActivity {
         });
 
         viewModel.getColors().observe(this, colors -> {
-            colorDropdown.setAdapter(
-                    new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, colors)
-            );
+            ColorAdapter adapter = new ColorAdapter(this, colors);
+
+            MaterialAutoCompleteTextView actv = findViewById(R.id.actv_color);
+
+            actv.setAdapter(adapter);
+
+            // Хак, чтобы dropdown открывался сразу полным списком при нажатии
+            actv.setOnClickListener(v -> actv.showDropDown());
         });
     }
+
+    private void saveRecentColor(String colorCode) {
+        SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
+        Set<String> set = new LinkedHashSet<>(
+                prefs.getStringSet(KEY_RECENT_COLORS, new LinkedHashSet<>())
+        );
+
+        set.remove(colorCode);   // чтобы не было дублей
+        set.add(colorCode);      // добавляем в конец (самый свежий)
+
+        // ограничиваем размер
+        while (set.size() > MAX_RECENT) {
+            String first = set.iterator().next();
+            set.remove(first);
+        }
+
+        prefs.edit().putStringSet(KEY_RECENT_COLORS, set).apply();
+    }
+
 
     private void setupListeners() {
         productDropdown.setOnFocusChangeListener((v, hasFocus) -> {
@@ -99,6 +197,7 @@ public class MainActivity extends AppCompatActivity {
         colorDropdown.setOnItemClickListener((parent, view, pos, id) -> {
             selectedColor = (Color) parent.getItemAtPosition(pos);
             Log.d("MainActivity", "colorId=" + selectedColor.colorId);
+            saveRecentColor(selectedColor.colorCode);
         });
 
         calcButton.setOnClickListener(v -> {
@@ -183,6 +282,7 @@ public class MainActivity extends AppCompatActivity {
         baseWeight.setText(litersView);
         colorDot.setBackgroundColor(color);
         colorDot.setBackgroundTintList(ColorStateList.valueOf(color));
+        colorDot.setImageIcon(null);
         colorName.setText(selectedColor.colorCode);
         colorData.setText(String.format("#%08X", (color)));
 
@@ -300,6 +400,7 @@ public class MainActivity extends AppCompatActivity {
         colorDot = findViewById(R.id.colorDot);
         colorName = findViewById(R.id.colorName);
         colorData = findViewById(R.id.colorData);
+        topAppBar = findViewById(R.id.topAppBar);
 
         canSizeEdit.setText(R.string.default_value_size);
     }
