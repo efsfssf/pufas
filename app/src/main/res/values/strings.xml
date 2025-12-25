@@ -135,6 +135,9 @@
     <string name="clean_frequently_colors">Clean frequently used colors</string>
     <string name="set_number_frequently">Set the number of frequently used</string>
     <string name="list_liters">Change the list of liters</string>
+    <string name="change_dinamic_color">Changing dynamic colors</string>
+    <string name="dymanic_colors_description">Allows you to change the dynamic application colors during calculations.</string>
+    <string name="set_number_history">Set the length of the story</string>
 
 
     <string-array name="Themes">

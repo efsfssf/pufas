@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.sjapps.logs.LogActivity"
+    tools:context="com.dandomi.logs.LogActivity"
     android:id="@+id/rootView">
 
     <LinearLayout
