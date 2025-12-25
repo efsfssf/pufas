@@ -29,4 +29,7 @@ public interface ProductDao {
 
     @Query("SELECT * FROM Product WHERE PRODUCTID = :id")
     Product getById(int id);
+
+    @Query("SELECT COUNT(*) FROM Product")
+    int countProducts();
 }

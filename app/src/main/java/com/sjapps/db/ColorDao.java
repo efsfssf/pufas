@@ -21,4 +21,8 @@ public interface ColorDao {
 
     @Query("DELETE FROM color")
     void clear();
+
+    @Query("SELECT COUNT(*) FROM Color")
+    int countColor();
+
 }

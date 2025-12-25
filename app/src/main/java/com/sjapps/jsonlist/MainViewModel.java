@@ -17,6 +17,8 @@ import com.sjapps.db.Product;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MainViewModel extends AndroidViewModel {
     private final CatalogRepository repository;
@@ -33,6 +35,43 @@ public class MainViewModel extends AndroidViewModel {
         loadProducts();
         loadColors();
     }
+
+    public LiveData<Boolean> isDatabaseEmpty() {
+        MutableLiveData<Boolean> result = new MutableLiveData<>();
+
+        @SuppressWarnings("resource")
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+
+        executor.execute(() -> {
+            try {
+                boolean empty = db.productDao().countProducts() == 0;
+                boolean empty2 = db.colorDao().countColor() == 0;
+                empty = empty || empty2;
+                result.postValue(empty);
+            } finally {
+                executor.shutdown();
+            }
+        });
+
+        return result;
+    }
+
+    public LiveData<List<FormulaItem>> calculateFormulaAsync(int productId, int colorId, double liters) {
+        MutableLiveData<List<FormulaItem>> result = new MutableLiveData<>();
+
+        @SuppressWarnings("resource")
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+
+        executor.execute(() -> {
+            List<FormulaItem> data = calculateFormula(productId, colorId, liters);
+
+            result.postValue(data);
+        });
+
+        return result;
+
+    }
+
 
     private void loadColors() {
         repository.getAllColors(colors::postValue);

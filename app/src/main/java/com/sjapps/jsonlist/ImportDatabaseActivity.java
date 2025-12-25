@@ -190,10 +190,10 @@ public class ImportDatabaseActivity extends AppCompatActivity {
         if (Intent.ACTION_VIEW.equals(intent.getAction())) {
             ReadFile(intent.getData());
         }
-        if (intent.getAction().equals("android.intent.action.OPEN_FILE")){
+        if (Objects.equals(intent.getAction(), "android.intent.action.OPEN_FILE")){
             fileManager.importFromFile();
         }
-        if (intent.getAction().equals("android.intent.action.OPEN_URL")){
+        if (Objects.equals(intent.getAction(), "android.intent.action.OPEN_URL")){
             showUrlSearchView();
         }
 

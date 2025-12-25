@@ -2,9 +2,11 @@ package com.sjapps.jsonlist;
 import static android.content.ContentValues.TAG;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -17,6 +19,8 @@ import android.widget.AutoCompleteTextView;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.color.DynamicColors;
+import com.google.android.material.color.DynamicColorsOptions;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.navigation.NavigationView;
 import android.widget.TableLayout;
@@ -27,7 +31,7 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
-
+import java.util.Random;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.color.MaterialColors;
@@ -79,6 +83,9 @@ public class MainActivity extends AppCompatActivity {
     private static final String KEY_RECENT_PRODUCTS = "recent_products";
     private static final String KEY_MAX_RECENT = "max_recent";
     private static final int DEFAULT_MAX_RECENT = 5;
+    private static final String USER_SETTINGS = "UserSettings";
+    private static final String STEPPER_BUTTONS = "StepperButtons";
+
 
 
     @Override
@@ -90,29 +97,37 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
+        viewModel = new ViewModelProvider(this)
+                .get(MainViewModel.class);
+
+        checkDatabaseAndRedirectIfEmpty();
+
         initViews();
         setupListeners();
 
         setupQuickSizeButtons();
         setupStepperButtons();
 
-        viewModel = new ViewModelProvider(this)
-                .get(MainViewModel.class);
-
         observeData();
 
-        // Находим тулбар (убедитесь, что он есть в layout activity_main)
         androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.topAppBar);
         setSupportActionBar(toolbar);
 
-        // 1. Устанавливаем иконку бургера СЛЕВА
         toolbar.setNavigationIcon(R.drawable.menu_24px);
 
-        // 2. Вешаем слушатель нажатия именно на эту левую иконку
         toolbar.setNavigationOnClickListener(v -> {
-            showExpressiveMenu(); // <--- Вызываем меню отсюда
+            showExpressiveMenu();
         });
 
+    }
+
+    private void checkDatabaseAndRedirectIfEmpty() {
+        viewModel.isDatabaseEmpty().observe(this, isEmpty -> {
+            if (isEmpty) {
+                startActivity(new Intent(this, ImportDatabaseActivity.class));
+                finish();
+            }
+        });
     }
 
     private int getMaxRecent() {
@@ -154,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
                 int itemId = item.getItemId();
 
                 if (itemId == R.id.nav_history) {
-                    Toast.makeText(this, "История", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(MainActivity.this, HistoryActivity.class));
                 } else if (itemId == R.id.nav_settings) {
                     startActivity(new Intent(MainActivity.this, SettingsActivity.class));
                 } else if (itemId == R.id.nav_about) {
@@ -301,18 +316,18 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
-            Executors.newSingleThreadExecutor().execute(() -> {
+            viewModel.calculateFormulaAsync(productId, colorId, canSize).observe(this, result -> {
+                if (result == null)
+                    showNotFound();
+                else
+                {
+                    int color = 0xFF000000 | selectedColor.rgb;
+                    showResult(result);
+                    applyDynamicColorScheme(color);
+                }
 
-                List<MainViewModel.FormulaItem> result =
-                        viewModel.calculateFormula(productId, colorId, canSize);
 
-                runOnUiThread(() -> {
-                    if (result == null) {
-                        showNotFound();
-                    } else {
-                        showResult(result);
-                    }
-                });
+
             });
         });
 
@@ -337,6 +352,20 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void applyDynamicColorScheme(int seedColor) {
+        // Создаем "фейковый" битмап 1x1 пиксель с вашим цветом
+        Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+        bitmap.setPixel(0, 0, seedColor);
+
+        // Настраиваем опции для DynamicColors
+        DynamicColorsOptions options = new DynamicColorsOptions.Builder()
+                .setContentBasedSource(bitmap)
+                .build();
+
+        // Применяем к текущей активити
+        DynamicColors.applyToActivityIfAvailable(this, options);
     }
 
     private void showNotFound() {
@@ -469,7 +498,7 @@ public class MainActivity extends AppCompatActivity {
         ChipGroup chipGroup = findViewById(R.id.chipGroupQuickSizes);
 
         // 1. Список значений (в будущем будете брать его из UserSettings)
-        List<String> sizes = Arrays.asList("0.5", "1.0", "2.5", "5.0", "10.0", "15.0", "20.0");
+        List<String> sizes = loadSizes(this);
 
         // Очищаем группу перед заполнением (на случай перезагрузки настроек)
         chipGroup.removeAllViews();
@@ -499,12 +528,28 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private List<String> loadSizes(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(USER_SETTINGS, MODE_PRIVATE);
+        String saved = prefs.getString("quick_sizes", "");
+        if (saved.isEmpty())
+            return Arrays.asList("0.5", "1.0", "2.5", "5.0", "10.0", "15.0", "20.0");
+        return new ArrayList<>(Arrays.asList(TextUtils.split(saved, ",")));
+    }
+
     private void setupStepperButtons() {
         MaterialButton btnMinus = findViewById(R.id.btn_minus);
         MaterialButton btnPlus = findViewById(R.id.btn_plus);
 
-        btnMinus.setOnClickListener(v -> changeValue(canSizeEdit, -1));
-        btnPlus.setOnClickListener(v -> changeValue(canSizeEdit, 1));
+        SharedPreferences prefs = getSharedPreferences(STEPPER_BUTTONS, MODE_PRIVATE);
+        int step;
+        if (prefs.getBoolean("stepper_buttons", true)) {
+            step = prefs.getInt("stepper_step", 1);
+        } else {
+            step = 1;
+        }
+
+        btnMinus.setOnClickListener(v -> changeValue(canSizeEdit, (step * -1)));
+        btnPlus.setOnClickListener(v -> changeValue(canSizeEdit, step));
     }
 
     private void changeValue(TextInputEditText canSizeEdit, int step) {
@@ -536,6 +581,33 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    List<String> emojis = Arrays.asList(
+            "😀", "😂", "😍", "🤩", "😎",
+            "🤗", "🥳", "😜", "🤪", "😇",
+            "🤓", "🧐", "🤠", "🌈", "🥸",
+            "✅", "😳", "💫", "🥶", "🥴",
+            "😈", "👻", "👾", "🤖", "👋",
+            "👍", "👏", "🙌", "🤝", "🙏",
+            "💪", "🧠", "👀", "👂", "👄",
+            "❤️", "💖", "💙", "💚", "💛",
+            "🧡", "💜", "🖤", "🤍", "🤎",
+            "✨", "🌟", "⭐", "💥", "🔥",
+            "🌈", "🌞", "🌙", "🎯", "🎲",
+            "🎁", "🎉", "🎊", "🎈", "🪄",
+            "⚡", "💎", "👑", "🛡️", "⚔️",
+            "🎮", "🕹️", "🏆", "🏆", "🏅",
+            "🥇", "🥈", "🥉", "⚽", "🏀",
+            "🏈", "⚾", "🎾", "🏐", "🎱",
+            "🏓", "🏸", "🥊", "🥋", "🛹",
+            "🚲", "💥", "🚀", "✈️", "🛸",
+            "🚁", "🚤", "⛵", "⚓", "🧭",
+            "🏝️", "🌋", "🌌", "🌠", "🌊",
+            "🌳", "🌵", "🌷", "🌸", "🌹",
+            "🍀", "🍁", "🍂", "🍃", "🍄",
+            "🦀", "🦑", "🐙", "🐟", "🐬"
+    );
+    String rareEmoji = "🦄";
+    String ultraRareEmoji = "🥕🐇";
     private void initViews() {
         productInput = findViewById(R.id.productInput);
         productDropdown = (AutoCompleteTextView) productInput.getEditText();
@@ -552,6 +624,20 @@ public class MainActivity extends AppCompatActivity {
         topAppBar = findViewById(R.id.topAppBar);
 
         canSizeEdit.setText(R.string.default_value_size);
+
+        Random random = new Random();
+        String selected;
+
+        if (random.nextInt(100) == 0)
+        {
+            selected = rareEmoji;
+        } else if (random.nextInt(2000) == 0) {
+            selected = ultraRareEmoji;
+        } else {
+            selected = emojis.get(random.nextInt(emojis.size()));
+        }
+
+        colorData.append(selected);
     }
 
     @Override

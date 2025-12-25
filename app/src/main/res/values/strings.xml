@@ -110,7 +110,7 @@
     <string name="Product">Product</string>
     <string name="color">Color</string>
     <string name="color_name">There will be a selected color here</string>
-    <string name="color_name_description">I\'m sure he\'ll be great!💫</string>
+    <string name="color_name_description">I\'m sure he\'ll be great!</string>
     <string name="Container">Container (l/kg)</string>
     <string name="Calculate">Calculate</string>
     <string name="Base">Base</string>
@@ -130,6 +130,11 @@
     <string name="often_used">Frequently used</string>
     <string name="other">Other</string>
     <string name="log">Log</string>
+    <string name="clear_db">Clear database</string>
+    <string name="clean_frequently_products">Clean frequently used products</string>
+    <string name="clean_frequently_colors">Clean frequently used colors</string>
+    <string name="set_number_frequently">Set the number of frequently used</string>
+    <string name="list_liters">Change the list of liters</string>
 
 
     <string-array name="Themes">

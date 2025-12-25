@@ -179,6 +179,27 @@
                 android:layout_marginBottom="10dp">
 
                 <TextView
+                    android:id="@+id/btnChangeListLiters"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="20dp"
+                    android:text="@string/list_liters"
+                    android:textSize="20sp"
+                    android:textColor="?colorOnSurfaceVariant"
+                    android:clickable="true"
+                    android:focusable="true"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/ripple_list2"
+                android:layout_marginBottom="10dp">
+
+                <TextView
                     android:id="@+id/btnLoadDatabase"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
@@ -221,11 +242,12 @@
                 android:layout_marginBottom="10dp">
 
                 <TextView
+                    android:id="@+id/btnClearDatabase"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:gravity="center_vertical"
                     android:paddingHorizontal="20dp"
-                    android:text="Очистить часто используемые продукты"
+                    android:text="@string/clear_db"
                     android:textSize="20sp"
                     android:textColor="?colorOnSurfaceVariant"
                     android:clickable="true"
@@ -245,7 +267,7 @@
                     android:layout_height="50dp"
                     android:gravity="center_vertical"
                     android:paddingHorizontal="20dp"
-                    android:text="Очистить часто используемые цвета"
+                    android:text="@string/clean_frequently_products"
                     android:textSize="20sp"
                     android:textColor="?colorOnSurfaceVariant"
                     android:clickable="true"
@@ -265,7 +287,27 @@
                     android:layout_height="50dp"
                     android:gravity="center_vertical"
                     android:paddingHorizontal="20dp"
-                    android:text="Установить кол-во часто используемых"
+                    android:text="@string/clean_frequently_colors"
+                    android:textSize="20sp"
+                    android:textColor="?colorOnSurfaceVariant"
+                    android:clickable="true"
+                    android:focusable="true"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/ripple_list2"
+                android:layout_marginBottom="10dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="20dp"
+                    android:text="@string/set_number_frequently"
                     android:textSize="20sp"
                     android:textColor="?colorOnSurfaceVariant"
                     android:clickable="true"

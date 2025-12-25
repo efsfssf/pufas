@@ -22,6 +22,9 @@
         <activity
             android:name="com.sjapps.about.AboutActivity" />
         <activity
+            android:name=".ImportDatabaseActivity"
+            android:exported="false" />
+        <activity
             android:name="com.sjapps.logs.LogActivity"
             android:exported="false" />
         <activity
