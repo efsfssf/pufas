@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <group android:checkableBehavior="none">
         <item
             android:id="@+id/nav_history"
@@ -15,5 +16,10 @@
             android:id="@+id/nav_about"
             android:icon="@drawable/info_24px"
             android:title="@string/about" />
+
+        <item
+            android:id="@+id/nav_log"
+            android:icon="@drawable/frame_bug_24px"
+            android:title="@string/log" />
     </group>
 </menu>

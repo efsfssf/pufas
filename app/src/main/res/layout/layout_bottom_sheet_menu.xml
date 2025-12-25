@@ -6,5 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingBottom="16dp"
+    app:itemIconTint="@null"
     app:menu="@menu/sheet_menu"
     style="@style/Widget.Material3.NavigationRailView.ActiveIndicator" />
