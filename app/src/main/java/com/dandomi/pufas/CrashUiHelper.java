@@ -20,7 +20,6 @@ import androidx.annotation.NonNull;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.dandomi.pufas.pufas.AppState;
-import com.sjapps.jsonlist.R;
 
 public final class CrashUiHelper {
 

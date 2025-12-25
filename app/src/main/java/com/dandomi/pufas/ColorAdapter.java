@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.dandomi.db.Color;
-import com.sjapps.jsonlist.R;
 
 import java.util.ArrayList;
 import java.util.List;

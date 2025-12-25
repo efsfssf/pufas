@@ -3,7 +3,7 @@ package com.dandomi.pufas.controllers;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.dandomi.pufas.ImportDatabaseActivity;
-import com.sjapps.jsonlist.R;
+import com.dandomi.pufas.R;
 import com.dandomi.pufas.pufas.controllers.FileManager;
 
 import java.io.IOException;

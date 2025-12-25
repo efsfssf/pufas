@@ -17,7 +17,7 @@ import com.dandomi.pufas.functions;
 import com.dandomi.pufas.pufas.JsonData;
 import com.dandomi.pufas.pufas.ListItem;
 import com.dandomi.pufas.ImportDatabaseActivity;
-import com.sjapps.jsonlist.R;
+import com.dandomi.pufas.R;
 
 import java.util.ArrayList;
 

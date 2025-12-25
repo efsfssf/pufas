@@ -11,7 +11,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.dandomi.pufas.ImportDatabaseActivity;
-import com.sjapps.jsonlist.R;
+import com.dandomi.pufas.R;
 import com.dandomi.pufas.functions;
 
 public class AndroidDragAndDrop {

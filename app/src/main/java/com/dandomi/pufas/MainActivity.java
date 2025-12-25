@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -14,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -23,6 +25,8 @@ import com.google.android.material.color.DynamicColors;
 import com.google.android.material.color.DynamicColorsOptions;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.navigation.NavigationView;
+
+import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -30,6 +34,11 @@ import android.widget.Toast;
 import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.widget.NestedScrollView;
 import androidx.lifecycle.ViewModelProvider;
 import java.util.Random;
 import com.google.android.material.appbar.MaterialToolbar;
@@ -46,13 +55,13 @@ import java.lang.reflect.Type;
 import com.dandomi.db.Product;
 import com.dandomi.logs.CustomExceptionHandler;
 import com.dandomi.logs.LogActivity;
-import com.sjapps.jsonlist.R;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import com.dandomi.pufas.R;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -92,40 +101,70 @@ public class MainActivity extends AppCompatActivity {
     private static final String KEY_THEME_SEED = "theme_seed_color";
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         applyThemeFromPrefs();
         super.onCreate(savedInstanceState);
 
-        if (!(Thread.getDefaultUncaughtExceptionHandler() instanceof CustomExceptionHandler))
+        if (!(Thread.getDefaultUncaughtExceptionHandler() instanceof CustomExceptionHandler)) {
             Thread.setDefaultUncaughtExceptionHandler(new CustomExceptionHandler(this));
+        }
 
         setContentView(R.layout.activity_main);
 
-        viewModel = new ViewModelProvider(this)
-                .get(MainViewModel.class);
+        viewModel = new ViewModelProvider(this).get(MainViewModel.class);
 
         checkDatabaseAndRedirectIfEmpty();
 
         initViews();
         setupListeners();
-
         setupQuickSizeButtons();
         setupStepperButtons();
-
         observeData();
-
         restoreCalculationStateIfAvailable();
 
         androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.topAppBar);
         setSupportActionBar(toolbar);
-
         toolbar.setNavigationIcon(R.drawable.menu_24px);
+        toolbar.setNavigationOnClickListener(v -> showExpressiveMenu());
 
-        toolbar.setNavigationOnClickListener(v -> {
-            showExpressiveMenu();
+        // ===============================
+        // EDGE-TO-EDGE + KEYBOARD FIX
+        // ===============================
+
+        // ВАЖНО: false — иначе IME inset'ы НЕ ПРИДУТ
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+
+        View root = findViewById(R.id.rootCoordinator);
+        ScrollView scrollView = findViewById(R.id.ScrollViewId);
+
+        ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
+
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            Insets imeInsets  = insets.getInsets(WindowInsetsCompat.Type.ime());
+
+            // Верх — статус-бар
+            v.setPadding(
+                    systemBars.left,
+                    systemBars.top,
+                    systemBars.right,
+                    0
+            );
+
+            // Низ — клавиатура ИЛИ навбар
+            int bottomPadding = Math.max(systemBars.bottom, imeInsets.bottom);
+
+            scrollView.setPadding(
+                    scrollView.getPaddingLeft(),
+                    scrollView.getPaddingTop(),
+                    scrollView.getPaddingRight(),
+                    bottomPadding
+            );
+
+            // ⬅️ НИКОГДА НЕ CONSUMED
+            return insets;
         });
-
     }
+
 
     private void applyThemeFromPrefs() {
         SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);

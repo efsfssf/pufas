@@ -4,7 +4,7 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.sjapps.jsonlist.R;
+import com.dandomi.pufas.R;
 
 public class HistoryActivity extends AppCompatActivity {
 

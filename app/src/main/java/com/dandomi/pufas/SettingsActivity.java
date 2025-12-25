@@ -20,7 +20,6 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.dandomi.pufas.pufas.AppState;
-import com.sjapps.jsonlist.R;
 
 public class SettingsActivity extends AppCompatActivity {
 

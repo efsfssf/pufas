@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.dandomi.pufas.pufas.JsonData;
 import com.dandomi.pufas.pufas.SearchItem;
 import com.dandomi.pufas.ImportDatabaseActivity;
-import com.sjapps.jsonlist.R;
+import com.dandomi.pufas.R;
 
 import java.util.ArrayList;
 
