@@ -70,7 +70,8 @@ public class ColorAdapter extends ArrayAdapter<Color> {
             nameView.setText(item.toString());
 
             // Устанавливаем цвет кружка
-            colorView.setBackgroundColor(0xFF000000 | item.rgb);
+            int color = item.rgb != null ? (0xFF000000 | item.rgb) : 0x00000000;
+            colorView.setBackgroundColor(color);
         }
 
         return convertView;

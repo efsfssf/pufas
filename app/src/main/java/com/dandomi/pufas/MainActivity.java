@@ -46,7 +46,6 @@ import java.lang.reflect.Type;
 import com.dandomi.db.Product;
 import com.dandomi.logs.CustomExceptionHandler;
 import com.dandomi.logs.LogActivity;
-import com.dandomi.pufas.R;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
@@ -87,8 +86,8 @@ public class MainActivity extends AppCompatActivity {
     private static final int DEFAULT_MAX_HISTORY = 50;
     private static final String USER_SETTINGS = "UserSettings";
     private static final String STEPPER_BUTTONS = "StepperButtons";
-    private static final String PREFS_HISTORY = "calculation_history";
-    private static final String KEY_HISTORY_LIST = "history_list";
+    static final String PREFS_HISTORY = "calculation_history";
+    static final String KEY_HISTORY_LIST = "history_list";
     private static final String KEY_THEME_SEED = "theme_seed_color";
 
     @Override
@@ -476,7 +475,7 @@ public class MainActivity extends AppCompatActivity {
     private void showResult(List<MainViewModel.FormulaItem> items) {
         for (MainViewModel.FormulaItem item : items) {
             Log.d("RESULT",
-                    "Colorant " + item.colorantId +
+                    "Colorant " + item.colorantCode +
                             " = " + item.amount);
         }
 
@@ -508,7 +507,7 @@ public class MainActivity extends AppCompatActivity {
             double result = item.amount;
 
             TableRow row = createRow(
-                    String.valueOf(item.colorantId),
+                    String.valueOf(item.colorantCode),
                     value1L,
                     result
             );

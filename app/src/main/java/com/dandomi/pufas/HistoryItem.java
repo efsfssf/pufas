@@ -1,5 +1,7 @@
 package com.dandomi.pufas;
 
+import android.content.Context;
+
 import com.dandomi.db.Color;
 import com.dandomi.db.Product;
 
@@ -20,5 +22,14 @@ public class HistoryItem {
         this.liters = liters;
         this.baseName = baseName;
         this.formulaResult = formulaResult;
+    }
+
+
+    public String getHeader(Context context) {
+        return context.getString(R.string.Product) + ": " + product.productName + " " + context.getString(R.string.liters) + ": " + liters + " " + context.getString(R.string.Base) + ": " + baseName;
+    }
+
+    public List<MainViewModel.FormulaItem> getColorants() {
+        return formulaResult;
     }
 }

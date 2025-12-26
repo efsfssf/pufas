@@ -11,11 +11,13 @@ import androidx.lifecycle.MutableLiveData;
 import com.dandomi.db.AppDatabase;
 import com.dandomi.db.Color;
 import com.dandomi.db.ColorInProduct;
+import com.dandomi.db.Colorant;
 import com.dandomi.db.Formula;
 import com.dandomi.db.Product;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -139,11 +141,15 @@ public class MainViewModel extends AndroidViewModel {
 
     public static class FormulaItem {
         public int colorantId;
+        public String colorantCode;
+        public int rgb;
         public double amount1L;
         public double amount;
 
-        public FormulaItem(int colorantId, double amount1L, double amount) {
+        public FormulaItem(int colorantId, String colorantCode, int rgb, double amount1L, double amount) {
             this.colorantId = colorantId;
+            this.colorantCode = colorantCode;
+            this.rgb = rgb;
             this.amount1L = amount1L;
             this.amount = amount;
         }
@@ -177,9 +183,12 @@ public class MainViewModel extends AndroidViewModel {
 
         for (int i = 0; i < ids.length; i++) {
             int id = Integer.parseInt(ids[i].trim());
+            Colorant colorant = db.colorantDao().getColorant(id);
+            String code = Objects.requireNonNullElse(colorant.CNTCODE, "?");
+            int rgb = colorant.rgb;
             double amount = Double.parseDouble(amounts[i].trim());
 
-            result.add(new FormulaItem(id, amount, amount));
+            result.add(new FormulaItem(id, code, rgb, amount, amount));
         }
 
         return result;

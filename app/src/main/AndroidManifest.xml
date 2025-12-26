@@ -22,6 +22,8 @@
         <activity
             android:name="com.dandomi.about.AboutActivity" />
         <activity
+            android:name="com.dandomi.pufas.HistoryActivity" />
+        <activity
             android:name="com.dandomi.pufas.ImportDatabaseActivity"
             android:exported="false" />
         <activity
