@@ -5,13 +5,13 @@ import static com.dandomi.pufas.pufas.JsonFunctions.getJsonObject;
 
 import android.widget.Toast;
 
+import com.dandomi.pufas.R;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import com.dandomi.pufas.ImportDatabaseActivity;
-import com.sjapps.jsonlist.R;
 import com.dandomi.pufas.pufas.JsonData;
 import com.dandomi.pufas.pufas.controllers.JsonLoader;
 import com.dandomi.pufas.pufas.ListItem;

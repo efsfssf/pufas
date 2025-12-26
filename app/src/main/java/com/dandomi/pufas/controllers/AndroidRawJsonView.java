@@ -7,9 +7,9 @@ import android.webkit.WebSettings;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.dandomi.pufas.ImportDatabaseActivity;
-import com.sjapps.jsonlist.R;
 import com.dandomi.pufas.pufas.JsonFunctions;
 import com.dandomi.pufas.pufas.controllers.RawJsonView;
+import com.dandomi.pufas.R;
 
 public class AndroidRawJsonView extends RawJsonView {
 

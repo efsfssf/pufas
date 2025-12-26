@@ -87,7 +87,7 @@ import com.dandomi.pufas.pufas.controllers.WebManager;
 import com.dandomi.pufas.pufas.AppState;
 import com.dandomi.pufas.pufas.JsonData;
 import com.dandomi.pufas.pufas.ListItem;
-import com.sjapps.jsonlist.R;
+import com.dandomi.pufas.R;
 import com.sjapps.library.customdialog.BasicDialog;
 import com.sjapps.library.customdialog.CustomViewDialog;
 import com.sjapps.library.customdialog.DialogButtonEvents;

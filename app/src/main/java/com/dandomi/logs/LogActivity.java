@@ -24,7 +24,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.google.gson.Gson;
 import com.dandomi.pufas.pufas.AppState;
 import com.dandomi.pufas.FileSystem;
-import com.sjapps.jsonlist.R;
+import com.dandomi.pufas.R;
 import com.dandomi.pufas.functions;
 import com.sjapps.library.customdialog.BasicDialog;
 import com.sjapps.library.customdialog.ListDialog;

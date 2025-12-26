@@ -46,7 +46,7 @@ import java.lang.reflect.Type;
 import com.dandomi.db.Product;
 import com.dandomi.logs.CustomExceptionHandler;
 import com.dandomi.logs.LogActivity;
-import com.sjapps.jsonlist.R;
+import com.dandomi.pufas.R;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;

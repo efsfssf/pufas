@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.dandomi.pufas.ImportDatabaseActivity;
-import com.sjapps.jsonlist.R;
+import com.dandomi.pufas.R;
 
 public class PathListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 

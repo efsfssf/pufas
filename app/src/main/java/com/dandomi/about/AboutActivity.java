@@ -34,7 +34,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.dandomi.pufas.pufas.controllers.WebManager;
-import com.sjapps.jsonlist.R;
+import com.dandomi.pufas.R;
 import com.sjapps.library.customdialog.BasicDialog;
 import com.sjapps.library.customdialog.CustomViewDialog;
 import com.sjapps.library.customdialog.DialogButtonEvents;
