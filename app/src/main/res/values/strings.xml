@@ -138,6 +138,8 @@
     <string name="change_dinamic_color">Changing dynamic colors</string>
     <string name="dymanic_colors_description">Allows you to change the dynamic application colors during calculations.</string>
     <string name="set_number_history">Set the length of the story</string>
+    <string name="set_step_liters">Change liter step size</string>
+    <string name="Cancel">Cancel</string>
 
 
     <string-array name="Themes">

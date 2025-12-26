@@ -637,15 +637,23 @@ public class MainActivity extends AppCompatActivity {
         MaterialButton btnPlus = findViewById(R.id.btn_plus);
 
         SharedPreferences prefs = getSharedPreferences(STEPPER_BUTTONS, MODE_PRIVATE);
-        int step;
-        if (prefs.getBoolean("stepper_buttons", true)) {
-            step = prefs.getInt("stepper_step", 1);
-        } else {
-            step = 1;
+        btnMinus.setOnClickListener(v -> {
+            int step = getCurrentStep(prefs);
+            changeValue(canSizeEdit, -step);
+        });
+
+        btnPlus.setOnClickListener(v -> {
+            int step = getCurrentStep(prefs);
+            changeValue(canSizeEdit, step);
+        });
+    }
+
+    private int getCurrentStep(SharedPreferences prefs) {
+        if (prefs.getBoolean(STEPPER_BUTTONS, true)) {
+            return prefs.getInt("stepper_step", 1);
         }
 
-        btnMinus.setOnClickListener(v -> changeValue(canSizeEdit, (step * -1)));
-        btnPlus.setOnClickListener(v -> changeValue(canSizeEdit, step));
+        return 1;
     }
 
     private void changeValue(TextInputEditText canSizeEdit, int step) {

@@ -2,13 +2,16 @@ package com.dandomi.pufas;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -18,11 +21,15 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.dandomi.pufas.pufas.AppState;
+import com.google.android.material.slider.Slider;
 
 public class SettingsActivity extends AppCompatActivity {
 
+    private static final String PREFS_NAME = "StepperButtons";
+    private static final String KEY_STEP_VALUE = "stepper_step";
     MaterialSwitch CheckForUpdateSw;
     MaterialSwitch disableMIMEFilterSw;
     MaterialSwitch syntaxHighlightingSw;
@@ -32,6 +39,7 @@ public class SettingsActivity extends AppCompatActivity {
     AppState state;
     TextView btnLoadDb;
     TextView btnViewDb;
+    LinearLayout btnStepSize;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,8 +114,37 @@ public class SettingsActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        btnStepSize.setOnClickListener(v -> showStepSizeDialog());
 
+    }
 
+    private void showStepSizeDialog() {
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        int currentStep = prefs.getInt(KEY_STEP_VALUE, 1);
+
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View dialogView = inflater.inflate(R.layout.dialog_step_size, null);
+
+        TextView tvValue = dialogView.findViewById(R.id.tv_dialog_value);
+        Slider slider = dialogView.findViewById(R.id.slider_step);
+
+        tvValue.setText(String.valueOf(currentStep));
+        slider.setValue((float) currentStep);
+
+        slider.addOnChangeListener((slider1, value, fromUser) -> {
+            tvValue.setText(String.valueOf((int) value));
+        });
+
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.set_step_liters)
+                .setView(dialogView)
+                .setIcon(R.drawable.ic_edit)
+                .setPositiveButton(R.string.save, (dialog, which) -> {
+                    int newStep = (int) slider.getValue();
+                    prefs.edit().putInt(KEY_STEP_VALUE, newStep).apply();
+                })
+                .setNegativeButton(R.string.Cancel, null)
+                .show();
     }
 
     private void setLayoutBounds() {
@@ -145,6 +182,7 @@ public class SettingsActivity extends AppCompatActivity {
         ThemeSpinner.setAdapter(Themes);
         btnLoadDb = findViewById(R.id.btnLoadDatabase);
         btnViewDb = findViewById(R.id.btnViewDatabase);
+        btnStepSize= findViewById(R.id.btnStepSize);
 
     }
 

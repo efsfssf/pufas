@@ -187,9 +187,7 @@
                     android:paddingHorizontal="20dp"
                     android:text="@string/list_liters"
                     android:textSize="20sp"
-                    android:textColor="?colorOnSurfaceVariant"
-                    android:clickable="true"
-                    android:focusable="true"/>
+                    android:textColor="?colorOnSurfaceVariant"/>
 
             </LinearLayout>
 
@@ -242,9 +240,7 @@
                     android:paddingHorizontal="20dp"
                     android:text="@string/import_database"
                     android:textSize="20sp"
-                    android:textColor="?colorOnSurfaceVariant"
-                    android:clickable="true"
-                    android:focusable="true"/>
+                    android:textColor="?colorOnSurfaceVariant"/>
 
             </LinearLayout>
 
@@ -263,9 +259,7 @@
                     android:paddingHorizontal="20dp"
                     android:text="@string/open_db"
                     android:textSize="20sp"
-                    android:textColor="?colorOnSurfaceVariant"
-                    android:clickable="true"
-                    android:focusable="true"/>
+                    android:textColor="?colorOnSurfaceVariant"/>
 
             </LinearLayout>
 
@@ -284,9 +278,7 @@
                     android:paddingHorizontal="20dp"
                     android:text="@string/clear_db"
                     android:textSize="20sp"
-                    android:textColor="?colorOnSurfaceVariant"
-                    android:clickable="true"
-                    android:focusable="true"/>
+                    android:textColor="?colorOnSurfaceVariant"/>
 
             </LinearLayout>
 
@@ -304,9 +296,7 @@
                     android:paddingHorizontal="20dp"
                     android:text="@string/clean_frequently_products"
                     android:textSize="20sp"
-                    android:textColor="?colorOnSurfaceVariant"
-                    android:clickable="true"
-                    android:focusable="true"/>
+                    android:textColor="?colorOnSurfaceVariant"/>
 
             </LinearLayout>
 
@@ -324,9 +314,7 @@
                     android:paddingHorizontal="20dp"
                     android:text="@string/clean_frequently_colors"
                     android:textSize="20sp"
-                    android:textColor="?colorOnSurfaceVariant"
-                    android:clickable="true"
-                    android:focusable="true"/>
+                    android:textColor="?colorOnSurfaceVariant"/>
 
             </LinearLayout>
 
@@ -344,9 +332,7 @@
                     android:paddingHorizontal="20dp"
                     android:text="@string/set_number_frequently"
                     android:textSize="20sp"
-                    android:textColor="?colorOnSurfaceVariant"
-                    android:clickable="true"
-                    android:focusable="true"/>
+                    android:textColor="?colorOnSurfaceVariant"/>
 
             </LinearLayout>
 
@@ -364,9 +350,27 @@
                     android:paddingHorizontal="20dp"
                     android:text="@string/set_number_history"
                     android:textSize="20sp"
+                    android:textColor="?colorOnSurfaceVariant"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/btnStepSize"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/ripple_list2"
+                android:layout_marginBottom="10dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="20dp"
+                    android:text="@string/set_step_liters"
+                    android:textSize="20sp"
                     android:textColor="?colorOnSurfaceVariant"
-                    android:clickable="true"
-                    android:focusable="true"/>
+                    />
 
             </LinearLayout>
         </LinearLayout>
