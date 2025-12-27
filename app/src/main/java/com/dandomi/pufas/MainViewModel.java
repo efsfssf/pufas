@@ -9,6 +9,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.dandomi.db.AppDatabase;
+import com.dandomi.db.Basepaint;
 import com.dandomi.db.Color;
 import com.dandomi.db.ColorInProduct;
 import com.dandomi.db.Colorant;
@@ -40,12 +41,14 @@ public class MainViewModel extends AndroidViewModel {
     public Product cachedProduct = null;
     public Color cachedColor = null;
     public String cachedSize = null;
+    public Formula cachedFormula = null;
     public List<FormulaItem> cachedResult = null;
 
-    public void saveState(Product p, Color c, String size, List<FormulaItem> res) {
+    public void saveState(Product p, Color c, String size, Formula formula, List<FormulaItem> res) {
         this.cachedProduct = p;
         this.cachedColor = c;
         this.cachedSize = size;
+        this.cachedFormula = formula;
         this.cachedResult = res;
     }
 
@@ -81,14 +84,14 @@ public class MainViewModel extends AndroidViewModel {
         return result;
     }
 
-    public LiveData<List<FormulaItem>> calculateFormulaAsync(int productId, int colorId, double liters) {
+    public LiveData<List<FormulaItem>> calculateFormulaAsync(Formula formula, double liters) {
         MutableLiveData<List<FormulaItem>> result = new MutableLiveData<>();
 
         @SuppressWarnings("resource")
         ExecutorService executor = Executors.newSingleThreadExecutor();
 
         executor.execute(() -> {
-            List<FormulaItem> data = calculateFormula(productId, colorId, liters);
+            List<FormulaItem> data = calculateFormula(formula, liters);
 
             result.postValue(data);
         });
@@ -137,6 +140,13 @@ public class MainViewModel extends AndroidViewModel {
         return null;
     }
 
+    public Basepaint getBasepaint(Formula formula) {
+        if (formula == null)
+            return null;
+
+        return db.basepaintDao().getBasepaint(formula.aBaseId);
+    }
+
     // ===== CNTINFORMULA =====
 
     public static class FormulaItem {
@@ -155,9 +165,11 @@ public class MainViewModel extends AndroidViewModel {
         }
     }
 
-    public List<FormulaItem> calculateFormula(int productId, int colorId, double liters) {
-        Formula formula = findFormulaRecursive(productId, colorId);
+    public Formula getFormula(int productId, int colorId) {
+        return findFormulaRecursive(productId, colorId);
+    }
 
+    public List<FormulaItem> calculateFormula(Formula formula, double liters) {
         if (formula == null)
             return null;
 

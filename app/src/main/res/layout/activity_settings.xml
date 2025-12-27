@@ -25,7 +25,6 @@
             android:background="@drawable/ripple"
             android:onClick="goBack"
             android:src="@drawable/ic_back"
-
             android:text="@string/back" />
 
         <TextView
@@ -279,7 +278,6 @@
                     android:text="@string/clear_db"
                     android:textSize="20sp"
                     android:textColor="?colorOnSurfaceVariant"/>
-
             </LinearLayout>
 
             <LinearLayout

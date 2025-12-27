@@ -16,6 +16,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+
+import com.dandomi.db.Basepaint;
+import com.dandomi.db.Formula;
+import com.dandomi.pufas.pufas.AppState;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
@@ -65,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
 
     MaterialButton calcButton;
     TextView baseWeight;
+    TextView baseName;
     ShapeableImageView colorDot;
     TextView colorName;
     TextView colorData;
@@ -76,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Product selectedProduct = null;
     private Color selectedColor = null;
+    private Basepaint selectedBase = null;
 
     private static final String PREFS = "recent_items";
     private static final String KEY_RECENT_COLORS = "recent_colors";
@@ -89,6 +95,8 @@ public class MainActivity extends AppCompatActivity {
     static final String PREFS_HISTORY = "calculation_history";
     static final String KEY_HISTORY_LIST = "history_list";
     private static final String KEY_THEME_SEED = "theme_seed_color";
+
+    public AppState state;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -123,6 +131,8 @@ public class MainActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(v -> {
             showExpressiveMenu();
         });
+
+        state = FileSystem.loadStateData(this);
 
     }
 
@@ -168,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             // 3. Показываем таблицу результатов
-            showResult(viewModel.cachedResult);
+            showResult(viewModel.cachedResult, viewModel.cachedFormula);
         }
     }
 
@@ -374,22 +384,29 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
-            viewModel.calculateFormulaAsync(productId, colorId, canSize).observe(this, result -> {
+            Formula formula = viewModel.getFormula(productId, colorId);
+            if (formula == null) {
+                showNotFound();
+                return;
+            }
+
+
+            viewModel.calculateFormulaAsync(formula, canSize).observe(this, result -> {
                 if (result == null)
                     showNotFound();
                 else
                 {
-                    saveToHistory(selectedProduct, selectedColor, canSizeText, result);
+                    saveToHistory(selectedProduct, selectedColor, selectedBase, canSizeText, result);
                     int color = 0xFF000000 | selectedColor.rgb;
 
                     SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
                     int currentColor = prefs.getInt(KEY_THEME_SEED, 0);
 
-                    if (currentColor != color) {
+                    if (currentColor != color && (state != null && state.isChangeDynamicColor())) {
                         // ЦВЕТ ИЗМЕНИЛСЯ -> НУЖЕН RECREATE
 
                         // А. Сохраняем все данные расчета в ViewModel
-                        viewModel.saveState(selectedProduct, selectedColor, canSizeText, result);
+                        viewModel.saveState(selectedProduct, selectedColor, canSizeText, formula, result);
 
                         // Б. Сохраняем новый цвет в настройки для следующего onCreate
                         prefs.edit().putInt(KEY_THEME_SEED, color).apply();
@@ -399,8 +416,8 @@ public class MainActivity extends AppCompatActivity {
                     } else {
                         // ЦВЕТ ТОТ ЖЕ -> Просто показываем результат
                         // (Можно тоже сохранить в кэш на случай поворота экрана)
-                        viewModel.saveState(selectedProduct, selectedColor, canSizeText, result);
-                        showResult(result);
+                        viewModel.saveState(selectedProduct, selectedColor, canSizeText, formula, result);
+                        showResult(result, formula);
                     }
                 }
             });
@@ -429,7 +446,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void saveToHistory(Product selectedProduct, Color selectedColor, String canSizeText, List<MainViewModel.FormulaItem> result) {
+    private void saveToHistory(Product selectedProduct, Color selectedColor, Basepaint selectedBase, String canSizeText, List<MainViewModel.FormulaItem> result) {
         SharedPreferences prefs = getSharedPreferences(PREFS_HISTORY, MODE_PRIVATE);
         Gson gson = new Gson();
 
@@ -447,7 +464,7 @@ public class MainActivity extends AppCompatActivity {
                 selectedProduct,
                 selectedColor,
                 Double.parseDouble(canSizeText),
-                "",
+                selectedBase,
                 result
         );
 
@@ -472,7 +489,7 @@ public class MainActivity extends AppCompatActivity {
         ).show();
     }
 
-    private void showResult(List<MainViewModel.FormulaItem> items) {
+    private void showResult(List<MainViewModel.FormulaItem> items, Formula formula) {
         for (MainViewModel.FormulaItem item : items) {
             Log.d("RESULT",
                     "Colorant " + item.colorantCode +
@@ -489,6 +506,14 @@ public class MainActivity extends AppCompatActivity {
         colorDot.setImageIcon(null);
         colorName.setText(selectedColor.colorCode);
         colorData.setText(String.format("#%08X", (color)));
+
+        selectedBase = viewModel.getBasepaint(formula);
+        if (selectedBase != null && selectedBase.baseCode != null) {
+            String base = "Base " + selectedBase.baseCode;
+            baseName.setText(base);
+        } else {
+            baseName.setText(getString(R.string.base_not_available));
+        }
 
         resultTable.removeAllViews();
 
@@ -722,6 +747,7 @@ public class MainActivity extends AppCompatActivity {
         calcButton = findViewById(R.id.calcButton);
         resultTable = findViewById(R.id.resultTable);
         baseWeight = findViewById(R.id.baseWeight);
+        baseName = findViewById(R.id.baseName);
         colorDot = findViewById(R.id.colorDot);
         colorName = findViewById(R.id.colorName);
         colorData = findViewById(R.id.colorData);

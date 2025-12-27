@@ -6,7 +6,7 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-@Database(entities = {Formula.class, Color.class, Product.class, ColorInProduct.class, Colorant.class}, version = 1)
+@Database(entities = {Formula.class, Color.class, Product.class, ColorInProduct.class, Colorant.class, Basepaint.class}, version = 1)
 public abstract class AppDatabase extends RoomDatabase {
 
     public abstract FormulaDao formulaDao();
@@ -14,6 +14,8 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract ProductDao productDao();
     public abstract ColorInProductDao colorInProductDao();
     public abstract ColorantDao colorantDao();
+    public abstract BasepaintDao basepaintDao();
+
 
     private static AppDatabase INSTANCE;
 

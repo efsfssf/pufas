@@ -56,6 +56,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.dandomi.db.Basepaint;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
@@ -87,7 +88,6 @@ import com.dandomi.pufas.pufas.controllers.WebManager;
 import com.dandomi.pufas.pufas.AppState;
 import com.dandomi.pufas.pufas.JsonData;
 import com.dandomi.pufas.pufas.ListItem;
-import com.dandomi.pufas.R;
 import com.sjapps.library.customdialog.BasicDialog;
 import com.sjapps.library.customdialog.CustomViewDialog;
 import com.sjapps.library.customdialog.DialogButtonEvents;
@@ -483,7 +483,8 @@ public class ImportDatabaseActivity extends AppCompatActivity {
                     "Colorant",
                     "ColorInProduct",
                     "Formula",
-                    "Product"
+                    "Product",
+                    "Basepaint"
             )
     );
 
@@ -574,6 +575,7 @@ public class ImportDatabaseActivity extends AppCompatActivity {
             db.productDao().clear();
             db.colorantDao().clear();
             db.colorDao().clear();
+            db.basepaintDao().clear();
 
             // 1️⃣ Color
             ListItem colors = getRootArray(data, "Color");
@@ -632,6 +634,26 @@ public class ImportDatabaseActivity extends AppCompatActivity {
                     }
                 }
 
+            }
+
+            // ️️ Basepaint
+            ListItem basepaints = getRootArray(data, "Basepaint");
+            if (basepaints != null) {
+                for (ArrayList<ListItem> obj : basepaints.getListObjects()) {
+                    Basepaint b = new Basepaint();
+                    b.baseId = getInt(obj, "BASEID");
+                    b.productId = getInt(obj, "PRODUCTID");
+                    b.abaseId = getInt(obj, "ABASEID");
+                    b.baseCode = getString(obj, "BASECODE");
+                    b.specificGravity = getFloat(obj, "SPECIFICGRAVITY");
+                    b.MINFILL = getFloat(obj, "MINFILL", true);
+                    b.MAXFILL = getFloat(obj, "MAXFILL");
+
+
+                    db.basepaintDao().insertBasepaint(b);
+
+                    updateProgress(++progress[0], total);
+                }
             }
 
             // 4️⃣ Formula

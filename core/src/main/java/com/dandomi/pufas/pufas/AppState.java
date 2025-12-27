@@ -1,0 +1,80 @@
+package com.dandomi.pufas.pufas;
+
+public class AppState {
+    boolean hasNewCrash;
+    boolean hasCrashLogs;
+    boolean MIMEFilterDisabled;
+    boolean syntaxHighlighting = true;
+    boolean changeDynamicColor;
+    boolean autoCheckForUpdate;
+    private int theme;
+
+    public boolean hasNewCrash() {
+        return hasNewCrash;
+    }
+
+    public void setHasNewCrash(boolean hasNewCrash) {
+        this.hasNewCrash = hasNewCrash;
+    }
+
+    public boolean hasCrashLogs() {
+        return hasCrashLogs;
+    }
+
+    public void setHasCrashLogs(boolean hasCrashLogs) {
+        this.hasCrashLogs = hasCrashLogs;
+    }
+
+    public boolean isMIMEFilterDisabled() {
+        return MIMEFilterDisabled;
+    }
+
+    public void setMIMEFilterDisabled(boolean MIMEFilterDisabled) {
+        this.MIMEFilterDisabled = MIMEFilterDisabled;
+    }
+
+    public boolean isSyntaxHighlighting() {
+        return syntaxHighlighting;
+    }
+
+    public boolean isChangeDynamicColor() {
+        return changeDynamicColor;
+    }
+
+    public void setChangeDynamicColor(boolean changeDynamicColor) {
+        this.changeDynamicColor = changeDynamicColor;
+    }
+
+    public void setSyntaxHighlighting(boolean syntaxHighlighting) {
+        this.syntaxHighlighting = syntaxHighlighting;
+    }
+
+    public boolean isAutoCheckForUpdate() {
+        return autoCheckForUpdate;
+    }
+
+    public void setAutoCheckForUpdate(boolean autoCheckForUpdate) {
+        this.autoCheckForUpdate = autoCheckForUpdate;
+    }
+
+    public int getTheme() {
+        return theme;
+    }
+
+    public void setTheme(int theme) {
+        this.theme = theme;
+    }
+
+    @Override
+    public String toString() {
+        return "AppState{" +
+                "hasNewCrash=" + hasNewCrash +
+                ", hasCrashLogs=" + hasCrashLogs +
+                ", MIMEFilterDisabled=" + MIMEFilterDisabled +
+                ", syntaxHighlighting=" + syntaxHighlighting +
+                ", changeDynamicColor=" + changeDynamicColor +
+                ", autoCheckForUpdate=" + autoCheckForUpdate +
+                ", theme=" + theme +
+                '}';
+    }
+}

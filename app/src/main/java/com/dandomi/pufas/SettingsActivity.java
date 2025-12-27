@@ -85,7 +85,7 @@ public class SettingsActivity extends AppCompatActivity {
         CheckForUpdateSw.setChecked(state.isAutoCheckForUpdate());
         disableMIMEFilterSw.setChecked(state.isMIMEFilterDisabled());
         syntaxHighlightingSw.setChecked(state.isSyntaxHighlighting());
-        //dymamicColorSw.setChecked(state.isChangeDynamicColor());
+        dymamicColorSw.setChecked(state.isChangeDynamicColor());
 
 
         CheckForUpdateSw.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -104,7 +104,7 @@ public class SettingsActivity extends AppCompatActivity {
         });
 
         dymamicColorSw.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            //state.setChangeDynamicColor(isChecked);
+            state.setChangeDynamicColor(isChecked);
             SaveData();
         });
 
