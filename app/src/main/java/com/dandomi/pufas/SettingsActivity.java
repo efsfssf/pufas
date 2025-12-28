@@ -3,6 +3,7 @@ package com.dandomi.pufas;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,14 +18,20 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.content.FileProvider;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.dandomi.db.DatabaseExportUtil;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.dandomi.pufas.pufas.AppState;
 import com.google.android.material.slider.Slider;
+
+import java.io.File;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -39,6 +46,11 @@ public class SettingsActivity extends AppCompatActivity {
     AppState state;
     TextView btnLoadDb;
     TextView btnViewDb;
+    TextView btnClearDb;
+    TextView btnCleanFrequentlyProducts;
+    TextView btnCleanFrequentlyColors;
+    TextView btnSetNumberFrequently;
+    TextView btnChangeListLiters;
     LinearLayout btnStepSize;
 
     @Override
@@ -114,6 +126,37 @@ public class SettingsActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        btnViewDb.setOnClickListener(view -> {
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            executor.execute(() -> {
+                try {
+                    File jsonFile = DatabaseExportUtil.exportDatabase(this);
+
+                    Uri uri = FileProvider.getUriForFile(
+                            this,
+                            getPackageName() + ".provider",
+                            jsonFile
+                    );
+
+                    Intent intent = new Intent(this, ImportDatabaseActivity.class);
+                    intent.setAction(Intent.ACTION_VIEW);
+                    intent.setDataAndType(uri, "application/json");
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+                    runOnUiThread(() -> startActivity(intent));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    throw new RuntimeException(e);
+                } finally {
+                    executor.shutdown();
+                }
+            });
+        });
+
+        btnChangeListLiters.setOnClickListener(view -> {
+
+        });
+
         btnStepSize.setOnClickListener(v -> showStepSizeDialog());
 
     }
@@ -182,6 +225,9 @@ public class SettingsActivity extends AppCompatActivity {
         ThemeSpinner.setAdapter(Themes);
         btnLoadDb = findViewById(R.id.btnLoadDatabase);
         btnViewDb = findViewById(R.id.btnViewDatabase);
+        btnClearDb = findViewById(R.id.btnClearDatabase);
+        btnChangeListLiters = findViewById(R.id.btnChangeListLiters);
+
         btnStepSize= findViewById(R.id.btnStepSize);
 
     }

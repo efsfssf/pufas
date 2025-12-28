@@ -5,6 +5,8 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 
+import java.util.List;
+
 @Dao
 public interface ColorantDao {
 
@@ -12,6 +14,10 @@ public interface ColorantDao {
             "\t   FROM colorant\n" +
             "\t   WHERE CNTID IN (:colorantId)")
     Colorant getColorant(int colorantId);
+
+    @Query("SELECT *\n" +
+            "\t   FROM colorant")
+    List<Colorant> getAllColorants();
 
     @Insert
     void insertColorant(Colorant... colorant);

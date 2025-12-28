@@ -5,6 +5,8 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 
+import java.util.List;
+
 @Dao
 public interface ColorInProductDao {
 
@@ -14,6 +16,11 @@ public interface ColorInProductDao {
             "       ORDER BY VERSION ASC\n" +
             "       LIMIT 1")
     Integer getColorInProduct(int productId, int colorId);
+
+    @Query("SELECT *\n" +
+        "FROM colorinproduct\n"
+    )
+    List<ColorInProduct> getAllColorInProducts();
 
     @Insert
     void insertColorInProduct(ColorInProduct... colorInProduct);

@@ -5,6 +5,8 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 
+import java.util.List;
+
 @Dao
 public interface BasepaintDao {
 
@@ -12,6 +14,9 @@ public interface BasepaintDao {
             "\t   FROM basepaint\n" +
             "\t   WHERE ABASEID IN (:abaseId)")
     Basepaint getBasepaint(int abaseId);
+
+    @Query("SELECT * FROM Basepaint")
+    List<Basepaint> getAllBasepaints();
 
     @Insert
     void insertBasepaint(Basepaint... basepaint);
