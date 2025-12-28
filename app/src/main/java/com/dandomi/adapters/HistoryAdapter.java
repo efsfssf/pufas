@@ -54,6 +54,17 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         return items.size();
     }
 
+    public void clearItems() {
+        items.clear(); // Чистим сам список в памяти
+        notifyDataSetChanged(); // Говорим RecyclerView перерисоваться
+    }
+
+    public void setItems(List<HistoryItem> newItems) {
+        items.clear();
+        items.addAll(newItems);
+        notifyDataSetChanged();
+    }
+
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView header, colorants;
 

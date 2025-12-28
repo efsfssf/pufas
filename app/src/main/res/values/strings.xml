@@ -137,11 +137,28 @@
     <string name="list_liters">Change the list of liters</string>
     <string name="change_dinamic_color">Changing dynamic colors</string>
     <string name="dymanic_colors_description">Allows you to change the dynamic application colors during calculations. A restart is needed.</string>
-    <string name="set_number_history">Set the length of the story</string>
+    <string name="set_length_history">Set the length of the history</string>
     <string name="set_step_liters">Change liter step size</string>
     <string name="Cancel">Cancel</string>
     <string name="no_data_available">No data available</string>
     <string name="base_not_available">Base not available</string>
+    <string name="imput_liters_hit">For example: 0.7</string>
+    <string name="edit">Edit</string>
+    <string name="add_volume">Add volume</string>
+    <string name="ok">OK</string>
+    <string name="Delete">Delete</string>
+    <string name="Volume_editor">Volume Editor</string>
+    <string name="Add">Add</string>
+    <string name="set_history_limit">Set a history limit</string>
+    <string name="change_history_description">ATTENTION: If you reduce the size of the history, the changes will take effect only after clearing the history.</string>
+    <string name="change_frequently_description">ATTENTION: If you reduce the size of the "Frequently" field, the changes will take effect only after deleting the "frequently" field.</string>
+    <string name="clear_history">Clear history</string>
+    <string name="history_cleared">History cleared</string>
+    <string name="undo">Undo</string>
+    <string name="frequently_used_products_removed">Frequently used products have been removed</string>
+    <string name="frequently_used_colors_removed">Frequently used colors have been removed</string>
+    <string name="db_cleared">The database has been cleared</string>
+    <string name="db_restored">The base has been restored</string>
 
 
     <string-array name="Themes">

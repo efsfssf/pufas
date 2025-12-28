@@ -24,7 +24,7 @@ import androidx.room.PrimaryKey;
                         entity = Formula.class,
                         parentColumns = "FORMULAID",
                         childColumns = "FORMULAID",
-                        onDelete = ForeignKey.SET_NULL
+                        onDelete = ForeignKey.CASCADE
                 )
         },
         indices = {

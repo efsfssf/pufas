@@ -2,6 +2,7 @@ package com.dandomi.pufas;
 import static android.content.ContentValues.TAG;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -19,6 +20,8 @@ import android.widget.AutoCompleteTextView;
 
 import com.dandomi.db.Basepaint;
 import com.dandomi.db.Formula;
+import com.dandomi.pufas.controllers.SizesEditorFragment;
+import com.dandomi.pufas.controllers.SizesRepository;
 import com.dandomi.pufas.pufas.AppState;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.chip.Chip;
@@ -32,6 +35,9 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.text.TextUtils;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -83,20 +89,24 @@ public class MainActivity extends AppCompatActivity {
     private Color selectedColor = null;
     private Basepaint selectedBase = null;
 
-    private static final String PREFS = "recent_items";
-    private static final String KEY_RECENT_COLORS = "recent_colors";
-    private static final String KEY_RECENT_PRODUCTS = "recent_products";
-    private static final String KEY_MAX_RECENT = "max_recent";
+    static final String PREFS = "recent_items";
+    static final String KEY_RECENT_COLORS = "recent_colors";
+    static final String KEY_RECENT_PRODUCTS = "recent_products";
+    static final String KEY_MAX_RECENT = "max_recent";
     private static final int DEFAULT_MAX_RECENT = 5;
-    private static final String KEY_MAX_HISTORY = "max_history";
-    private static final int DEFAULT_MAX_HISTORY = 50;
-    private static final String USER_SETTINGS = "UserSettings";
-    private static final String STEPPER_BUTTONS = "StepperButtons";
-    static final String PREFS_HISTORY = "calculation_history";
-    static final String KEY_HISTORY_LIST = "history_list";
+    static final String KEY_MAX_HISTORY = "max_history";
+    static final int DEFAULT_MAX_HISTORY = 50;
+    static final String STEPPER_BUTTONS = "StepperButtons";
+    static final String KEY_STEP_VALUE = "stepper_step";
+    public static final String PREFS_HISTORY = "calculation_history";
+    public static final String KEY_HISTORY_LIST = "history_list";
     private static final String KEY_THEME_SEED = "theme_seed_color";
 
     public AppState state;
+
+    private List<Color> mCurrentColors = new ArrayList<>();
+    private List<Product> mCurrentProducts = new ArrayList<>();
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -185,11 +195,25 @@ public class MainActivity extends AppCompatActivity {
     private void checkDatabaseAndRedirectIfEmpty() {
         viewModel.isDatabaseEmpty().observe(this, isEmpty -> {
             if (isEmpty) {
-                startActivity(new Intent(this, ImportDatabaseActivity.class));
-                finish();
+                importLauncher.launch(
+                        new Intent(this, ImportDatabaseActivity.class)
+                );
             }
         });
     }
+
+    private final ActivityResultLauncher<Intent> importLauncher =
+            registerForActivityResult(
+                    new ActivityResultContracts.StartActivityForResult(),
+                    result -> {
+                        if (result.getResultCode() == Activity.RESULT_OK) {
+                            // ✅ Импорт завершён, база уже не пустая
+                            // тут можно обновить UI / ViewModel
+                            viewModel.reload(); // или любой твой метод
+                        }
+                    }
+            );
+
 
     private int getMaxRecent() {
         SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
@@ -254,50 +278,58 @@ public class MainActivity extends AppCompatActivity {
 
     private void observeData() {
         viewModel.getProducts().observe(this, products -> {
-
-            SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
-            Set<String> recentProducts = prefs.getStringSet(KEY_RECENT_PRODUCTS, new LinkedHashSet<>());
-
-            productDropdown.setAdapter(
-                    new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, products)
-            );
+            mCurrentProducts = products;
+            updateProductsAdapter();
         });
 
         viewModel.getColors().observe(this, colors -> {
-
-            SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
-            Set<String> recentColors = prefs.getStringSet(KEY_RECENT_COLORS, new LinkedHashSet<>());
-
-            List<Color> recent = new ArrayList<>();
-            List<Color> others = new ArrayList<>();
-
-            for (Color color : colors) {
-                if (recentColors.contains(color.colorCode)) {
-                    recent.add(color);
-                } else {
-                    others.add(color);
-                }
-            }
-
-            List<Color> finalColors = new ArrayList<>();
-
-            if (!recent.isEmpty()) {
-                finalColors.add(ColorAdapter.DIVIDER_RECENT);
-                finalColors.addAll(recent);
-                finalColors.add(ColorAdapter.DIVIDER_OTHER);
-            }
-
-            finalColors.addAll(others);
-
-            ColorAdapter adapter = new ColorAdapter(this, finalColors);
-
-            MaterialAutoCompleteTextView actv = findViewById(R.id.actv_color);
-
-            actv.setAdapter(adapter);
-
-            // Хак, чтобы dropdown открывался сразу полным списком при нажатии
-            actv.setOnClickListener(v -> actv.showDropDown());
+            mCurrentColors = colors;
+            updateColorAdapter();
         });
+    }
+
+    public void updateProductsAdapter() {
+        SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
+        Set<String> recentProducts = prefs.getStringSet(KEY_RECENT_PRODUCTS, new LinkedHashSet<>());
+
+        productDropdown.setAdapter(
+                new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, mCurrentProducts)
+        );
+    }
+
+    public void updateColorAdapter() {
+        SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
+        Set<String> recentColors = prefs.getStringSet(KEY_RECENT_COLORS, new LinkedHashSet<>());
+
+        List<Color> recent = new ArrayList<>();
+        List<Color> others = new ArrayList<>();
+
+        for (Color color : mCurrentColors) {
+            if (recentColors.contains(color.colorCode)) {
+                recent.add(color);
+            } else {
+                others.add(color);
+            }
+        }
+
+        List<Color> finalColors = new ArrayList<>();
+
+        if (!recent.isEmpty()) {
+            finalColors.add(ColorAdapter.DIVIDER_RECENT);
+            finalColors.addAll(recent);
+            finalColors.add(ColorAdapter.DIVIDER_OTHER);
+        }
+
+        finalColors.addAll(others);
+
+        ColorAdapter adapter = new ColorAdapter(this, finalColors);
+
+        MaterialAutoCompleteTextView actv = findViewById(R.id.actv_color);
+
+        actv.setAdapter(adapter);
+
+        // Хак, чтобы dropdown открывался сразу полным списком при нажатии
+        actv.setOnClickListener(v -> actv.showDropDown());
     }
 
     private void saveRecentColor(String colorCode) {
@@ -325,8 +357,8 @@ public class MainActivity extends AppCompatActivity {
                 prefs.getStringSet(KEY_RECENT_PRODUCTS, new LinkedHashSet<>())
         );
 
-        set.remove(product);   // чтобы не было дублей
-        set.add(product);      // добавляем в конец (самый свежий)
+        set.remove(product);
+        set.add(product);
 
         // ограничиваем размер
         int maxRecent = getMaxRecent();
@@ -618,8 +650,8 @@ public class MainActivity extends AppCompatActivity {
     private void setupQuickSizeButtons() {
         ChipGroup chipGroup = findViewById(R.id.chipGroupQuickSizes);
 
-        // 1. Список значений (в будущем будете брать его из UserSettings)
-        List<String> sizes = loadSizes(this);
+        // 1. Список значений
+        List<String> sizes = SizesRepository.loadSizes(this);
 
         // Очищаем группу перед заполнением (на случай перезагрузки настроек)
         chipGroup.removeAllViews();
@@ -649,14 +681,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private List<String> loadSizes(Context context) {
-        SharedPreferences prefs = context.getSharedPreferences(USER_SETTINGS, MODE_PRIVATE);
-        String saved = prefs.getString("quick_sizes", "");
-        if (saved.isEmpty())
-            return Arrays.asList("0.5", "1.0", "2.5", "5.0", "10.0", "15.0", "20.0");
-        return new ArrayList<>(Arrays.asList(TextUtils.split(saved, ",")));
-    }
-
     private void setupStepperButtons() {
         MaterialButton btnMinus = findViewById(R.id.btn_minus);
         MaterialButton btnPlus = findViewById(R.id.btn_plus);
@@ -675,7 +699,7 @@ public class MainActivity extends AppCompatActivity {
 
     private int getCurrentStep(SharedPreferences prefs) {
         if (prefs.getBoolean(STEPPER_BUTTONS, true)) {
-            return prefs.getInt("stepper_step", 1);
+            return prefs.getInt(KEY_STEP_VALUE, 1);
         }
 
         return 1;
@@ -779,6 +803,13 @@ public class MainActivity extends AppCompatActivity {
 
         // ДОБАВИТЬ ЭТУ СТРОКУ: Обновляем иконку бургера
         CrashUiHelper.applyToToolbar(this, topAppBar);
+
+        // этот метод сработает, считает новые данные и перерисует кнопки.
+        setupQuickSizeButtons();
+
+        // обновляем частоиспользуемые цвета
+        updateColorAdapter();
+
         Log.d(TAG, "onResume: resume");
     }
 }

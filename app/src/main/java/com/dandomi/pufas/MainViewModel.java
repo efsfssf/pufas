@@ -207,6 +207,14 @@ public class MainViewModel extends AndroidViewModel {
 
     }
 
+    public void reload() {
+        // 1️⃣ Сброс кэша расчётов
+        clearCache();
+
+        // 2️⃣ Перезагружаем данные из БД
+        loadProducts();
+        loadColors();
+    }
 
     @Override
     protected void onCleared() {

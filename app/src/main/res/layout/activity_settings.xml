@@ -172,6 +172,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/btnChangeListLiters"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -179,7 +180,6 @@
                 android:layout_marginBottom="10dp">
 
                 <TextView
-                    android:id="@+id/btnChangeListLiters"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:gravity="center_vertical"
@@ -225,6 +225,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/btnLoadDatabase"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -232,7 +233,6 @@
                 android:layout_marginBottom="10dp">
 
                 <TextView
-                    android:id="@+id/btnLoadDatabase"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:gravity="center_vertical"
@@ -244,6 +244,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/btnViewDatabase"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -251,7 +252,6 @@
                 android:layout_marginBottom="10dp">
 
                 <TextView
-                    android:id="@+id/btnViewDatabase"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:gravity="center_vertical"
@@ -263,6 +263,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/btnClearDatabase"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -270,7 +271,6 @@
                 android:layout_marginBottom="10dp">
 
                 <TextView
-                    android:id="@+id/btnClearDatabase"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:gravity="center_vertical"
@@ -281,6 +281,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/btnClearFrequentlyUsedProducts"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -299,6 +300,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/btnClearFrequentlyUsedColors"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -317,6 +319,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/btnSetNumberFrequently"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -332,9 +335,17 @@
                     android:textSize="20sp"
                     android:textColor="?colorOnSurfaceVariant"/>
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/change_frequently_description"
+                    android:paddingHorizontal="20dp"
+                    android:layout_marginBottom="10dp"
+                    />
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/btnSetLenghtHistory"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -346,7 +357,33 @@
                     android:layout_height="50dp"
                     android:gravity="center_vertical"
                     android:paddingHorizontal="20dp"
-                    android:text="@string/set_number_history"
+                    android:text="@string/set_length_history"
+                    android:textSize="20sp"
+                    android:textColor="?colorOnSurfaceVariant"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/change_history_description"
+                    android:paddingHorizontal="20dp"
+                    android:layout_marginBottom="10dp"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/btnClearHistory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/ripple_list2"
+                android:layout_marginBottom="10dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="20dp"
+                    android:text="@string/clear_history"
                     android:textSize="20sp"
                     android:textColor="?colorOnSurfaceVariant"/>
 

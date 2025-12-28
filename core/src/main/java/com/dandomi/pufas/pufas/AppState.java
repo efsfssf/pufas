@@ -5,7 +5,7 @@ public class AppState {
     boolean hasCrashLogs;
     boolean MIMEFilterDisabled;
     boolean syntaxHighlighting = true;
-    boolean changeDynamicColor;
+    boolean changeDynamicColor = true;
     boolean autoCheckForUpdate;
     private int theme;
 

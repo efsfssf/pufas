@@ -535,6 +535,9 @@ public class ImportDatabaseActivity extends AppCompatActivity {
                     Snackbar.make(getWindow().getDecorView(),
                             R.string.finished,
                             BaseTransientBottomBar.LENGTH_SHORT).show();
+
+                    setResult(Activity.RESULT_OK);
+                    finish();
                 });
             } catch (Exception e) {
                 Log.e(TAG, "Import failed", e);

@@ -1,6 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="@string/Volume_editor"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerSizes"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:paddingBottom="80dp" /> <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+    android:id="@+id/fabAddSize"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="end"
+    android:text="@string/Add"
+    app:icon="@android:drawable/ic_input_add"
+    android:layout_marginTop="16dp"/>
+
+</LinearLayout>
