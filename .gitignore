@@ -9,3 +9,7 @@
 .cxx
 local.properties
 .mp4
+
+gource_video.mp4
+
+*.mp4
