@@ -52,6 +52,7 @@
                 app:boxCornerRadiusBottomStart="4dp"
                 app:boxCornerRadiusBottomEnd="4dp">
                 <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/actv_product"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="text"/>

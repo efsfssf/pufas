@@ -39,6 +39,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.room.PrimaryKey;
 
 import java.util.Objects;
 import java.util.Random;
@@ -296,9 +297,35 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
         Set<String> recentProducts = prefs.getStringSet(KEY_RECENT_PRODUCTS, new LinkedHashSet<>());
 
-        productDropdown.setAdapter(
-                new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, mCurrentProducts)
-        );
+        List<Product> recent = new ArrayList<>();
+        List<Product> others = new ArrayList<>();
+
+        for (Product product : mCurrentProducts) {
+            if (recentProducts.contains(product.productName)) {
+                recent.add(product);
+            } else {
+                others.add(product);
+            }
+        }
+
+        List<Product> finalProducts = new ArrayList<>();
+
+        if (!recent.isEmpty()) {
+            finalProducts.add(ProductAdapter.DIVIDER_RECENT);
+            finalProducts.addAll(recent);
+            finalProducts.add(ProductAdapter.DIVIDER_OTHER);
+        }
+
+        finalProducts.addAll(others);
+
+        ProductAdapter adapter = new ProductAdapter(this, finalProducts);
+
+        MaterialAutoCompleteTextView actv = findViewById(R.id.actv_product);
+
+        actv.setAdapter(adapter);
+
+        // Хак, чтобы dropdown открывался сразу полным списком при нажатии
+        actv.setOnClickListener(v -> actv.showDropDown());
     }
 
     public void updateColorAdapter() {
@@ -841,8 +868,9 @@ public class MainActivity extends AppCompatActivity {
         // этот метод сработает, считает новые данные и перерисует кнопки.
         setupQuickSizeButtons();
 
-        // обновляем частоиспользуемые цвета
+        // обновляем частоиспользуемые цвета и продукты
         updateColorAdapter();
+        updateProductsAdapter();
 
         Log.d(TAG, "onResume: resume");
     }
