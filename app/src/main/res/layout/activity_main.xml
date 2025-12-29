@@ -2,375 +2,88 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorSurface">
+    android:fitsSystemWindows="true">
 
+    <!-- AppBar (минимальный) -->
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorSurface">
+        android:fitsSystemWindows="true">
 
-        <com.google.android.material.appbar.CollapsingToolbarLayout
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/collapsingToolbarLayoutLargeSize"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
-
-            <com.google.android.material.appbar.MaterialToolbar
-                android:id="@+id/topAppBar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:title="@string/formula_calculation"
-                app:layout_collapseMode="pin" />
-        </com.google.android.material.appbar.CollapsingToolbarLayout>
+            android:layout_height="?attr/actionBarSize"
+            app:title="Calculation"/>
     </com.google.android.material.appbar.AppBarLayout>
 
+    <!-- СКРОЛЛ-КОНТЕНТ -->
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:overScrollMode="never"
+        android:fitsSystemWindows="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingHorizontal="16dp"
-            android:paddingBottom="32dp"
-            android:clipToPadding="false">
+            android:padding="16dp">
 
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/resultCard"
-                style="?attr/materialCardViewFilledStyle"
+            <!-- Заглушка сверху (контент) -->
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="24dp"
-                app:cardBackgroundColor="?attr/colorSurfaceContainerHigh"
-                app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.ExtraLarge">
+                android:layout_height="400dp"/>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="24dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:layout_marginBottom="24dp">
-
-                        <com.google.android.material.imageview.ShapeableImageView
-                            android:id="@+id/colorDot"
-                            android:layout_width="56dp"
-                            android:layout_height="56dp"
-                            android:scaleType="center"
-                            app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full"
-                            android:background="#018CFF"
-                            android:src="@drawable/format_color_reset_24px"
-                            app:tint="@android:color/white" />
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:layout_marginStart="16dp">
-
-                            <TextView
-                                android:id="@+id/colorName"
-                                android:text="@string/color_name"
-                                android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
-                                android:textStyle="bold"
-                                android:textColor="?attr/colorOnSurface"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"/>
-                            <TextView
-                                android:id="@+id/colorData"
-                                android:text="@string/color_name_description"
-                                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-                                android:textColor="?attr/colorOnSurfaceVariant"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"/>
-                        </LinearLayout>
-                    </LinearLayout>
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:cardBackgroundColor="?attr/colorSurfaceContainer"
-                        app:cardCornerRadius="16dp"
-                        app:strokeWidth="0dp"
-                        android:layout_marginBottom="16dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:padding="16dp"
-                            android:gravity="center_vertical">
-
-                            <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:contentDescription="@string/paint_icon"
-                                android:src="@drawable/format_color_fill_24px"
-                                app:tint="?attr/colorPrimary"/>
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical"
-                                android:layout_marginStart="16dp">
-                                <TextView
-                                    android:text="@string/Base"
-                                    android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
-                                    android:textColor="?attr/colorOnSurfaceVariant"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"/>
-                                <TextView
-                                    android:id="@+id/baseName"
-                                    android:text="@string/Base"
-                                    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-                                    android:textColor="?attr/colorOnSurface"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"/>
-                            </LinearLayout>
-
-                            <TextView
-                                android:id="@+id/baseWeight"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
-                                android:textColor="?attr/colorPrimary" />
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:layout_marginBottom="8dp">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Colorants"
-                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-                            android:textColor="?attr/colorOnSurfaceVariant" />
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btn_toggle_points"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
-                            android:padding="0dp"
-                            android:insetLeft="0dp"
-                            android:insetRight="0dp"
-                            android:insetTop="0dp"
-                            android:insetBottom="0dp"
-                            android:minWidth="0dp"
-                            android:minHeight="0dp"
-                            app:icon="@drawable/visibility_off_24px"
-                            app:iconGravity="textStart"
-                            app:iconPadding="0dp"
-                            app:iconSize="20dp"
-                            app:iconTint="?attr/colorOnSecondaryContainer"
-                            android:contentDescription="@string/hide_points" />
-
-                    </LinearLayout>
-
-                    <TableLayout
-                        android:id="@+id/resultTable"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:stretchColumns="0,1,2">
-
-                        <TableRow android:paddingBottom="8dp">
-                            <TextView
-                                android:text="@string/Code"
-                                android:layout_width="0dp"
-                                android:layout_weight="2"
-                                android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
-                                android:textColor="?attr/colorOutline"/>
-                            <TextView
-                                android:text="@string/Values_1L"
-                                android:gravity="end"
-                                android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
-                                android:textColor="?attr/colorOutline"/>
-                            <TextView
-                                android:text="@string/Result"
-                                android:gravity="end"
-                                android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
-                                android:textColor="?attr/colorOutline"/>
-                        </TableRow>
-
-<!--                        <TableRow android:paddingVertical="6dp">-->
-<!--                            <TextView android:text="@string/no_data" style="@style/DataCell.Text"/>-->
-<!--                            <TextView android:text="@string/no_data" style="@style/DataCell.Num"/>-->
-<!--                            <TextView android:text="@string/no_data" style="@style/DataCell.Num"/>-->
-<!--                        </TableRow>-->
-<!--                        <View android:layout_height="1dp" android:background="?attr/colorOutlineVariant" android:alpha="0.2"/>-->
-
-<!--                        <TableRow android:paddingVertical="6dp">-->
-<!--                            <TextView android:text="@string/no_data" style="@style/DataCell.Text"/>-->
-<!--                            <TextView android:text="@string/no_data" style="@style/DataCell.Num"/>-->
-<!--                            <TextView android:text="@string/no_data" style="@style/DataCell.Num"/>-->
-<!--                        </TableRow>-->
-<!--                        <View android:layout_height="1dp" android:background="?attr/colorOutlineVariant" android:alpha="0.2"/>-->
-
-<!--                        <TableRow android:paddingVertical="6dp">-->
-<!--                            <TextView android:text="@string/no_data" style="@style/DataCell.Text" android:textColor="?attr/colorOutline"/>-->
-<!--                            <TextView android:text="@string/no_data" style="@style/DataCell.Num" android:textColor="?attr/colorOutline"/>-->
-<!--                            <TextView android:text="@string/no_data" style="@style/DataCell.Num" android:textColor="?attr/colorOutline"/>-->
-<!--                        </TableRow>-->
-<!--                        <View android:layout_height="1dp" android:background="?attr/colorOutlineVariant" android:alpha="0.2"/>-->
-
-<!--                        <TableRow android:paddingVertical="6dp">-->
-<!--                            <TextView android:text="@string/no_data" style="@style/DataCell.Text" android:textColor="?attr/colorOutline"/>-->
-<!--                            <TextView android:text="@string/no_data" style="@style/DataCell.Num" android:textColor="?attr/colorOutline"/>-->
-<!--                            <TextView android:text="@string/no_data" style="@style/DataCell.Num" android:textColor="?attr/colorOutline"/>-->
-<!--                        </TableRow>-->
-<!--                        <View android:layout_height="1dp" android:background="?attr/colorOutlineVariant" android:alpha="0.2"/>-->
-
-<!--                        <TableRow android:paddingVertical="6dp">-->
-<!--                            <TextView android:text="@string/no_data" style="@style/DataCell.Text" android:textColor="?attr/colorOutline"/>-->
-<!--                            <TextView android:text="@string/no_data" style="@style/DataCell.Num" android:textColor="?attr/colorOutline"/>-->
-<!--                            <TextView android:text="@string/no_data" style="@style/DataCell.Num" android:textColor="?attr/colorOutline"/>-->
-<!--                        </TableRow>-->
-<!--                        <View android:layout_height="1dp" android:background="?attr/colorOutlineVariant" android:alpha="0.2"/>-->
-
-<!--                        <TableRow android:paddingVertical="6dp">-->
-<!--                            <TextView android:text="@string/no_data" style="@style/DataCell.Text" android:textColor="?attr/colorOutline"/>-->
-<!--                            <TextView android:text="@string/no_data" style="@style/DataCell.Num" android:textColor="?attr/colorOutline"/>-->
-<!--                            <TextView android:text="@string/no_data" style="@style/DataCell.Num" android:textColor="?attr/colorOutline"/>-->
-<!--                        </TableRow>-->
-
-                    </TableLayout>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
+            <!-- PRODUCT -->
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/productInput"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/Product"
-                app:startIconDrawable="@drawable/package_2_24px"
-                app:boxCornerRadiusTopStart="16dp"
-                app:boxCornerRadiusTopEnd="16dp"
-                app:boxCornerRadiusBottomStart="4dp"
-                app:boxCornerRadiusBottomEnd="4dp">
-                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:hint="Product">
+
+                <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="text"/>
+                    android:layout_height="wrap_content"/>
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- COLOR -->
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/colorInput"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/color"
-                app:startIconDrawable="@drawable/colors_24px"
-                app:boxCornerRadiusTopStart="4dp"
-                app:boxCornerRadiusTopEnd="4dp"
-                app:boxCornerRadiusBottomStart="4dp"
-                app:boxCornerRadiusBottomEnd="4dp">
-                <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                    android:id="@+id/actv_color"
+                android:hint="Color"
+                android:layout_marginTop="8dp">
+
+                <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="text"/>
+                    android:layout_height="wrap_content"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/canSizeInput"
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/Container"
-                    app:startIconDrawable="@drawable/scale_24px"
-                    app:boxCornerRadiusTopStart="4dp"
-                    app:boxCornerRadiusTopEnd="4dp"
-                    app:boxCornerRadiusBottomStart="16dp"
-                    app:boxCornerRadiusBottomEnd="16dp">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/canSizeEditText"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="numberDecimal"
-                        android:paddingEnd="96dp" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end|center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingEnd="4dp">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_minus"
-                        style="@style/Widget.Material3.Button.IconButton"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:padding="0dp"
-                        app:icon="@drawable/remove_24px"
-                        app:iconGravity="textStart"
-                        app:iconPadding="0dp" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_plus"
-                        style="@style/Widget.Material3.Button.IconButton"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:padding="0dp"
-                        app:icon="@drawable/add_24px"
-                        app:iconTint="?attr/colorPrimary"
-                        app:iconGravity="textStart"
-                        app:iconPadding="0dp" />
-
-                </LinearLayout>
-            </FrameLayout>
-
-            <HorizontalScrollView
+            <!-- SIZE -->
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:scrollbars="none"
-                android:layout_marginTop="8dp"
-                android:clipToPadding="false"
-                android:paddingHorizontal="4dp">
+                android:hint="Size"
+                android:layout_marginTop="8dp">
 
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/chipGroupQuickSizes"
-                    android:layout_width="wrap_content"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:singleLine="true"
-                    app:chipSpacingHorizontal="8dp" />
+                    android:inputType="numberDecimal"/>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            </HorizontalScrollView>
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/calcButton"
-                style="@style/Widget.Material3.Button"
+            <!-- Отступ снизу -->
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="64dp"
-                android:layout_marginTop="24dp"
-                android:text="@string/Calculate"
-                app:cornerRadius="28dp"
-                android:textAppearance="@style/TextAppearance.Material3.TitleMedium" />
+                android:layout_height="24dp"/>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

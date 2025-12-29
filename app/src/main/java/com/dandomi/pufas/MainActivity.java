@@ -40,6 +40,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.widget.NestedScrollView;
 import androidx.lifecycle.ViewModelProvider;
 import java.util.Random;
 import com.google.android.material.appbar.MaterialToolbar;
@@ -370,7 +371,23 @@ public class MainActivity extends AppCompatActivity {
         prefs.edit().putStringSet(KEY_RECENT_PRODUCTS, set).apply();
     }
 
+    private void scrollToView(View v) {
+        NestedScrollView scroll = findViewById(R.id.rootScroll);
+        scroll.post(() ->
+                scroll.smoothScrollTo(0, v.getBottom())
+        );
+    }
+
     private void setupListeners() {
+
+        productDropdown.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) scrollToView(v);
+        });
+
+        colorDropdown.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) scrollToView(v);
+        });
+
         productDropdown.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) productDropdown.showDropDown();
         });
