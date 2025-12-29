@@ -111,7 +111,7 @@
     <string name="color">Color</string>
     <string name="color_name">There will be a selected color here</string>
     <string name="color_name_description">I\'m sure he\'ll be great!</string>
-    <string name="Container">Container (l/kg)</string>
+    <string name="Container">Container (l)</string>
     <string name="Calculate">Calculate</string>
     <string name="Base">Base</string>
     <string name="Base_C">Base C (Transparent)</string>
@@ -159,6 +159,8 @@
     <string name="frequently_used_colors_removed">Frequently used colors have been removed</string>
     <string name="db_cleared">The database has been cleared</string>
     <string name="db_restored">The base has been restored</string>
+    <string name="Database">Database</string>
+    <string name="HistoryAndCleanup">History and Cleanup</string>
 
 
     <string-array name="Themes">
