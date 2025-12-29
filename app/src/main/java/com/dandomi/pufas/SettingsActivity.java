@@ -260,7 +260,14 @@ public class SettingsActivity extends AppCompatActivity {
         });
 
         MaterialToolbar topBar = findViewById(R.id.topBar);
+        topBar.post(() -> {
+            View navButton = topBar.getChildAt(1); // navigation icon
+            if (navButton != null) {
+                ViewCompat.setTooltipText(navButton, null);
+            }
+        });
         topBar.setNavigationOnClickListener(v -> finish());
+
 
 
         btnStepSize.setOnClickListener(v -> showStepSizeDialog());

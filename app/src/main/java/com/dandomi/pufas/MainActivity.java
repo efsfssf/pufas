@@ -133,6 +133,8 @@ public class MainActivity extends AppCompatActivity {
 
         restoreCalculationStateIfAvailable();
 
+        clearAllFocus();
+
         androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.topAppBar);
         setSupportActionBar(toolbar);
 
@@ -476,6 +478,23 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void clearAllFocus() {
+        View root = findViewById(android.R.id.content);
+        if (root != null) {
+            root.requestFocus();
+        }
+
+        if (productDropdown != null) {
+            productDropdown.clearFocus();
+            productDropdown.dismissDropDown();
+        }
+
+        if (colorDropdown != null) {
+            colorDropdown.clearFocus();
+            colorDropdown.dismissDropDown();
+        }
     }
 
     private void saveToHistory(Product selectedProduct, Color selectedColor, Basepaint selectedBase, String canSizeText, List<MainViewModel.FormulaItem> result) {
