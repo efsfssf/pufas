@@ -5,8 +5,10 @@ import static com.dandomi.pufas.MainActivity.PREFS_HISTORY;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -31,15 +33,20 @@ public class HistoryActivity extends AppCompatActivity {
         MaterialToolbar toolbar = findViewById(R.id.topAppBar);
         setSupportActionBar(toolbar);
 
-        // включаем системную кнопку "Назад"
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
 
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         loadFromHistory();
+
+        MaterialToolbar topBar = findViewById(R.id.topBar);
+        topBar.post(() -> {
+            View navButton = topBar.getChildAt(1); // navigation icon
+            if (navButton != null) {
+                ViewCompat.setTooltipText(navButton, null);
+            }
+        });
+        topBar.setNavigationOnClickListener(v -> finish());
     }
 
     @Override

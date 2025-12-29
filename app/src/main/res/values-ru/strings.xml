@@ -29,10 +29,14 @@
     <string name="menu">Меню</string>
     <string name="often_used">Часто используемые</string>
     <string name="other">Другое</string>
+    <string name="Calculate">Вычислить</string>
     <string name="Base">База</string>
     <string name="Base_C">База C (прозрачная)</string>
     <string name="Colorants">Колоранты</string>
     <string name="Code">Код</string>
     <string name="Values_1L">Значения (1 Л)</string>
     <string name="Result">Результат</string>
+    <string name="color_name">Тут будет выбранный цвет</string>
+    <string name="color_name_description">Я уверен, у тебя все получится!</string>
+    <string name="Container">Емкость (литры)</string>
 </resources>
