@@ -3,7 +3,6 @@ import static android.content.ContentValues.TAG;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
@@ -20,7 +19,6 @@ import android.widget.AutoCompleteTextView;
 
 import com.dandomi.db.Basepaint;
 import com.dandomi.db.Formula;
-import com.dandomi.pufas.controllers.SizesEditorFragment;
 import com.dandomi.pufas.controllers.SizesRepository;
 import com.dandomi.pufas.pufas.AppState;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -41,8 +39,10 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
+
+import java.util.Objects;
 import java.util.Random;
-import com.google.android.material.appbar.MaterialToolbar;
+
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.color.MaterialColors;
 import com.google.android.material.snackbar.Snackbar;
@@ -461,7 +461,7 @@ public class MainActivity extends AppCompatActivity {
 
         canSizeEdit.setOnFocusChangeListener((view, hasFocus) -> {
             if (!hasFocus) {
-                String input = canSizeEdit.getText().toString().trim();
+                String input = Objects.requireNonNull(canSizeEdit.getText()).toString().trim();
                 if (!input.isEmpty()) {
                     try {
                         double value = Double.parseDouble(input);
@@ -482,8 +482,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         togglePointsBtn.setOnClickListener(v -> {
-            boolean isChecked = togglePointsBtn.isChecked();
-            hidePoints = isChecked;
+            hidePoints = togglePointsBtn.isChecked();
 
             // если результат уже показан — просто перерисовываем таблицу
             if (viewModel.hasCachedData()) {
@@ -583,7 +582,7 @@ public class MainActivity extends AppCompatActivity {
         TableRow header = new TableRow(this);
         header.setPadding(0,0,0,dp(8));
 
-        header.addView(createHeaderCell(getString(R.string.Code), 2));
+        header.addView(createHeaderCell(getString(R.string.Code)));
         header.addView(createHeaderCell(getString(R.string.Values_1L), 1, Gravity.END));
         header.addView(createHeaderCell(getString(R.string.Result), 1, Gravity.END));
 
@@ -592,7 +591,7 @@ public class MainActivity extends AppCompatActivity {
         for (MainViewModel.FormulaItem item : items)
         {
             double value1L = item.amount1L;
-            String result = String.format("%.1f", item.amount);
+            String result = String.format(Locale.US, "%.1f", item.amount);
 
             if (hidePoints) {
                 result = result.replace(",", "");
@@ -656,8 +655,8 @@ public class MainActivity extends AppCompatActivity {
         return row;
     }
 
-    private View createHeaderCell(String text, int weight) {
-        return createHeaderCell(text, weight, Gravity.START);
+    private View createHeaderCell(String text) {
+        return createHeaderCell(text, 2, Gravity.START);
     }
 
     private View createHeaderCell(String text, int weight, int gravity) {
@@ -741,7 +740,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void changeValue(TextInputEditText canSizeEdit, int step) {
-        String currentText = canSizeEdit.getText().toString();
+        String currentText = Objects.requireNonNull(canSizeEdit.getText()).toString();
         double value = 0.0;
 
         if (!TextUtils.isEmpty(currentText)) {
