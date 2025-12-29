@@ -79,7 +79,8 @@ public class MainActivity extends AppCompatActivity {
     ShapeableImageView colorDot;
     TextView colorName;
     TextView colorData;
-    MaterialToolbar topAppBar;
+    androidx.appcompat.widget.Toolbar topAppBar;
+    MaterialButton togglePointsBtn;
 
     private TableLayout resultTable;
 
@@ -107,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
     private List<Color> mCurrentColors = new ArrayList<>();
     private List<Product> mCurrentProducts = new ArrayList<>();
 
+    private boolean hidePoints = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -135,12 +137,11 @@ public class MainActivity extends AppCompatActivity {
 
         clearAllFocus();
 
-        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.topAppBar);
-        setSupportActionBar(toolbar);
+        setSupportActionBar(topAppBar);
 
-        toolbar.setNavigationIcon(R.drawable.menu_24px);
+        topAppBar.setNavigationIcon(R.drawable.menu_24px);
 
-        toolbar.setNavigationOnClickListener(v -> {
+        topAppBar.setNavigationOnClickListener(v -> {
             showExpressiveMenu();
         });
 
@@ -395,6 +396,8 @@ public class MainActivity extends AppCompatActivity {
 
         calcButton.setOnClickListener(v -> {
 
+            setupQuickSizeButtons();
+
             if (selectedProduct == null || selectedColor == null) {
                 Toast.makeText(this, "Выберите продукт и цвет", Toast.LENGTH_SHORT).show();
                 return;
@@ -476,6 +479,16 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     canSizeInput.setError("Введите значение");
                 }
+            }
+        });
+
+        togglePointsBtn.setOnClickListener(v -> {
+            boolean isChecked = togglePointsBtn.isChecked();
+            hidePoints = isChecked;
+
+            // если результат уже показан — просто перерисовываем таблицу
+            if (viewModel.hasCachedData()) {
+                showResult(viewModel.cachedResult, viewModel.cachedFormula);
             }
         });
     }
@@ -685,7 +698,11 @@ public class MainActivity extends AppCompatActivity {
             if (value == (long) value) {
                 clear_size = String.format(Locale.US, "%d", (long) value);
             } else {
-                clear_size = String.format(Locale.US, "%.1f", value);
+                if (hidePoints) {
+                    clear_size = String.valueOf(Math.round(value));
+                } else {
+                    clear_size = String.format(Locale.US, "%.1f", value);
+                }
             }
 
             chip.setText(size);
@@ -795,7 +812,7 @@ public class MainActivity extends AppCompatActivity {
         colorName = findViewById(R.id.colorName);
         colorData = findViewById(R.id.colorData);
         topAppBar = findViewById(R.id.topAppBar);
-
+        togglePointsBtn = findViewById(R.id.btn_toggle_points);
         canSizeEdit.setText(R.string.default_value_size);
 
         Random random = new Random();

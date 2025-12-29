@@ -277,7 +277,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Colorants"
+                            android:text="@string/Colorants"
                             android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
                             android:textColor="?attr/colorOnSurfaceVariant" />
 
@@ -285,9 +285,10 @@
                             android:id="@+id/btn_toggle_points"
                             android:layout_width="40dp"
                             android:layout_height="40dp"
-                            style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+                            style="@style/Widget.Material3.Button.IconButton.Outlined"
                             android:padding="0dp"
                             android:insetLeft="0dp"
+                            android:checkable="true"
                             android:insetRight="0dp"
                             android:insetTop="0dp"
                             android:insetBottom="0dp"

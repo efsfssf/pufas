@@ -14,15 +14,20 @@
         android:layout_height="wrap_content"
         android:background="?attr/colorSurface">
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/topBar"
+        <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:title="@string/settings"
-            app:titleCentered="true"
-            app:navigationIcon="@drawable/ic_back"
-            app:navigationContentDescription="@string/back"
-            style="@style/Widget.Material3.Toolbar.Surface" />
+            android:layout_height="?attr/collapsingToolbarLayoutLargeSize"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/topBar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:title="@string/settings"
+                app:navigationIcon="@drawable/ic_back"
+                app:navigationContentDescription="@string/back"
+                app:layout_collapseMode="pin" />
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView

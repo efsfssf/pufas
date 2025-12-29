@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Pufas 2.0</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="back">Назад</string>
+    <string name="exit">Выйти?</string>
+    <string name="copied_to_clipboard">Скопировано в буфер</string>
+    <string name="about">О приложении</string>
+    <string name="name">Имя</string>
+    <string name="version">Версия</string>
+    <string name="check_for_update">Проверить обновления</string>
+    <string name="settings">Настройки</string>
+    <string name="disable_MIME">Отключить MIME-фильтр</string>
+    <string name="disable_MIME_description">Если у вас возникли проблемы с открытием файлов в формате json или файл не имеет расширения .json, отключите фильтр MIME</string>
+    <string name="SHighlighting">Подсветка синтаксиса</string>
+    <string name="undo">Отмена</string>
+    <string name="Database">База данных</string>
+    <string name="clean_frequently_colors">Очистить часто используемые цвета</string>
+    <string name="HistoryAndCleanup">История и очистка</string>
+    <string name="set_history_limit">Установить размер истории</string>
+    <string name="change_history_description">ВНИМАНИЕ: Если вы уменьшите размер истории, изменения вступят в силу только после очистки истории.</string>
+    <string name="change_frequently_description">ВНИМАНИЕ: Если вы уменьшите размер поля \"Часто используемые\", изменения вступят в силу только после очистки поля \"Часто используемые\" цвета/продукта</string>
+    <string name="Delete">Удалить</string>
+    <string name="Volume_editor">Редактор объемов</string>
+    <string name="Add">Добавить</string>
+    <string name="imput_liters_hit">Например: 0.7</string>
+    <string name="hide_points">Скрыть/Показать точки</string>
+    <string name="menu">Меню</string>
+    <string name="often_used">Часто используемые</string>
+    <string name="other">Другое</string>
+    <string name="Base">База</string>
+    <string name="Base_C">База C (прозрачная)</string>
+    <string name="Colorants">Колоранты</string>
+    <string name="Code">Код</string>
+    <string name="Values_1L">Значения (1 Л)</string>
+    <string name="Result">Результат</string>
+</resources>
