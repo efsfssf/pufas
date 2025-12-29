@@ -17,6 +17,7 @@ import com.dandomi.db.Formula;
 import com.dandomi.db.Product;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
@@ -189,7 +190,13 @@ public class MainViewModel extends AndroidViewModel {
         String[] parts = clean.split("\\],\\s*\\[");
 
         String[] ids = parts[0].split(",");
-        String[] amounts = parts[1].split(",");
+        String[] amounts;
+        if (parts.length > 1 && parts[1] != null && !parts[1].isEmpty()) {
+            amounts = parts[1].split(",");
+        } else {
+            amounts = new String[ids.length];
+            Arrays.fill(amounts, "0");
+        }
 
         List<FormulaItem> result = new ArrayList<>();
 

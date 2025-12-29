@@ -161,6 +161,7 @@
     <string name="db_restored">The base has been restored</string>
     <string name="Database">Database</string>
     <string name="HistoryAndCleanup">History and Cleanup</string>
+    <string name="error_not_found">The formula for the selected color was not found</string>
 
 
     <string-array name="Themes">

@@ -45,6 +45,7 @@ import java.util.Random;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.color.MaterialColors;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.dandomi.about.AboutActivity;
 import com.dandomi.db.Color;
@@ -396,8 +397,6 @@ public class MainActivity extends AppCompatActivity {
 
         calcButton.setOnClickListener(v -> {
 
-            setupQuickSizeButtons();
-
             if (selectedProduct == null || selectedColor == null) {
                 Toast.makeText(this, "Выберите продукт и цвет", Toast.LENGTH_SHORT).show();
                 return;
@@ -546,9 +545,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showNotFound() {
-        Toast.makeText(
-                this,
-                "Формула для выбранного цвета не найдена",
+        Snackbar.make(
+                findViewById(R.id.scrollView),
+                getString(R.string.error_not_found),
                 Toast.LENGTH_LONG
         ).show();
     }
@@ -593,7 +592,11 @@ public class MainActivity extends AppCompatActivity {
         for (MainViewModel.FormulaItem item : items)
         {
             double value1L = item.amount1L;
-            double result = item.amount;
+            String result = String.format("%.1f", item.amount);
+
+            if (hidePoints) {
+                result = result.replace(",", "");
+            }
 
             TableRow row = createRow(
                     String.valueOf(item.colorantCode),
@@ -626,7 +629,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @SuppressLint("DefaultLocale")
-    private TableRow createRow(String code, double value1L, double result) {
+    private TableRow createRow(String code, double value1L, String result) {
 
         TableRow row = new TableRow(this);
         row.setPadding(0, dp(6), 0, dp(6));
@@ -642,7 +645,7 @@ public class MainActivity extends AppCompatActivity {
         tvValue1L.setTextAppearance(this, R.style.DataCell_Num);
 
         TextView tvResult = new TextView(this);
-        tvResult.setText(String.format("%.1f", result));
+        tvResult.setText(result);
         tvResult.setGravity(Gravity.END);
         tvResult.setTextAppearance(this, R.style.DataCell_Num);
 
@@ -698,11 +701,7 @@ public class MainActivity extends AppCompatActivity {
             if (value == (long) value) {
                 clear_size = String.format(Locale.US, "%d", (long) value);
             } else {
-                if (hidePoints) {
-                    clear_size = String.valueOf(Math.round(value));
-                } else {
-                    clear_size = String.format(Locale.US, "%.1f", value);
-                }
+                clear_size = String.format(Locale.US, "%.1f", value);
             }
 
             chip.setText(size);
