@@ -28,4 +28,6 @@ public interface FormulaDao {
     @Query("SELECT * FROM Formula WHERE FORMULAID = :id")
     Formula getById(int id);
 
+    @Query("SELECT COUNT(*) FROM Formula")
+    int count();
 }

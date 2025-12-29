@@ -162,6 +162,8 @@
     <string name="Database">Database</string>
     <string name="HistoryAndCleanup">History and Cleanup</string>
     <string name="error_not_found">The formula for the selected color was not found</string>
+    <string name="import_verification_failed">Import verification failed</string>
+    <string name="import_verification_progress">Verification...</string>
 
 
     <string-array name="Themes">

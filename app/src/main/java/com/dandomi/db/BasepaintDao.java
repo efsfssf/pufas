@@ -26,4 +26,7 @@ public interface BasepaintDao {
 
     @Query("DELETE FROM basepaint")
     void clear();
+
+    @Query("SELECT COUNT(*) FROM basepaint")
+    int count();
 }

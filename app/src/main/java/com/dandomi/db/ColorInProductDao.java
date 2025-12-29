@@ -37,4 +37,7 @@ public interface ColorInProductDao {
 
     @Query("DELETE FROM colorInProduct")
     void clear();
+
+    @Query("SELECT COUNT(*) FROM colorinproduct")
+    int count();
 }
