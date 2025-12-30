@@ -33,7 +33,7 @@ android {
         }
         debug {
             applicationIdSuffix '.debug'
-            versionNameSuffix ' dev 6'
+            versionNameSuffix ' dev 7'
         }
     }
     compileOptions {
