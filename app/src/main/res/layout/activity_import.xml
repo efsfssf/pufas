@@ -2,80 +2,73 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.dandomi.pufas.ImportDatabaseActivity"
     android:animateLayoutChanges="true"
-    android:id="@+id/content"
-    >
+    android:background="?attr/colorSurface"
+    tools:context="com.dandomi.pufas.ImportDatabaseActivity">
 
     <LinearLayout
         android:id="@+id/titlePanel"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="?attr/colorSurface"
+        android:gravity="center_vertical"
+        android:minHeight="64dp"
+        android:paddingHorizontal="4dp">
 
         <ImageButton
             android:id="@+id/backBtn"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="15dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginBottom="15dp"
-            android:background="@drawable/ripple"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/actionBarItemBackground"
+            android:contentDescription="@string/back_button_desc"
             android:src="@drawable/ic_back"
-            android:visibility="gone" />
+            android:visibility="gone"
+            app:tint="?attr/colorOnSurface" />
 
         <TextView
             android:id="@+id/titleTxt"
             android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_marginVertical="15dp"
-            android:layout_marginStart="5dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="12dp"
             android:layout_weight="1"
-
-            android:ellipsize="start"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
             android:maxLines="1"
             android:singleLine="true"
-            android:text=""
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:gravity="center_vertical" />
+            android:text="@string/import_database"
+            android:textAppearance="?attr/textAppearanceTitleLarge"
+            android:textColor="?attr/colorOnSurface" />
 
         <ImageButton
             android:id="@+id/saveBtn"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginBottom="15dp"
-            android:background="@drawable/ripple3"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/actionBarItemBackground"
+            android:contentDescription="@string/save_desc"
+            android:src="@drawable/ic_save"
             android:visibility="gone"
-            app:tint="?colorOnPrimary"
+            app:tint="?attr/colorPrimary" />
 
-            android:src="@drawable/ic_save" />
         <ImageButton
             android:id="@+id/splitViewBtn"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginBottom="15dp"
-            android:background="@drawable/ripple"
-
-            android:src="@drawable/ic_splitscreen" />
-
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/actionBarItemBackground"
+            android:contentDescription="@string/split_view_desc"
+            android:src="@drawable/ic_splitscreen"
+            app:tint="?attr/colorOnSurfaceVariant" />
 
         <ImageButton
             android:id="@+id/menuBtn"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginEnd="15dp"
-            android:layout_marginBottom="15dp"
-            android:background="@drawable/ripple"
-
-            android:src="@drawable/ic_menu" />
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/actionBarItemBackground"
+            android:contentDescription="@string/menu_desc"
+            android:src="@drawable/ic_menu"
+            app:tint="?attr/colorOnSurfaceVariant" />
 
     </LinearLayout>
 
@@ -87,95 +80,95 @@
         android:layout_below="@+id/titlePanel"
         android:layout_marginBottom="10dp"
         android:animateLayoutChanges="true"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
     <View
         android:id="@+id/dim_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#70000000"
+        android:background="#99000000"
         android:visibility="invisible" />
 
     <LinearLayout
         android:id="@+id/searchUrlView"
         android:layout_width="match_parent"
-        android:orientation="horizontal"
-        android:weightSum="1"
-        android:layout_marginHorizontal="20dp"
+        android:layout_height="wrap_content"
         android:layout_centerInParent="true"
+        android:layout_marginHorizontal="16dp"
+        android:orientation="horizontal"
         android:translationY="-100dp"
         android:visibility="gone"
-        android:layout_height="wrap_content">
+        android:weightSum="1">
+
         <EditText
             android:id="@+id/urlSearch"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:background="@drawable/outline_background"
-            android:paddingVertical="10dp"
-            android:paddingHorizontal="15dp"
-            android:imeOptions="actionSearch"
-
-            android:inputType="textUri"
-            android:hint="@string/enter_url"
+            android:layout_height="56dp"
             android:layout_weight="1"
-            />
+            android:autofillHints="Enter url"
+            android:background="@drawable/outline_background"
+            android:hint="@string/enter_url"
+            android:imeOptions="actionSearch"
+            android:inputType="textUri"
+            android:paddingHorizontal="24dp"
+            android:textColor="?attr/colorOnSurface"
+            android:textColorHint="?attr/colorOnSurfaceVariant" />
 
         <ImageButton
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
             android:layout_gravity="center"
-            android:src="@drawable/ic_search"
+            android:layout_marginStart="8dp"
             android:background="@drawable/ripple_list2"
-            android:layout_marginStart="5dp"
+            android:contentDescription="@string/search_desc"
             android:onClick="SearchUrl"
-            />
-
+            android:src="@drawable/ic_search"
+            app:tint="?attr/colorOnSurfaceVariant" />
 
     </LinearLayout>
+
     <LinearLayout
         android:id="@+id/searchLL"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         android:layout_below="@+id/titlePanel"
-        android:visibility="gone"
-        >
+        android:orientation="vertical"
+        android:visibility="gone">
+
         <EditText
             android:id="@+id/searchTxt"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="56dp"
+            android:layout_marginHorizontal="16dp"
+            android:autofillHints="Enter search"
             android:background="@drawable/outline_background"
-            android:paddingVertical="10dp"
-            android:paddingHorizontal="15dp"
-            android:layout_marginHorizontal="5dp"
+            android:hint="@string/search"
             android:imeOptions="actionSearch"
             android:inputType="textUri"
-            android:hint="@string/search"
-            />
+            android:paddingHorizontal="24dp"
+            android:textColor="?attr/colorOnSurface"
+            android:textColorHint="?attr/colorOnSurfaceVariant" />
 
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/searchChipGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="10dp"
-
-            >
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="8dp">
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/searchChipKey"
+                style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/Widget.Material3.Chip.Filter"
-                android:text="key"
-                />
+                android:text="@string/key" />
+
             <com.google.android.material.chip.Chip
                 android:id="@+id/searchChipValue"
-                android:layout_width="wrap_content"
                 style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="value"
-
-                />
+                android:text="@string/value" />
 
         </com.google.android.material.chip.ChipGroup>
 
@@ -184,8 +177,9 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:clipToPadding="false"
             android:foreground="@drawable/foreground"
-            />
+            android:paddingTop="8dp" />
 
     </LinearLayout>
 
@@ -194,8 +188,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/titlePanel"
-        android:orientation="vertical"
-        >
+        android:orientation="vertical">
 
         <RelativeLayout
             android:id="@+id/listRL"
@@ -206,51 +199,48 @@
             app:layout_constraintBottom_toTopOf="@id/guideline"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-
-            >
-
+            app:layout_constraintTop_toTopOf="parent">
 
             <LinearLayout
                 android:id="@+id/messageLL"
                 android:layout_width="match_parent"
-                android:visibility="gone"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
                 android:background="@drawable/background5"
-                android:padding="10dp"
-                android:layout_margin="10dp"
-                android:layout_height="wrap_content">
+                android:elevation="2dp"
+                android:gravity="center_vertical"
+                android:padding="16dp"
+                android:visibility="gone">
+
                 <TextView
                     android:id="@+id/messageTxt"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Tap the item to edit"
-                    android:textColor="?colorOnPrimaryContainer"
                     android:layout_weight="1"
-                    />
-                <TextView
+                    android:text="@string/tap_the_item_to_edit"
+                    android:textAppearance="?attr/textAppearanceBodyMedium"
+                    android:textColor="?attr/colorOnPrimaryContainer" />
+
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/messageBtn"
+                    style="@style/Widget.Material3.Button.TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="5dp"
-                    android:paddingHorizontal="15dp"
-                    android:paddingVertical="10dp"
-                    android:background="@drawable/ripple_button"
-                    android:textColor="?colorOnPrimary"
                     android:onClick="DoneEdit"
-                    android:text="done"/>
+                    android:text="@string/done" />
             </LinearLayout>
-
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:divider="@null"
-                android:listSelector="@drawable/transparent_drawable"
-                android:foreground="@drawable/foreground"
                 android:layout_below="@+id/messageLL"
-                android:visibility="gone"
-                />
+                android:clipToPadding="false"
+                android:divider="@null"
+                android:foreground="@drawable/foreground"
+                android:listSelector="@drawable/transparent_drawable"
+                android:paddingBottom="88dp"
+                android:visibility="gone" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -259,86 +249,88 @@
                 android:layout_marginBottom="16dp"
                 android:clipChildren="false">
 
-                <!-- Floating Toolbar -->
                 <com.google.android.material.floatingtoolbar.FloatingToolbarLayout
                     android:id="@+id/floating_toolbar"
+                    style="?attr/floatingToolbarVibrantStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    style="?attr/floatingToolbarVibrantStyle"
                     android:elevation="4dp"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/importFab"
-                    app:layout_constraintHorizontal_chainStyle="packed">
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintStart_toStartOf="parent">
 
-                    <LinearLayout android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
                         android:layout_marginVertical="5dp"
-                        android:gravity="center"
-                        android:layout_alignParentEnd="true">
+                        android:gravity="center">
 
                         <ImageButton
                             android:id="@+id/searchBtn"
                             android:layout_width="60dp"
-                            android:layout_height="40dp"
+                            android:layout_height="48dp"
                             android:background="@drawable/ripple2"
-                            android:contentDescription="Search Button"
-                            app:tint="?colorOnPrimaryContainer"
-                            android:src="@drawable/ic_search"/>
+                            android:contentDescription="@string/search_button"
+                            android:src="@drawable/ic_search"
+                            app:tint="?attr/colorOnSurfaceVariant" />
+
                         <RelativeLayout
                             android:id="@+id/editBtn"
                             android:layout_width="60dp"
-                            android:layout_height="40dp"
-                            android:background="@drawable/ripple2" >
-                            <ImageView android:layout_width="25dp"
-                                android:layout_height="25dp"
+                            android:layout_height="48dp"
+                            android:background="@drawable/ripple2">
+
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
                                 android:layout_centerHorizontal="true"
-                                android:layout_marginTop="4dp"
-                                app:tint="?colorOnPrimaryContainer"
-                                android:src="@drawable/ic_edit">
-                            </ImageView>
+                                android:layout_marginTop="8dp"
+                                android:contentDescription="@string/edit"
+                                android:src="@drawable/ic_edit"
+                                app:tint="?attr/colorOnSurfaceVariant" />
+
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/beta"
-                                android:paddingHorizontal="10dp"
-                                android:background="@drawable/ripple_red"
-                                android:textColor="?colorOnError"
-                                android:textSize="8dp"
                                 android:layout_alignParentBottom="true"
-                                android:layout_marginBottom="3dp"
-                                android:layout_centerHorizontal="true"/>
+                                android:layout_centerHorizontal="true"
+                                android:layout_marginBottom="6dp"
+                                android:background="@drawable/ripple_red"
+                                android:paddingHorizontal="6dp"
+                                android:text="@string/beta"
+                                android:textColor="?attr/colorOnError"
+                                android:textSize="11sp" />
                         </RelativeLayout>
+
                         <ImageButton
                             android:id="@+id/filterBtn"
                             android:layout_width="60dp"
-                            android:layout_height="40dp"
+                            android:layout_height="48dp"
                             android:background="@drawable/ripple2"
-                            app:tint="?colorOnPrimaryContainer"
-                            android:src="@drawable/ic_filter"/>
+                            android:contentDescription="@string/filter_button"
+                            android:src="@drawable/ic_filter"
+                            app:tint="?attr/colorOnSurfaceVariant" />
                     </LinearLayout>
                 </com.google.android.material.floatingtoolbar.FloatingToolbarLayout>
 
-                <!-- КНОПКА ЗАГРУЗКИ -->
                 <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
                     android:id="@+id/importFab"
+                    style="@style/Widget.Material3.ExtendedFloatingActionButton.Primary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/import_db"
+                    android:layout_marginStart="12dp"
                     android:icon="@drawable/database_upload_24px"
+                    android:text="@string/import_db"
                     android:visibility="gone"
-                    app:backgroundTint="?colorPrimary"
-                    app:iconTint="?colorOnPrimary"
-                    android:textColor="?colorOnPrimary"
                     app:layout_constraintBottom_toBottomOf="@id/floating_toolbar"
-                    app:layout_constraintTop_toTopOf="@id/floating_toolbar"
-                    app:layout_constraintStart_toEndOf="@id/floating_toolbar"
                     app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_marginStart="12dp"/>
+                    app:layout_constraintStart_toEndOf="@id/floating_toolbar"
+                    app:layout_constraintTop_toTopOf="@id/floating_toolbar" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
-
 
             <TextView
                 android:id="@+id/emptyListTxt"
@@ -346,43 +338,42 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:text="@string/list_is_empty"
-                android:textSize="17dp"
-                android:visibility="gone"
-                />
+                android:textAppearance="?attr/textAppearanceBodyLarge"
+                android:visibility="gone" />
 
             <ImageView
                 android:id="@+id/fileImg"
                 android:layout_width="140dp"
                 android:layout_height="140dp"
-                android:layout_centerHorizontal="true"
                 android:layout_above="@id/openFileBtn"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="24dp"
                 android:background="@drawable/ic_open_file_foreground"
-                android:backgroundTint="?colorPrimary"
-                android:scaleX="2"
-                android:scaleY="2"
-                android:rotation="-15"
-                />
+                android:backgroundTint="?attr/colorSecondaryContainer"
+                android:contentDescription="@string/file_image"
+                android:rotation="-10"
+                android:scaleX="1.2"
+                android:scaleY="1.2" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/openFileBtn"
+                style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:text="@string/open_file" />
-            <Button
+
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/openUrlBtn"
+                style="@style/Widget.Material3.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:layout_marginTop="5dp"
                 android:layout_below="@+id/openFileBtn"
-                android:background="@drawable/ripple"
-                android:textColor="?colorOnBackground"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="8dp"
                 android:text="@string/open_from_url" />
 
         </RelativeLayout>
-
-
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline"
@@ -391,7 +382,6 @@
             android:background="@color/Custom0"
             android:orientation="horizontal"
             app:layout_constraintGuide_percent="1" />
-
 
         <RelativeLayout
             android:id="@+id/rawJsonRL"
@@ -419,139 +409,130 @@
 
             </LinearLayout>
 
-
         </RelativeLayout>
 
         <FrameLayout
             android:id="@+id/resizeSplitViewBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="15dp"
             android:layout_marginTop="-15dp"
+            android:clickable="false"
+            android:padding="15dp"
             android:scaleX=".5"
             android:scaleY=".5"
-            app:layout_constraintTop_toTopOf="@+id/rawJsonRL"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             android:visibility="gone"
-            android:clickable="false">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/rawJsonRL">
+
             <View
                 android:id="@+id/resizeSplitViewBtnLine"
-                android:layout_width="100dp"
-                android:layout_height="7dp"
-                android:background="@drawable/ripple_button"
-                />
+                android:layout_width="64dp"
+                android:layout_height="6dp"
+                android:background="?attr/colorOnSurfaceVariant"
+                android:backgroundTint="?attr/colorOutline" />
         </FrameLayout>
 
-
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="20dp"
-        >
+        android:layout_marginBottom="24dp">
 
-        <LinearLayout
+        <com.google.android.material.card.MaterialCardView
             android:id="@+id/loadingView"
+            style="@style/Widget.Material3.CardView.Elevated"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:minWidth="150dp"
-            android:animateLayoutChanges="true"
-            android:background="@drawable/background6"
-
-            android:padding="10dp"
             android:layout_marginBottom="20dp"
+            android:animateLayoutChanges="true"
+            android:minWidth="200dp"
             android:visibility="invisible"
-            android:gravity="center"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:elevation="5dp"
-            android:orientation="vertical">
+            app:cardBackgroundColor="?attr/colorSurfaceContainerHigh"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="6dp">
 
-            <TextView
-                android:id="@+id/loadingTxt"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/loading_data_from_file"
-                android:textAlignment="center"
-                android:textColor="?colorOnTertiaryContainer"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="24dp">
 
-                />
-            <com.google.android.material.progressindicator.LinearProgressIndicator
-                android:id="@+id/progressBar"
-                android:layout_width="150dp"
-                android:layout_height="wrap_content"
-                android:indeterminate="true"
-                android:layout_marginTop="5dp"
-                android:max="100"
-                app:waveAmplitude="2dp"
-                app:wavelength="30dp"
-                app:waveSpeed="20dp"
-                app:trackColor="?colorOnTertiary"
-                app:indicatorColor="?colorTertiary"
-                />
-        </LinearLayout>
+                <TextView
+                    android:id="@+id/loadingTxt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/loading_data_from_file"
+                    android:textAlignment="center"
+                    android:textAppearance="?attr/textAppearanceBodyMedium"
+                    android:textColor="?attr/colorOnSurface" />
+
+                <com.google.android.material.progressindicator.LinearProgressIndicator
+                    android:id="@+id/progressBar"
+                    android:layout_width="160dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:indeterminate="true"
+                    android:max="100"
+                    app:indicatorColor="?attr/colorPrimary"
+                    app:trackColor="?attr/colorSurfaceContainerHighest"
+                    app:trackCornerRadius="4dp"
+                    app:waveAmplitude="2dp"
+                    app:waveSpeed="20dp"
+                    app:wavelength="30dp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
     </RelativeLayout>
+
     <RelativeLayout
         android:id="@+id/pathListBG"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/background_transparent"
-        android:visibility="gone"
-        >
+        android:background="#80000000"
+        android:visibility="gone">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/pathList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:listSelector="@drawable/transparent_drawable"
-            android:layout_marginTop="60dp"
-            android:layout_marginBottom="20dp"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="72dp"
+            android:layout_marginBottom="24dp"
             android:background="@drawable/background3"
-            android:layout_marginHorizontal="15dp"
-            />
+            android:listSelector="@drawable/transparent_drawable" />
 
     </RelativeLayout>
-
-
 
     <RelativeLayout
         android:id="@+id/dropTarget"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:backgroundTintMode="add"
-        android:layout_margin="10dp"
         android:alpha="0"
-
-        >
+        android:backgroundTintMode="add"
+        android:layout_margin="16dp">
 
         <View
             android:id="@+id/dropTargetBackground"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/background2"
-            android:alpha=".5"
-            />
+            android:alpha=".8"
+            android:background="?attr/colorPrimaryContainer" />
 
         <TextView
             android:id="@+id/dropTargetText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingBottom="30dp"
-
-            android:text="@string/drop_json_file_here"
-            android:textColor="#ffffff"
-
-            android:layout_centerInParent="true"
             android:layout_alignParentBottom="true"
-            />
+            android:layout_centerInParent="true"
+            android:paddingBottom="30dp"
+            android:text="@string/drop_json_file_here"
+            android:textAppearance="?attr/textAppearanceHeadlineMedium"
+            android:textColor="?attr/colorOnPrimaryContainer" />
 
     </RelativeLayout>
-
 
 </RelativeLayout>

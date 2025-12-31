@@ -32,6 +32,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.dandomi.pufas.pufas.controllers.WebManager;
@@ -318,7 +319,7 @@ public class AboutActivity extends AppCompatActivity {
             @Override
             public void onFailure() {
                 handler.post(() -> {
-                    Toast.makeText(AboutActivity.this, getResources().getText(R.string.fail_to_get_data),Toast.LENGTH_SHORT).show();
+                    Snackbar.make(view, getResources().getText(R.string.fail_to_get_data),Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
                 });
 
@@ -327,7 +328,7 @@ public class AboutActivity extends AppCompatActivity {
             @Override
             public void onFailure(int code) {
                 handler.post(() -> {
-                    Toast.makeText(AboutActivity.this, getResources().getText(R.string.fail_to_get_data) + "code:" + code, Toast.LENGTH_SHORT).show();
+                    Snackbar.make(view, getResources().getText(R.string.fail_to_get_data) + "code:" + code, Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
                 });
             }

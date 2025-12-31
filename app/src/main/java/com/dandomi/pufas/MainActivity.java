@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -15,7 +16,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 
 import com.dandomi.db.Basepaint;
@@ -29,6 +29,9 @@ import com.google.android.material.color.DynamicColors;
 import com.google.android.material.color.DynamicColorsOptions;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.navigation.NavigationView;
+
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -38,10 +41,10 @@ import android.text.TextUtils;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.widget.NestedScrollView;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.room.PrimaryKey;
 
 import java.util.Objects;
 import java.util.Random;
@@ -490,7 +493,7 @@ public class MainActivity extends AppCompatActivity {
 
         productDropdown.setOnItemClickListener((parent, view, pos, id) -> {
             selectedProduct = (Product) parent.getItemAtPosition(pos);
-            Log.d("MainActivity", "productId=" + selectedProduct .productId);
+            Log.d("MainActivity", "productId=" + selectedProduct.productId);
             saveRecentProduct(selectedProduct.productName);
         });
 
@@ -510,15 +513,21 @@ public class MainActivity extends AppCompatActivity {
             colorDropdown.showDropDown();
         });
 
+        colorDropdown.setOnItemClickListener((parent, view, pos, id) -> {
+            selectedColor = (Color) parent.getItemAtPosition(pos);
+            Log.d("MainActivity", "colorId=" + selectedColor.colorId);
+            saveRecentColor(selectedColor.colorCode);
+        });
+
         calcButton.setOnClickListener(v -> {
 
             if (selectedProduct == null || selectedColor == null) {
-                Toast.makeText(this, "Выберите продукт и цвет", Toast.LENGTH_SHORT).show();
+                Snackbar.make(v, getString(R.string.select_product_color), Toast.LENGTH_SHORT).show();
                 return;
             }
 
             if (canSizeEdit.getText() == null || canSizeEdit.getText().toString().isEmpty()) {
-                Toast.makeText(this, "Введите литры", Toast.LENGTH_SHORT).show();
+                Snackbar.make(v, getString(R.string.select_size), Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -531,7 +540,7 @@ public class MainActivity extends AppCompatActivity {
 
             if (productDropdown.getText().toString().isEmpty() ||
                     colorDropdown.getText().toString().isEmpty() || canSizeEdit.getText().toString().isEmpty()) {
-                Toast.makeText(this, "Заполните все поля", Toast.LENGTH_SHORT).show();
+                Snackbar.make(v, getString(R.string.fill_all_fields), Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -548,7 +557,10 @@ public class MainActivity extends AppCompatActivity {
                 else
                 {
                     saveToHistory(selectedProduct, selectedColor, selectedBase, canSizeText, result);
-                    int color = 0xFF000000 | selectedColor.rgb;
+
+                    Integer rgb = selectedColor.rgb != null ? selectedColor.rgb : 0xFF000000;
+
+                    int color = 0xFF000000 | rgb;
 
                     SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
                     int currentColor = prefs.getInt(KEY_THEME_SEED, 0);
@@ -676,13 +688,22 @@ public class MainActivity extends AppCompatActivity {
         String litersView = canSizeEdit.getText() + " " + getString(R.string.liters);
 
         // Заполняем данные о выбранном продукте
-        int color = 0xFF000000 | selectedColor.rgb;
+
+        if (selectedColor.rgb != null) {
+
+            int color = 0xFF000000 | selectedColor.rgb;
+
+            colorDot.setImageDrawable(null); // убираем иконку
+            colorDot.setBackgroundTintList(ColorStateList.valueOf(color));
+
+        } else {
+
+            colorDot.setBackgroundTintList(null); // убираем цвет
+            colorDot.setImageResource(R.drawable.question_mark_20px);
+        }
         baseWeight.setText(litersView);
-        colorDot.setBackgroundColor(color);
-        colorDot.setBackgroundTintList(ColorStateList.valueOf(color));
-        colorDot.setImageIcon(null);
         colorName.setText(selectedColor.colorCode);
-        colorData.setText(String.format("#%08X", (color)));
+        colorData.setText(selectedColor.rgb != null ? String.format("#%08X", selectedColor.rgb) : getString(R.string.no_color_data_available));
 
         selectedBase = viewModel.getBasepaint(formula);
         if (selectedBase != null && selectedBase.baseCode != null) {
@@ -713,6 +734,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             TableRow row = createRow(
+                    item.rgb,
                     String.valueOf(item.colorantCode),
                     value1L,
                     result
@@ -723,6 +745,66 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
+    private View createColorCircle(@Nullable Integer rgb) {
+        View view = new View(this);
+        int size = dp(12);
+
+        if (rgb == null) {
+            ImageView iv = new ImageView(this);
+
+            LinearLayout.LayoutParams lp =
+                    new LinearLayout.LayoutParams(size, size);
+            lp.setMarginEnd(dp(8));
+            lp.gravity = Gravity.CENTER_VERTICAL;
+
+            iv.setImageResource(R.drawable.question_mark_20px);
+            iv.setLayoutParams(lp);
+
+            return iv;
+        }
+
+        LinearLayout.LayoutParams lp =
+                new LinearLayout.LayoutParams(size, size);
+        lp.setMarginEnd(dp(8));
+        lp.gravity = Gravity.CENTER_VERTICAL;
+
+        GradientDrawable drawable = new GradientDrawable();
+        drawable.setShape(GradientDrawable.OVAL);
+        drawable.setColor(0xFF000000 | rgb);
+
+        view.setBackground(drawable);
+        view.setLayoutParams(lp);
+
+        return view;
+    }
+
+
+    private View createCodeCell(int rgb, String code) {
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.HORIZONTAL);
+        layout.setLayoutParams(new TableRow.LayoutParams(
+                0,
+                TableRow.LayoutParams.WRAP_CONTENT,
+                2f
+        ));
+        layout.setGravity(Gravity.CENTER_VERTICAL);
+
+        // кружок цвета
+        layout.addView(createColorCircle(rgb));
+
+        // текст кода
+        TextView tv = new TextView(this);
+        tv.setText(code);
+        tv.setTextAppearance(
+                com.google.android.material.R.style.TextAppearance_Material3_BodyMedium
+        );
+
+        layout.addView(tv);
+
+        return layout;
+    }
+
 
     private View createDivider() {
         View v = new View(this);
@@ -743,7 +825,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @SuppressLint("DefaultLocale")
-    private TableRow createRow(String code, double value1L, String result) {
+    private TableRow createRow(Integer RGB, String code, double value1L, String result) {
 
         TableRow row = new TableRow(this);
         row.setPadding(0, dp(6), 0, dp(6));
@@ -763,7 +845,7 @@ public class MainActivity extends AppCompatActivity {
         tvResult.setGravity(Gravity.END);
         tvResult.setTextAppearance(this, R.style.DataCell_Num);
 
-        row.addView(tvCode);
+        row.addView(createCodeCell(RGB, code));
         row.addView(tvValue1L);
         row.addView(tvResult);
 

@@ -18,11 +18,13 @@
         app:strokeColor="?attr/colorOutlineVariant"
         app:cardElevation="0dp">
 
-        <View
+        <ImageView
             android:id="@+id/color_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#CCCCCC"/> </com.google.android.material.card.MaterialCardView>
+            android:background="#CCCCCC"
+            android:contentDescription="@string/Colorants"/>
+    </com.google.android.material.card.MaterialCardView>
 
     <TextView
         android:id="@+id/color_name"

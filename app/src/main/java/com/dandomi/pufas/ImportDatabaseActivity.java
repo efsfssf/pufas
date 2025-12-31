@@ -57,6 +57,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dandomi.db.Basepaint;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
@@ -125,7 +126,7 @@ public class ImportDatabaseActivity extends AppCompatActivity {
     RecyclerView pathList;
     RecyclerView searchList;
     public JsonData data = new JsonData();
-    public LinearLayout progressView;
+    public MaterialCardView progressView;
     ConstraintLayout mainLL;
     LinearProgressIndicator progressBar;
     ListAdapter adapter;

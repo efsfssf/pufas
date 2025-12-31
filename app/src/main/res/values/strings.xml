@@ -164,6 +164,22 @@
     <string name="error_not_found">The formula for the selected color was not found</string>
     <string name="import_verification_failed">Import verification failed</string>
     <string name="import_verification_progress">Verification...</string>
+    <string name="select_product_color">Choose a product and a color</string>
+    <string name="select_size">Select the volume</string>
+    <string name="fill_all_fields">Fill in all the fields</string>
+    <string name="search_desc">Search</string>
+    <string name="split_view_desc">Menu</string>
+    <string name="save_desc">Save</string>
+    <string name="back_button_desc">Back Button</string>
+    <string name="menu_desc">Menu</string>
+    <string name="key">key</string>
+    <string name="value">value</string>
+    <string name="tap_the_item_to_edit">Tap the item to edit</string>
+    <string name="done">done</string>
+    <string name="search_button">Search Button</string>
+    <string name="file_image">File image</string>
+    <string name="filter_button">Filter button</string>
+    <string name="no_color_data_available">No color data available</string>
 
 
     <string-array name="Themes">

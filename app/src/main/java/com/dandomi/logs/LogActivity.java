@@ -21,6 +21,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.dandomi.pufas.pufas.AppState;
 import com.dandomi.pufas.FileSystem;
@@ -160,7 +161,7 @@ public class LogActivity extends AppCompatActivity {
     public void shareLog(View view) {
 
         if (logTxt.getText().toString().equals("")) {
-            Toast.makeText(this, R.string.file_is_empty, Toast.LENGTH_SHORT).show();
+            Snackbar.make(view, R.string.file_is_empty, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -207,10 +208,9 @@ public class LogActivity extends AppCompatActivity {
     }
 
     private void copyToClipboard() {
-
         ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clipData = ClipData.newPlainText("log",logTxt.getText().toString());
         clipboard.setPrimaryClip(clipData);
-        Toast.makeText(this, getString(R.string.logs_copied_to_clipboard), Toast.LENGTH_SHORT).show();
+        Snackbar.make(findViewById(android.R.id.content), getString(R.string.logs_copied_to_clipboard), Toast.LENGTH_SHORT).show();
     }
 }

@@ -1,11 +1,15 @@
 package com.dandomi.pufas;
 
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -64,17 +68,33 @@ public class ColorAdapter extends ArrayAdapter<Color> {
 
         if (item != null) {
             TextView nameView = convertView.findViewById(R.id.color_name);
-            View colorView = convertView.findViewById(R.id.color_view);
+            ImageView colorView = convertView.findViewById(R.id.color_view);
 
             // Устанавливаем текст
             nameView.setText(item.toString());
 
             // Устанавливаем цвет кружка
-            int color = item.rgb != null ? (0xFF000000 | item.rgb) : 0x00000000;
-            colorView.setBackgroundColor(color);
+
+            if (item.rgb == null) {
+                colorView.setImageResource(R.drawable.question_mark_20px);
+                colorView.setBackground(null);
+            }
+            else {
+                int color = 0xFF000000 | item.rgb;
+                GradientDrawable d = new GradientDrawable();
+                d.setShape(GradientDrawable.OVAL);
+                d.setColor(color);
+
+                colorView.setImageDrawable(null);
+                colorView.setBackground(d);
+            }
         }
 
         return convertView;
+    }
+
+    private int dp(int dp) {
+        return (int) (dp * getContext().getResources().getDisplayMetrics().density);
     }
 
     // (Опционально) Чтобы работала фильтрация при вводе текста
