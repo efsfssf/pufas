@@ -5,9 +5,6 @@
     <string name="no">Нет</string>
     <string name="back">Назад</string>
     <string name="exit">Выйти?</string>
-    <string name="filter">Ф</string>
-    <string name="filter">Фильтр…</string>
-    <string name="filter">Фильтр…</string>
     <string name="filter">Фильтр…</string>
     <string name="copied_to_clipboard">Скопировано в буфер</string>
     <string name="only_one_file_is_allowed">Разрешен только один файл!</string>

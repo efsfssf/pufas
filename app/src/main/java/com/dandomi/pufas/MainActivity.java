@@ -85,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
     TextView colorData;
     androidx.appcompat.widget.Toolbar topAppBar;
     MaterialButton togglePointsBtn;
+    NestedScrollView scrollView;
 
     private TableLayout resultTable;
 
@@ -114,26 +115,25 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean hidePoints = false;
 
-    private NestedScrollView nestedScrollView;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        applyThemeFromPrefs();
         super.onCreate(savedInstanceState);
+
+        if (!(Thread.getDefaultUncaughtExceptionHandler() instanceof CustomExceptionHandler))
+            Thread.setDefaultUncaughtExceptionHandler(new CustomExceptionHandler(this));
+
         setContentView(R.layout.activity_main);
 
-        nestedScrollView = findViewById(R.id.scroll);
-        MaterialAutoCompleteTextView colorDropdown = findViewById(R.id.colorDropdown);
+        viewModel = new ViewModelProvider(this)
+                .get(MainViewModel.class);
 
-        String[] colors = {
-                "RAL 3014",
-                "TVT F341",
-                "White",
-                "Black",
-                "RAL 9005"
-        };
+        checkDatabaseAndRedirectIfEmpty();
 
         initViews();
         setupListeners();
+        setupKeyboardListener();
+
 
         setupQuickSizeButtons();
         setupStepperButtons();
@@ -155,6 +155,80 @@ public class MainActivity extends AppCompatActivity {
         state = FileSystem.loadStateData(this);
 
     }
+
+    // TODO: ПЕРЕДЕЛАТЬ. ВРЕМЕННЫЙ ФИКС ПЕРЕКРЫТИЯ КЛАВИАТУРОЙ ПОЛЯ ВВОДА
+    private void scrollToViewImproved(View view) {
+        scrollView.post(() -> {
+            // Получаем координаты view относительно экрана
+            int[] viewLocation = new int[2];
+            view.getLocationOnScreen(viewLocation);
+
+            // Получаем координаты scrollView
+            int[] scrollLocation = new int[2];
+            scrollView.getLocationOnScreen(scrollLocation);
+
+            // Высота экрана
+            int screenHeight = getResources().getDisplayMetrics().heightPixels;
+
+            // Высота AppBar (учитываем CollapsingToolbar)
+            View appBar = findViewById(R.id.topAppBar);
+            int appBarHeight = appBar != null ? appBar.getHeight() : 0;
+
+            // Примерная высота клавиатуры (40% экрана)
+            int keyboardHeight = (int) (screenHeight * 0.4);
+
+            // Высота dropdown
+            int dropdownHeight = dpToPx(300);
+
+            // Вычисляем нужную позицию прокрутки
+            int viewTopRelativeToScroll = viewLocation[1] - scrollLocation[1];
+            int currentScroll = scrollView.getScrollY();
+
+            // Целевая позиция: view должен быть под AppBar с отступом
+            int targetPosition = currentScroll + viewTopRelativeToScroll - appBarHeight - dpToPx(16);
+
+            // Проверяем, поместится ли dropdown
+            int viewBottom = viewLocation[1] + view.getHeight();
+            int availableSpace = screenHeight - keyboardHeight - viewBottom;
+
+            if (availableSpace < dropdownHeight) {
+                // Dropdown не помещается - прокручиваем больше
+                targetPosition += (dropdownHeight - availableSpace);
+            }
+
+            // Плавная прокрутка
+            scrollView.smoothScrollTo(0, Math.max(0, targetPosition));
+        });
+    }
+
+
+    private int dpToPx(int dp) {
+        return (int) (dp * getResources().getDisplayMetrics().density);
+    }
+
+    private void setupKeyboardListener() {
+        View rootView = findViewById(android.R.id.content);
+
+        rootView.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+            Rect r = new Rect();
+            rootView.getWindowVisibleDisplayFrame(r);
+            int screenHeight = rootView.getRootView().getHeight();
+            int keypadHeight = screenHeight - r.bottom;
+
+            if (keypadHeight > screenHeight * 0.15) {
+                // Клавиатура ПОЯВИЛАСЬ
+                View focusedView = getCurrentFocus();
+                if (focusedView != null) {
+                    // Проверяем оба поля
+                    if (focusedView.getId() == R.id.actv_color ||
+                            focusedView.getId() == R.id.actv_product || focusedView.getId() == R.id.canSizeEditText) {
+                        focusedView.postDelayed(() -> scrollToViewImproved(focusedView), 200);
+                    }
+                }
+            }
+        });
+    }
+
 
     private void applyThemeFromPrefs() {
         SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
@@ -333,20 +407,171 @@ public class MainActivity extends AppCompatActivity {
         actv.setOnClickListener(v -> actv.showDropDown());
     }
 
-        colorDropdown.setAdapter(adapter);
+    public void updateColorAdapter() {
+        SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
+        Set<String> recentColors = prefs.getStringSet(KEY_RECENT_COLORS, new LinkedHashSet<>());
 
-        // Ограничиваем высоту dropdown
-        colorDropdown.setDropDownHeight(400);
+        List<Color> recent = new ArrayList<>();
+        List<Color> others = new ArrayList<>();
 
-        // При фокусе показываем dropdown и прокручиваем
+        for (Color color : mCurrentColors) {
+            if (recentColors.contains(color.colorCode)) {
+                recent.add(color);
+            } else {
+                others.add(color);
+            }
+        }
+
+        List<Color> finalColors = new ArrayList<>();
+
+        if (!recent.isEmpty()) {
+            finalColors.add(ColorAdapter.DIVIDER_RECENT);
+            finalColors.addAll(recent);
+            finalColors.add(ColorAdapter.DIVIDER_OTHER);
+        }
+
+        finalColors.addAll(others);
+
+        ColorAdapter adapter = new ColorAdapter(this, finalColors);
+
+        MaterialAutoCompleteTextView actv = findViewById(R.id.actv_color);
+
+        actv.setAdapter(adapter);
+
+        // Хак, чтобы dropdown открывался сразу полным списком при нажатии
+        actv.setOnClickListener(v -> actv.showDropDown());
+    }
+
+    private void saveRecentColor(String colorCode) {
+        SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
+        Set<String> set = new LinkedHashSet<>(
+                prefs.getStringSet(KEY_RECENT_COLORS, new LinkedHashSet<>())
+        );
+
+        set.remove(colorCode);   // чтобы не было дублей
+        set.add(colorCode);      // добавляем в конец (самый свежий)
+
+        // ограничиваем размер
+        int maxRecent = getMaxRecent();
+        while (set.size() > maxRecent) {
+            String first = set.iterator().next();
+            set.remove(first);
+        }
+
+        prefs.edit().putStringSet(KEY_RECENT_COLORS, set).apply();
+    }
+
+    private void saveRecentProduct(String product) {
+        SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
+        Set<String> set = new LinkedHashSet<>(
+                prefs.getStringSet(KEY_RECENT_PRODUCTS, new LinkedHashSet<>())
+        );
+
+        set.remove(product);
+        set.add(product);
+
+        // ограничиваем размер
+        int maxRecent = getMaxRecent();
+        while (set.size() > maxRecent) {
+            String first = set.iterator().next();
+            set.remove(first);
+        }
+
+        prefs.edit().putStringSet(KEY_RECENT_PRODUCTS, set).apply();
+    }
+
+    private void setupListeners() {
+
+        productDropdown.setDropDownHeight(dpToPx(300));
+
+        productDropdown.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) productDropdown.showDropDown();
+        });
+
+        productDropdown.setOnItemClickListener((parent, view, pos, id) -> {
+            selectedProduct = (Product) parent.getItemAtPosition(pos);
+            Log.d("MainActivity", "productId=" + selectedProduct .productId);
+            saveRecentProduct(selectedProduct.productName);
+        });
+
+        colorDropdown.setDropDownHeight(dpToPx(300)); // Ограничиваем высоту
+
         colorDropdown.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
-                // Небольшая задержка для корректной прокрутки
                 v.postDelayed(() -> {
-                    scrollToView(v);
+                    scrollToViewImproved(v);
                     colorDropdown.showDropDown();
-                }, 100);
+                }, 150); // Увеличил задержку
             }
+        });
+
+        colorDropdown.setOnClickListener(v -> {
+            scrollToViewImproved(v);
+            colorDropdown.showDropDown();
+        });
+
+        calcButton.setOnClickListener(v -> {
+
+            if (selectedProduct == null || selectedColor == null) {
+                Toast.makeText(this, "Выберите продукт и цвет", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (canSizeEdit.getText() == null || canSizeEdit.getText().toString().isEmpty()) {
+                Toast.makeText(this, "Введите литры", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            int productId = selectedProduct.productId;
+            int colorId = selectedColor.colorId;
+            String canSizeText = canSizeEdit.getText().toString();
+            double canSize = Double.parseDouble(canSizeText);
+            Log.d("MainActivity", "productId=" + productId + ", colorId=" + colorId + ", canSize=" + canSize);
+
+
+            if (productDropdown.getText().toString().isEmpty() ||
+                    colorDropdown.getText().toString().isEmpty() || canSizeEdit.getText().toString().isEmpty()) {
+                Toast.makeText(this, "Заполните все поля", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Formula formula = viewModel.getFormula(productId, colorId);
+            if (formula == null) {
+                showNotFound();
+                return;
+            }
+
+
+            viewModel.calculateFormulaAsync(formula, canSize).observe(this, result -> {
+                if (result == null)
+                    showNotFound();
+                else
+                {
+                    saveToHistory(selectedProduct, selectedColor, selectedBase, canSizeText, result);
+                    int color = 0xFF000000 | selectedColor.rgb;
+
+                    SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
+                    int currentColor = prefs.getInt(KEY_THEME_SEED, 0);
+
+                    if (currentColor != color && (state != null && state.isChangeDynamicColor())) {
+                        // ЦВЕТ ИЗМЕНИЛСЯ -> НУЖЕН RECREATE
+
+                        // А. Сохраняем все данные расчета в ViewModel
+                        viewModel.saveState(selectedProduct, selectedColor, canSizeText, formula, result);
+
+                        // Б. Сохраняем новый цвет в настройки для следующего onCreate
+                        prefs.edit().putInt(KEY_THEME_SEED, color).apply();
+
+                        // В. Пересоздаем Activity (перезапустится onCreate с новым цветом)
+                        recreate();
+                    } else {
+                        // ЦВЕТ ТОТ ЖЕ -> Просто показываем результат
+                        // (Можно тоже сохранить в кэш на случай поворота экрана)
+                        viewModel.saveState(selectedProduct, selectedColor, canSizeText, formula, result);
+                        showResult(result, formula);
+                    }
+                }
+            });
         });
 
         canSizeEdit.setOnFocusChangeListener((view, hasFocus) -> {
@@ -435,16 +660,18 @@ public class MainActivity extends AppCompatActivity {
 
     private void showNotFound() {
         Snackbar.make(
-                findViewById(R.id.scrollView),
+                scrollView,
                 getString(R.string.error_not_found),
                 Toast.LENGTH_LONG
         ).show();
     }
 
-            // Вычисляем сколько нужно прокрутить
-            int viewTop = location[1];
-            int scrollViewTop = nestedScrollView.getScrollY();
-            int desiredPosition = viewTop + scrollViewTop - 200; // 200dp отступ сверху
+    private void showResult(List<MainViewModel.FormulaItem> items, Formula formula) {
+        for (MainViewModel.FormulaItem item : items) {
+            Log.d("RESULT",
+                    "Colorant " + item.colorantCode +
+                            " = " + item.amount);
+        }
 
         String litersView = canSizeEdit.getText() + " " + getString(R.string.liters);
 
@@ -497,13 +724,23 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void setupKeyboardListener() {
-        View rootView = findViewById(android.R.id.content);
-        rootView.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
-            Rect r = new Rect();
-            rootView.getWindowVisibleDisplayFrame(r);
-            int screenHeight = rootView.getRootView().getHeight();
-            int keypadHeight = screenHeight - r.bottom;
+    private View createDivider() {
+        View v = new View(this);
+        TableRow.LayoutParams params = new TableRow.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                dp(1)
+        );
+        v.setLayoutParams(params);
+        v.setBackgroundColor(
+                MaterialColors.getColor(
+                        this,
+                        com.google.android.material.R.attr.colorOutlineVariant,
+                        android.graphics.Color.GRAY
+                )
+        );
+        v.setAlpha(0.2f);
+        return v;
+    }
 
     @SuppressLint("DefaultLocale")
     private TableRow createRow(String code, double value1L, String result) {
@@ -580,6 +817,32 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 clear_size = String.format(Locale.US, "%.1f", value);
             }
+
+            chip.setText(size);
+
+            String finalClear_size = clear_size;
+            chip.setOnClickListener(v -> {
+                canSizeEdit.setText(finalClear_size);
+                canSizeEdit.setSelection(finalClear_size.length());
+            });
+
+            chipGroup.addView(chip);
+        }
+    }
+
+    private void setupStepperButtons() {
+        MaterialButton btnMinus = findViewById(R.id.btn_minus);
+        MaterialButton btnPlus = findViewById(R.id.btn_plus);
+
+        SharedPreferences prefs = getSharedPreferences(STEPPER_BUTTONS, MODE_PRIVATE);
+        btnMinus.setOnClickListener(v -> {
+            int step = getCurrentStep(prefs);
+            changeValue(canSizeEdit, -step);
+        });
+
+        btnPlus.setOnClickListener(v -> {
+            int step = getCurrentStep(prefs);
+            changeValue(canSizeEdit, step);
         });
     }
 
@@ -663,6 +926,8 @@ public class MainActivity extends AppCompatActivity {
         colorData = findViewById(R.id.colorData);
         topAppBar = findViewById(R.id.topAppBar);
         togglePointsBtn = findViewById(R.id.btn_toggle_points);
+        scrollView = findViewById(R.id.scrollView);
+
         canSizeEdit.setText(R.string.default_value_size);
 
         Random random = new Random();
