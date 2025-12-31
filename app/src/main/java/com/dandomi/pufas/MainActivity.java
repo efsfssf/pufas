@@ -23,6 +23,7 @@ import com.dandomi.db.Formula;
 import com.dandomi.pufas.controllers.SizesRepository;
 import com.dandomi.pufas.pufas.AppState;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.color.DynamicColors;
@@ -30,6 +31,8 @@ import com.google.android.material.color.DynamicColorsOptions;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.navigation.NavigationView;
 
+import android.widget.FrameLayout;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
@@ -79,7 +82,9 @@ public class MainActivity extends AppCompatActivity {
     AutoCompleteTextView colorDropdown;
     TextInputEditText canSizeEdit;
     TextInputLayout canSizeInput;
-
+    MaterialCardView resultCard;
+    FrameLayout canSizeContainer;
+    HorizontalScrollView chipGroupQuickSizesContainer;
     MaterialButton calcButton;
     TextView baseWeight;
     TextView baseName;
@@ -157,6 +162,36 @@ public class MainActivity extends AppCompatActivity {
 
         state = FileSystem.loadStateData(this);
 
+
+        setAlternativeDesign();
+    }
+
+    public void setAlternativeDesign() {
+
+        ViewGroup parent = (ViewGroup) resultCard.getParent();
+
+        parent.removeView(resultCard);
+        parent.removeView(productInput);
+        parent.removeView(colorInput);
+        parent.removeView(canSizeContainer);
+        parent.removeView(chipGroupQuickSizesContainer);
+        parent.removeView(calcButton);
+
+        if (state.isAlternativeDesign()) {
+            parent.addView(resultCard);
+            parent.addView(productInput);
+            parent.addView(colorInput);
+            parent.addView(canSizeContainer);
+            parent.addView(chipGroupQuickSizesContainer);
+            parent.addView(calcButton);
+        } else {
+            parent.addView(productInput);
+            parent.addView(colorInput);
+            parent.addView(canSizeContainer);
+            parent.addView(chipGroupQuickSizesContainer);
+            parent.addView(calcButton);
+            parent.addView(resultCard);
+        }
     }
 
     // TODO: ПЕРЕДЕЛАТЬ. ВРЕМЕННЫЙ ФИКС ПЕРЕКРЫТИЯ КЛАВИАТУРОЙ ПОЛЯ ВВОДА
@@ -1000,6 +1035,9 @@ public class MainActivity extends AppCompatActivity {
         canSizeEdit = findViewById(R.id.canSizeEditText);
         canSizeInput = findViewById(R.id.canSizeInput);
         calcButton = findViewById(R.id.calcButton);
+        resultCard = findViewById(R.id.resultCard);
+        canSizeContainer = findViewById(R.id.canSizeContainer);
+        chipGroupQuickSizesContainer = findViewById(R.id.chipGroupQuickSizesContainer);
         resultTable = findViewById(R.id.resultTable);
         baseWeight = findViewById(R.id.baseWeight);
         baseName = findViewById(R.id.baseName);
@@ -1030,6 +1068,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        state = FileSystem.loadStateData(this);
+
         // Логика меню (как была)
         Menu menu = topAppBar.getMenu();
         CrashUiHelper.apply(this, menu);
@@ -1043,6 +1084,7 @@ public class MainActivity extends AppCompatActivity {
         // обновляем частоиспользуемые цвета и продукты
         updateColorAdapter();
         updateProductsAdapter();
+        setAlternativeDesign();
 
         Log.d(TAG, "onResume: resume");
     }

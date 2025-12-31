@@ -106,7 +106,7 @@
     <string name="theme">Theme</string>
     <string name="import_db">Import</string>
     <string name="import_database">Import database</string>
-    <string name="no_data">-</string>
+    <string name="no_data" translatable="false">-</string>
     <string name="Product">Product</string>
     <string name="color">Color</string>
     <string name="color_name">There will be a selected color here</string>
@@ -119,7 +119,7 @@
     <string name="Code">Code</string>
     <string name="Values_1L">Values (1L)</string>
     <string name="Result">Result</string>
-    <string name="default_value_size">10</string>
+    <string name="default_value_size" translatable="false">10</string>
     <string name="liters">L</string>
     <string name="formula_calculation">Formula calculation</string>
     <string name="paint_icon">The paint jar icon</string>
@@ -130,13 +130,13 @@
     <string name="often_used">Frequently used</string>
     <string name="other">Other</string>
     <string name="log" translatable="false">Log</string>
-    <string name="clear_db">Clear database</string>
+    <string name="clear_db">Clearing the database</string>
     <string name="clean_frequently_products">Clean frequently used products</string>
     <string name="clean_frequently_colors">Clean frequently used colors</string>
     <string name="set_number_frequently">Set the number of frequently used</string>
     <string name="list_liters">Change the list of liters</string>
     <string name="change_dinamic_color">Changing dynamic colors</string>
-    <string name="dymanic_colors_description">Allows you to change the dynamic application colors during calculations. A restart is needed.</string>
+    <string name="dymanic_colors_description">Allows you to change the dynamic application colors during calculations</string>
     <string name="set_length_history">Set the length of the history</string>
     <string name="set_step_liters">Change liter step size</string>
     <string name="Cancel">Cancel</string>
@@ -152,7 +152,7 @@
     <string name="set_history_limit">Set a history limit</string>
     <string name="change_history_description">ATTENTION: If you reduce the size of the history, the changes will take effect only after clearing the history.</string>
     <string name="change_frequently_description">ATTENTION: If you reduce the size of the Frequently used field, the changes will take effect only after deleting the frequently used field.</string>
-    <string name="clear_history">Clear history</string>
+    <string name="clear_history">Clearing the history</string>
     <string name="history_cleared">History cleared</string>
     <string name="undo">Undo</string>
     <string name="frequently_used_products_removed">Frequently used products have been removed</string>
@@ -180,6 +180,7 @@
     <string name="file_image">File image</string>
     <string name="filter_button">Filter button</string>
     <string name="no_color_data_available">No color data available</string>
+    <string name="alternative_design">Alternative Design</string>
 
 
     <string-array name="Themes">

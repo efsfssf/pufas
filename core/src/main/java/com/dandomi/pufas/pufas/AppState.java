@@ -6,6 +6,7 @@ public class AppState {
     boolean MIMEFilterDisabled;
     boolean syntaxHighlighting = true;
     boolean changeDynamicColor = true;
+    boolean alternativeDesign = true;
     boolean autoCheckForUpdate;
     private int theme;
 
@@ -41,8 +42,16 @@ public class AppState {
         return changeDynamicColor;
     }
 
+    public boolean isAlternativeDesign() {
+        return alternativeDesign;
+    }
+
     public void setChangeDynamicColor(boolean changeDynamicColor) {
         this.changeDynamicColor = changeDynamicColor;
+    }
+
+    public void setAlternativeDesign(boolean alternativeDesign) {
+        this.alternativeDesign = alternativeDesign;
     }
 
     public void setSyntaxHighlighting(boolean syntaxHighlighting) {
@@ -73,6 +82,7 @@ public class AppState {
                 ", MIMEFilterDisabled=" + MIMEFilterDisabled +
                 ", syntaxHighlighting=" + syntaxHighlighting +
                 ", changeDynamicColor=" + changeDynamicColor +
+                ", alternativeDesign=" + alternativeDesign +
                 ", autoCheckForUpdate=" + autoCheckForUpdate +
                 ", theme=" + theme +
                 '}';

@@ -294,6 +294,7 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <FrameLayout
+                android:id="@+id/canSizeContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -350,6 +351,7 @@
             </FrameLayout>
 
             <HorizontalScrollView
+                android:id="@+id/chipGroupQuickSizesContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:scrollbars="none"

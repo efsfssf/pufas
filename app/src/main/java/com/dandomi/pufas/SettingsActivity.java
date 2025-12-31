@@ -66,6 +66,7 @@ public class SettingsActivity extends AppCompatActivity {
     MaterialSwitch disableMIMEFilterSw;
     MaterialSwitch syntaxHighlightingSw;
     MaterialSwitch dymamicColorSw;
+    MaterialSwitch alternativeDesign;
     MaterialAutoCompleteTextView ThemeSpinner;
     ArrayAdapter<CharSequence> Themes;
     AppState state;
@@ -122,6 +123,8 @@ public class SettingsActivity extends AppCompatActivity {
         disableMIMEFilterSw.setChecked(state.isMIMEFilterDisabled());
         syntaxHighlightingSw.setChecked(state.isSyntaxHighlighting());
         dymamicColorSw.setChecked(state.isChangeDynamicColor());
+        alternativeDesign.setChecked(state.isAlternativeDesign());
+
 
 
         CheckForUpdateSw.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -141,6 +144,11 @@ public class SettingsActivity extends AppCompatActivity {
 
         dymamicColorSw.setOnCheckedChangeListener((buttonView, isChecked) -> {
             state.setChangeDynamicColor(isChecked);
+            SaveData();
+        });
+
+        alternativeDesign.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            state.setAlternativeDesign(isChecked);
             SaveData();
         });
 
@@ -423,6 +431,7 @@ public class SettingsActivity extends AppCompatActivity {
         disableMIMEFilterSw = findViewById(R.id.MIMESwitch);
         syntaxHighlightingSw = findViewById(R.id.sHighlightingSwitch);
         dymamicColorSw = findViewById(R.id.ChangeDynamicColorSwitch);
+        alternativeDesign = findViewById(R.id.alternativeDesignSwitch);
         ThemeSpinner = findViewById(R.id.theme_spinner);
         Themes = ArrayAdapter.createFromResource(this, R.array.Themes, android.R.layout.simple_spinner_item);
         Themes.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

@@ -53,6 +53,7 @@
                 android:layout_marginBottom="8dp"
                 android:textColor="?attr/colorPrimary"
                 style="@style/TextAppearance.Material3.LabelLarge"/>
+
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -120,6 +121,57 @@
                             android:layout_marginTop="4dp"
                             style="@style/TextAppearance.Material3.BodyMedium"
                             android:textColor="?attr/colorOnSurfaceVariant"/>
+
+                    </LinearLayout>
+
+                    <com.google.android.material.divider.MaterialDivider android:layout_width="match_parent" android:layout_height="wrap_content"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingVertical="8dp">
+
+                            <TextView
+                                android:id="@+id/titleText"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/alternative_design"
+                                style="@style/TextAppearance.Material3.BodyLarge"
+                                android:textColor="?attr/colorOnSurface"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent"/>
+
+                            <TextView
+                                android:id="@+id/betaBadge"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:background="@drawable/ripple_red"
+                                android:paddingHorizontal="6dp"
+                                android:text="@string/beta"
+                                android:textColor="?attr/colorOnError"
+                                android:textSize="11sp"
+                                app:layout_constraintStart_toEndOf="@id/titleText"
+                                app:layout_constraintTop_toTopOf="@id/titleText"
+                                app:layout_constraintBottom_toBottomOf="@id/titleText"/>
+
+                            <com.google.android.material.materialswitch.MaterialSwitch
+                                android:id="@+id/alternativeDesignSwitch"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent"/>
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
