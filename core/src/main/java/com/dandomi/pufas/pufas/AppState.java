@@ -7,6 +7,7 @@ public class AppState {
     boolean syntaxHighlighting = true;
     boolean changeDynamicColor = true;
     boolean alternativeDesign = true;
+    boolean hidePoints = false;
     boolean autoCheckForUpdate;
     private int theme;
 
@@ -46,6 +47,10 @@ public class AppState {
         return alternativeDesign;
     }
 
+    public boolean isHidePoints() {
+        return hidePoints;
+    }
+
     public void setChangeDynamicColor(boolean changeDynamicColor) {
         this.changeDynamicColor = changeDynamicColor;
     }
@@ -66,6 +71,10 @@ public class AppState {
         this.autoCheckForUpdate = autoCheckForUpdate;
     }
 
+    public void setHidePoints(boolean hidePoints) {
+        this.hidePoints = hidePoints;
+    }
+
     public int getTheme() {
         return theme;
     }
@@ -84,6 +93,7 @@ public class AppState {
                 ", changeDynamicColor=" + changeDynamicColor +
                 ", alternativeDesign=" + alternativeDesign +
                 ", autoCheckForUpdate=" + autoCheckForUpdate +
+                ", hidePoints=" + hidePoints +
                 ", theme=" + theme +
                 '}';
     }

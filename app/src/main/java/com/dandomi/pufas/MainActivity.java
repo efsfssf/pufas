@@ -3,6 +3,7 @@ import static android.content.ContentValues.TAG;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
@@ -16,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
 
 import com.dandomi.db.Basepaint;
@@ -94,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
     androidx.appcompat.widget.Toolbar topAppBar;
     MaterialButton togglePointsBtn;
     NestedScrollView scrollView;
+    TextView points_hidden_warning;
 
     private TableLayout resultTable;
 
@@ -121,8 +124,6 @@ public class MainActivity extends AppCompatActivity {
     private List<Color> mCurrentColors = new ArrayList<>();
     private List<Product> mCurrentProducts = new ArrayList<>();
 
-    private boolean hidePoints = false;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         applyThemeFromPrefs();
@@ -132,6 +133,8 @@ public class MainActivity extends AppCompatActivity {
             Thread.setDefaultUncaughtExceptionHandler(new CustomExceptionHandler(this));
 
         setContentView(R.layout.activity_main);
+
+        state = FileSystem.loadStateData(this);
 
         viewModel = new ViewModelProvider(this)
                 .get(MainViewModel.class);
@@ -159,11 +162,11 @@ public class MainActivity extends AppCompatActivity {
         topAppBar.setNavigationOnClickListener(v -> {
             showExpressiveMenu();
         });
-
-        state = FileSystem.loadStateData(this);
-
+        boolean hidePoints = state.isHidePoints();
+        togglePointsBtn.setChecked(hidePoints);
 
         setAlternativeDesign();
+
     }
 
     public void setAlternativeDesign() {
@@ -440,9 +443,6 @@ public class MainActivity extends AppCompatActivity {
         MaterialAutoCompleteTextView actv = findViewById(R.id.actv_product);
 
         actv.setAdapter(adapter);
-
-        // Хак, чтобы dropdown открывался сразу полным списком при нажатии
-        actv.setOnClickListener(v -> actv.showDropDown());
     }
 
     public void updateColorAdapter() {
@@ -475,9 +475,6 @@ public class MainActivity extends AppCompatActivity {
         MaterialAutoCompleteTextView actv = findViewById(R.id.actv_color);
 
         actv.setAdapter(adapter);
-
-        // Хак, чтобы dropdown открывался сразу полным списком при нажатии
-        actv.setOnClickListener(v -> actv.showDropDown());
     }
 
     private void saveRecentColor(String colorCode) {
@@ -532,6 +529,20 @@ public class MainActivity extends AppCompatActivity {
             saveRecentProduct(selectedProduct.productName);
         });
 
+        productDropdown.setOnClickListener(v -> {
+            productDropdown.setFocusableInTouchMode(true);
+            productDropdown.requestFocus();
+
+            InputMethodManager imm =
+                    (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.showSoftInput(productDropdown, InputMethodManager.SHOW_IMPLICIT);
+            }
+
+            productDropdown.showDropDown();
+
+        });
+
         colorDropdown.setDropDownHeight(dpToPx(300)); // Ограничиваем высоту
 
         colorDropdown.setOnFocusChangeListener((v, hasFocus) -> {
@@ -539,12 +550,21 @@ public class MainActivity extends AppCompatActivity {
                 v.postDelayed(() -> {
                     scrollToViewImproved(v);
                     colorDropdown.showDropDown();
-                }, 150); // Увеличил задержку
+                }, 100); // Увеличил задержку
             }
         });
 
         colorDropdown.setOnClickListener(v -> {
-            scrollToViewImproved(v);
+//            scrollToViewImproved(v);
+            colorDropdown.setFocusableInTouchMode(true);
+            colorDropdown.requestFocus();
+
+            InputMethodManager imm =
+                    (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.showSoftInput(colorDropdown, InputMethodManager.SHOW_IMPLICIT);
+            }
+
             colorDropdown.showDropDown();
         });
 
@@ -593,7 +613,7 @@ public class MainActivity extends AppCompatActivity {
                 {
                     saveToHistory(selectedProduct, selectedColor, selectedBase, canSizeText, result);
 
-                    Integer rgb = selectedColor.rgb != null ? selectedColor.rgb : 0xFF000000;
+                    int rgb = selectedColor.rgb != null ? selectedColor.rgb : 0xFF000000;
 
                     int color = 0xFF000000 | rgb;
 
@@ -644,7 +664,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         togglePointsBtn.setOnClickListener(v -> {
-            hidePoints = togglePointsBtn.isChecked();
+            state.setHidePoints(togglePointsBtn.isChecked());
+            FileSystem.SaveState(this, state);
 
             // если результат уже показан — просто перерисовываем таблицу
             if (viewModel.hasCachedData()) {
@@ -764,9 +785,11 @@ public class MainActivity extends AppCompatActivity {
             double value1L = item.amount1L;
             String result = String.format(Locale.US, "%.1f", item.amount);
 
-            if (hidePoints) {
-                result = result.replace(",", "");
+            if (state.isHidePoints()) {
+                result = result.replace(".", "");
             }
+
+            update_hide_points();
 
             TableRow row = createRow(
                     item.rgb,
@@ -779,6 +802,15 @@ public class MainActivity extends AppCompatActivity {
             resultTable.addView(createDivider());
         }
 
+    }
+
+    private void update_hide_points() {
+        if (state.isHidePoints()) {
+            points_hidden_warning.setVisibility(View.VISIBLE);
+        }
+        else {
+            points_hidden_warning.setVisibility(View.GONE);
+        }
     }
 
     private View createColorCircle(@Nullable Integer rgb) {
@@ -868,17 +900,17 @@ public class MainActivity extends AppCompatActivity {
         TextView tvCode = new TextView(this);
         tvCode.setText(code);
         tvCode.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 2));
-        tvCode.setTextAppearance(this, R.style.DataCell_Text);
+        tvCode.setTextAppearance(R.style.DataCell_Text);
 
         TextView tvValue1L = new TextView(this);
         tvValue1L.setText(String.format("%.1f", value1L));
         tvValue1L.setGravity(Gravity.END);
-        tvValue1L.setTextAppearance(this, R.style.DataCell_Num);
+        tvValue1L.setTextAppearance(R.style.DataCell_Num);
 
         TextView tvResult = new TextView(this);
         tvResult.setText(result);
         tvResult.setGravity(Gravity.END);
-        tvResult.setTextAppearance(this, R.style.DataCell_Num);
+        tvResult.setTextAppearance(R.style.DataCell_Num);
 
         row.addView(createCodeCell(RGB, code));
         row.addView(tvValue1L);
@@ -898,7 +930,7 @@ public class MainActivity extends AppCompatActivity {
         tv.setLayoutParams(
                 new TableRow.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, weight)
         );
-        tv.setTextAppearance(this, R.style.TextAppearance_Material3_LabelMedium);
+        tv.setTextAppearance(R.style.TextAppearance_Material3_LabelMedium);
         tv.setTextColor(
                 MaterialColors.getColor(
                         this,
@@ -928,16 +960,10 @@ public class MainActivity extends AppCompatActivity {
             chip.setCheckable(false);
 
             double value = Double.parseDouble(size);
-            String clear_size = "";
-            if (value == (long) value) {
-                clear_size = String.format(Locale.US, "%d", (long) value);
-            } else {
-                clear_size = String.format(Locale.US, "%.1f", value);
-            }
 
             chip.setText(size);
 
-            String finalClear_size = clear_size;
+            String finalClear_size = value == (long) value ? String.format(Locale.US, "%d", (long) value) : String.format(Locale.US, "%.1f", value);
             chip.setOnClickListener(v -> {
                 canSizeEdit.setText(finalClear_size);
                 canSizeEdit.setSelection(finalClear_size.length());
@@ -1047,6 +1073,7 @@ public class MainActivity extends AppCompatActivity {
         topAppBar = findViewById(R.id.topAppBar);
         togglePointsBtn = findViewById(R.id.btn_toggle_points);
         scrollView = findViewById(R.id.scrollView);
+        points_hidden_warning = findViewById(R.id.tv_points_hidden_warning);
 
         canSizeEdit.setText(R.string.default_value_size);
 
@@ -1070,6 +1097,8 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         state = FileSystem.loadStateData(this);
+        togglePointsBtn.setChecked(state.isHidePoints());
+        update_hide_points();
 
         // Логика меню (как была)
         Menu menu = topAppBar.getMenu();

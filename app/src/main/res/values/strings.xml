@@ -181,6 +181,7 @@
     <string name="filter_button">Filter button</string>
     <string name="no_color_data_available">No color data available</string>
     <string name="alternative_design">Alternative Design</string>
+    <string name="points_hidden">The dots are hidden!</string>
 
 
     <string-array name="Themes">

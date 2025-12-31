@@ -6,8 +6,8 @@
     android:id="@+id/rootView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:context="com.dandomi.about.AboutActivity">
+    tools:context="com.dandomi.about.AboutActivity"
+    android:fitsSystemWindows="true">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -110,14 +110,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="32dp" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/updateBtn"
-                style="@style/Widget.Material3.Button.TonalButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:minWidth="200dp"
-                android:onClick="CheckForUpdate"
-                android:text="@string/check_for_update" />
+<!--            <com.google.android.material.button.MaterialButton-->
+<!--                android:id="@+id/updateBtn"-->
+<!--                style="@style/Widget.Material3.Button.TonalButton"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:minWidth="200dp"-->
+<!--                android:onClick="CheckForUpdate"-->
+<!--                android:text="@string/check_for_update" />-->
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/feedbackBtn"

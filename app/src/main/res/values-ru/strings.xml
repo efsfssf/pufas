@@ -45,7 +45,7 @@
     <string name="Base_C">База C (прозрачная)</string>
     <string name="Colorants">Колоранты</string>
     <string name="Code">Код</string>
-    <string name="Values_1L">Значения (1 Л)</string>
+    <string name="Values_1L">Знач. (1 л)</string>
     <string name="Result">Результат</string>
     <string name="color">Цвет</string>
     <string name="color_name">Цвет скоро появится</string>
@@ -142,4 +142,6 @@
     <string name="change_dinamic_color">Изменение динамических цветов</string>
     <string name="Cancel">Отмена</string>
     <string name="add_volume">Добавить объем</string>
+    <string name="alternative_design">Альтернативный дизайн</string>
+    <string name="points_hidden">Точки скрыты!</string>
 </resources>
