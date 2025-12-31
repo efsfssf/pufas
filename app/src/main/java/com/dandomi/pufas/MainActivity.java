@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -38,6 +39,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.widget.NestedScrollView;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.room.PrimaryKey;
 
@@ -83,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
     TextView colorData;
     androidx.appcompat.widget.Toolbar topAppBar;
     MaterialButton togglePointsBtn;
+    NestedScrollView scrollView;
 
     private TableLayout resultTable;
 
@@ -129,6 +132,8 @@ public class MainActivity extends AppCompatActivity {
 
         initViews();
         setupListeners();
+        setupKeyboardListener();
+
 
         setupQuickSizeButtons();
         setupStepperButtons();
@@ -150,6 +155,80 @@ public class MainActivity extends AppCompatActivity {
         state = FileSystem.loadStateData(this);
 
     }
+
+    // TODO: ПЕРЕДЕЛАТЬ. ВРЕМЕННЫЙ ФИКС ПЕРЕКРЫТИЯ КЛАВИАТУРОЙ ПОЛЯ ВВОДА
+    private void scrollToViewImproved(View view) {
+        scrollView.post(() -> {
+            // Получаем координаты view относительно экрана
+            int[] viewLocation = new int[2];
+            view.getLocationOnScreen(viewLocation);
+
+            // Получаем координаты scrollView
+            int[] scrollLocation = new int[2];
+            scrollView.getLocationOnScreen(scrollLocation);
+
+            // Высота экрана
+            int screenHeight = getResources().getDisplayMetrics().heightPixels;
+
+            // Высота AppBar (учитываем CollapsingToolbar)
+            View appBar = findViewById(R.id.topAppBar);
+            int appBarHeight = appBar != null ? appBar.getHeight() : 0;
+
+            // Примерная высота клавиатуры (40% экрана)
+            int keyboardHeight = (int) (screenHeight * 0.4);
+
+            // Высота dropdown
+            int dropdownHeight = dpToPx(300);
+
+            // Вычисляем нужную позицию прокрутки
+            int viewTopRelativeToScroll = viewLocation[1] - scrollLocation[1];
+            int currentScroll = scrollView.getScrollY();
+
+            // Целевая позиция: view должен быть под AppBar с отступом
+            int targetPosition = currentScroll + viewTopRelativeToScroll - appBarHeight - dpToPx(16);
+
+            // Проверяем, поместится ли dropdown
+            int viewBottom = viewLocation[1] + view.getHeight();
+            int availableSpace = screenHeight - keyboardHeight - viewBottom;
+
+            if (availableSpace < dropdownHeight) {
+                // Dropdown не помещается - прокручиваем больше
+                targetPosition += (dropdownHeight - availableSpace);
+            }
+
+            // Плавная прокрутка
+            scrollView.smoothScrollTo(0, Math.max(0, targetPosition));
+        });
+    }
+
+
+    private int dpToPx(int dp) {
+        return (int) (dp * getResources().getDisplayMetrics().density);
+    }
+
+    private void setupKeyboardListener() {
+        View rootView = findViewById(android.R.id.content);
+
+        rootView.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+            Rect r = new Rect();
+            rootView.getWindowVisibleDisplayFrame(r);
+            int screenHeight = rootView.getRootView().getHeight();
+            int keypadHeight = screenHeight - r.bottom;
+
+            if (keypadHeight > screenHeight * 0.15) {
+                // Клавиатура ПОЯВИЛАСЬ
+                View focusedView = getCurrentFocus();
+                if (focusedView != null) {
+                    // Проверяем оба поля
+                    if (focusedView.getId() == R.id.actv_color ||
+                            focusedView.getId() == R.id.actv_product || focusedView.getId() == R.id.canSizeEditText) {
+                        focusedView.postDelayed(() -> scrollToViewImproved(focusedView), 200);
+                    }
+                }
+            }
+        });
+    }
+
 
     private void applyThemeFromPrefs() {
         SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
@@ -402,6 +481,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupListeners() {
+
+        productDropdown.setDropDownHeight(dpToPx(300));
+
         productDropdown.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) productDropdown.showDropDown();
         });
@@ -412,14 +494,20 @@ public class MainActivity extends AppCompatActivity {
             saveRecentProduct(selectedProduct.productName);
         });
 
+        colorDropdown.setDropDownHeight(dpToPx(300)); // Ограничиваем высоту
+
         colorDropdown.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) colorDropdown.showDropDown();
+            if (hasFocus) {
+                v.postDelayed(() -> {
+                    scrollToViewImproved(v);
+                    colorDropdown.showDropDown();
+                }, 150); // Увеличил задержку
+            }
         });
 
-        colorDropdown.setOnItemClickListener((parent, view, pos, id) -> {
-            selectedColor = (Color) parent.getItemAtPosition(pos);
-            Log.d("MainActivity", "colorId=" + selectedColor.colorId);
-            saveRecentColor(selectedColor.colorCode);
+        colorDropdown.setOnClickListener(v -> {
+            scrollToViewImproved(v);
+            colorDropdown.showDropDown();
         });
 
         calcButton.setOnClickListener(v -> {
@@ -572,7 +660,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void showNotFound() {
         Snackbar.make(
-                findViewById(R.id.scrollView),
+                scrollView,
                 getString(R.string.error_not_found),
                 Toast.LENGTH_LONG
         ).show();
@@ -838,6 +926,8 @@ public class MainActivity extends AppCompatActivity {
         colorData = findViewById(R.id.colorData);
         topAppBar = findViewById(R.id.topAppBar);
         togglePointsBtn = findViewById(R.id.btn_toggle_points);
+        scrollView = findViewById(R.id.scrollView);
+
         canSizeEdit.setText(R.string.default_value_size);
 
         Random random = new Random();

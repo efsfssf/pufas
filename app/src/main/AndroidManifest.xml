@@ -32,6 +32,7 @@
         <activity
             android:name="com.dandomi.pufas.MainActivity"
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|density"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
             android:exported="true">
             <meta-data
                 android:name="android.app.shortcuts"
