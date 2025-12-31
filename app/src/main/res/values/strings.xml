@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Pufas 2.0</string>
+    <string name="app_name" translatable="false">Pufas 2.0</string>
 
     <string name="back">Back</string>
     <string name="yes">Yes</string>
@@ -39,10 +39,10 @@
     <string name="SHighlighting">Syntax Highlighting</string>
     <string name="SHighlighting_description">Syntax Highlighting for the raw JSON text</string>
     <string name="checking_for_update">Enable checking for update</string>
-    <string name="beta">Beta</string>
+    <string name="beta" translatable="false">Beta</string>
 
     <!--  Crash logs Page -->
-    <string name="crash_logs">Crash logs</string>
+    <string name="crash_logs" translatable="false">Crash logs</string>
     <string name="list_is_empty">List is empty</string>
     <string name="file_is_empty">File is empty</string>
     <string name="copy_logs_to_clipboard">Copy logs to clipboard</string>
@@ -110,8 +110,8 @@
     <string name="Product">Product</string>
     <string name="color">Color</string>
     <string name="color_name">There will be a selected color here</string>
-    <string name="color_name_description">I\'m sure he\'ll be great!</string>
-    <string name="Container">Container (l/kg)</string>
+    <string name="color_name_description">All that remains is to enter the data!</string>
+    <string name="Container">Container (l)</string>
     <string name="Calculate">Calculate</string>
     <string name="Base">Base</string>
     <string name="Base_C">Base C (Transparent)</string>
@@ -129,7 +129,7 @@
     <string name="open_db">Open database</string>
     <string name="often_used">Frequently used</string>
     <string name="other">Other</string>
-    <string name="log">Log</string>
+    <string name="log" translatable="false">Log</string>
     <string name="clear_db">Clear database</string>
     <string name="clean_frequently_products">Clean frequently used products</string>
     <string name="clean_frequently_colors">Clean frequently used colors</string>
@@ -140,18 +140,18 @@
     <string name="set_length_history">Set the length of the history</string>
     <string name="set_step_liters">Change liter step size</string>
     <string name="Cancel">Cancel</string>
-    <string name="no_data_available">No data available</string>
-    <string name="base_not_available">Base not available</string>
+    <string name="no_data_available" translatable="false">No data available</string>
+    <string name="base_not_available" translatable="false">Base not available</string>
     <string name="imput_liters_hit">For example: 0.7</string>
     <string name="edit">Edit</string>
     <string name="add_volume">Add volume</string>
-    <string name="ok">OK</string>
+    <string name="ok" translatable="false">OK</string>
     <string name="Delete">Delete</string>
     <string name="Volume_editor">Volume Editor</string>
     <string name="Add">Add</string>
     <string name="set_history_limit">Set a history limit</string>
     <string name="change_history_description">ATTENTION: If you reduce the size of the history, the changes will take effect only after clearing the history.</string>
-    <string name="change_frequently_description">ATTENTION: If you reduce the size of the "Frequently" field, the changes will take effect only after deleting the "frequently" field.</string>
+    <string name="change_frequently_description">ATTENTION: If you reduce the size of the Frequently used field, the changes will take effect only after deleting the frequently used field.</string>
     <string name="clear_history">Clear history</string>
     <string name="history_cleared">History cleared</string>
     <string name="undo">Undo</string>
@@ -159,6 +159,11 @@
     <string name="frequently_used_colors_removed">Frequently used colors have been removed</string>
     <string name="db_cleared">The database has been cleared</string>
     <string name="db_restored">The base has been restored</string>
+    <string name="Database">Database</string>
+    <string name="HistoryAndCleanup">History and Cleanup</string>
+    <string name="error_not_found">The formula for the selected color was not found</string>
+    <string name="import_verification_failed">Import verification failed</string>
+    <string name="import_verification_progress">Verification...</string>
 
 
     <string-array name="Themes">

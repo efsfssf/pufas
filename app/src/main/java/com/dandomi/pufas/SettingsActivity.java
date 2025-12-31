@@ -39,11 +39,13 @@ import com.dandomi.adapters.HistoryAdapter;
 import com.dandomi.db.AppDatabase;
 import com.dandomi.db.DatabaseExportUtil;
 import com.dandomi.pufas.controllers.SizesEditorFragment;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.dandomi.pufas.pufas.AppState;
 import com.google.android.material.slider.Slider;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -64,19 +66,21 @@ public class SettingsActivity extends AppCompatActivity {
     MaterialSwitch disableMIMEFilterSw;
     MaterialSwitch syntaxHighlightingSw;
     MaterialSwitch dymamicColorSw;
-    Spinner ThemeSpinner;
+    MaterialAutoCompleteTextView ThemeSpinner;
     ArrayAdapter<CharSequence> Themes;
     AppState state;
-    LinearLayout btnLoadDb;
-    LinearLayout btnViewDb;
-    LinearLayout btnClearDb;
-    LinearLayout btnClearFrequentlyUsedProducts;
-    LinearLayout btnClearFrequentlyUsedColors;
+    TextView btnLoadDb;
+    TextView btnViewDb;
+    TextView btnClearDb;
+    TextView btnClearFrequentlyUsedProducts;
+    TextView btnClearFrequentlyUsedColors;
     LinearLayout btnSetNumberFrequently;
-    LinearLayout btnChangeListLiters;
+    TextView btnChangeListLiters;
     LinearLayout btnSetLenghtHistory;
-    LinearLayout btnClearHistory;
-    LinearLayout btnStepSize;
+    TextView btnClearHistory;
+    TextView btnStepSize;
+
+    String[] items;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,12 +95,12 @@ public class SettingsActivity extends AppCompatActivity {
         Animation animation = AnimationUtils.loadAnimation(this, R.anim.slide_from_bottom);
         findViewById(R.id.mainSV).startAnimation(animation);
 
-        ThemeSpinner.setSelection(state.getTheme());
+        ThemeSpinner.setText(items[state.getTheme()], false);
 
-        ThemeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        ThemeSpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @SuppressLint("WrongConstant")
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 state.setTheme(position);
                 switch (position) {
                     case 0:
@@ -111,11 +115,6 @@ public class SettingsActivity extends AppCompatActivity {
                 }
 
                 SaveData();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
             }
         });
 
@@ -259,6 +258,16 @@ public class SettingsActivity extends AppCompatActivity {
                     })
                     .show();
         });
+
+        MaterialToolbar topBar = findViewById(R.id.topBar);
+        topBar.post(() -> {
+            View navButton = topBar.getChildAt(1); // navigation icon
+            if (navButton != null) {
+                ViewCompat.setTooltipText(navButton, null);
+            }
+        });
+        topBar.setNavigationOnClickListener(v -> finish());
+
 
 
         btnStepSize.setOnClickListener(v -> showStepSizeDialog());
@@ -417,7 +426,10 @@ public class SettingsActivity extends AppCompatActivity {
         ThemeSpinner = findViewById(R.id.theme_spinner);
         Themes = ArrayAdapter.createFromResource(this, R.array.Themes, android.R.layout.simple_spinner_item);
         Themes.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        ThemeSpinner.setAdapter(Themes);
+        items = getResources().getStringArray(R.array.Themes);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, items);
+
+        ThemeSpinner.setAdapter(adapter);
         btnLoadDb = findViewById(R.id.btnLoadDatabase);
         btnViewDb = findViewById(R.id.btnViewDatabase);
         btnClearDb = findViewById(R.id.btnClearDatabase);

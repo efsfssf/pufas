@@ -32,4 +32,7 @@ public interface ProductDao {
 
     @Query("SELECT COUNT(*) FROM Product")
     int countProducts();
+
+    @Query("SELECT COUNT(*) FROM Product")
+    int count();
 }

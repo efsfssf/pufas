@@ -526,33 +526,55 @@ public class ImportDatabaseActivity extends AppCompatActivity {
         // 2. Запускаем импорт В ФОНЕ
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
+            boolean success = false;
+
             try {
                 importToRoom(data);
 
-                // 3. Завершение — обратно в UI
-                runOnUiThread(() -> {
-                    loadingFinished(true);
+                // 🔍 ВЕРИФИКАЦИЯ
+                success = verifyImportedDatabase(data);
+
+                if (!success) {
+                    wipeDatabase();
+                }
+
+            } catch (Exception e) {
+                Log.e(TAG, "Import failed", e);
+                wipeDatabase();
+            }
+
+            boolean finalSuccess = success;
+            runOnUiThread(() -> {
+                loadingFinished(finalSuccess);
+
+                if (finalSuccess) {
                     Snackbar.make(getWindow().getDecorView(),
                             R.string.finished,
                             BaseTransientBottomBar.LENGTH_SHORT).show();
-
                     setResult(Activity.RESULT_OK);
                     finish();
-                });
-            } catch (Exception e) {
-                Log.e(TAG, "Import failed", e);
-
-                runOnUiThread(() -> {
-                    loadingFinished(false);
+                } else {
                     Snackbar.make(getWindow().getDecorView(),
-                            R.string.fail_to_load_data,
-                            BaseTransientBottomBar.LENGTH_SHORT).show();
-                });
-            } finally {
-                executor.shutdown();
-            }
+                            R.string.import_verification_failed,
+                            BaseTransientBottomBar.LENGTH_LONG).show();
+
+                    resetToImportState();
+                }
+            });
+
+            executor.shutdown();
         });
     }
+
+    private void resetToImportState() {
+        list.setVisibility(GONE);
+        fileImg.setVisibility(VISIBLE);
+        openFileBtn.setVisibility(VISIBLE);
+        openUrlBtn.setVisibility(VISIBLE);
+        backBtn.setVisibility(GONE);
+        titleTxt.setText("");
+    }
+
 
     private int countItems(JsonData data) {
         int total = 0;
@@ -563,6 +585,49 @@ public class ImportDatabaseActivity extends AppCompatActivity {
         }
         return total;
     }
+
+    private boolean verifyImportedDatabase(@NonNull JsonData json) {
+
+        runOnUiThread(() -> {
+            Snackbar.make(getWindow().getDecorView(), R.string.import_verification_progress, BaseTransientBottomBar.LENGTH_SHORT).show();
+        });
+
+        AppDatabase db = AppDatabase.getDbInstance(this);
+
+        if (db.colorDao().count() != getCount(data, "Color")) return false;
+        if (db.colorantDao().count() != getCount(data, "Colorant")) return false;
+        if (db.productDao().count() != getCount(data, "Product")) return false;
+        if (db.basepaintDao().count() != getCount(data, "Basepaint")) return false;
+        if (db.formulaDao().count() != getCount(data, "Formula")) return false;
+        if (db.colorInProductDao().count() != getCount(data, "ColorInProduct")) return false;
+
+        return true;
+    }
+
+    private void wipeDatabase() {
+        AppDatabase db = AppDatabase.getDbInstance(this);
+        db.runInTransaction(() -> {
+            db.colorInProductDao().clear();
+            db.formulaDao().clear();
+            db.basepaintDao().clear();
+            db.productDao().clear();
+            db.colorantDao().clear();
+            db.colorDao().clear();
+        });
+    }
+
+    private int getCount(JsonData data, String key) {
+        ListItem arr = getRootArray(data, key);
+
+        if (arr == null)
+            return 0;
+
+        if (arr.getListObjects() == null)
+            return 0;
+
+        return arr.getListObjects().size();
+    }
+
 
     private void importToRoom(@NonNull JsonData data) {
 

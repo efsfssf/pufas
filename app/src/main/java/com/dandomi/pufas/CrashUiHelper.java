@@ -13,6 +13,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.widget.Toolbar;
 
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
@@ -208,7 +209,7 @@ public final class CrashUiHelper {
         }
     }
 
-    public static void applyToToolbar(@NonNull Context context, @NonNull MaterialToolbar toolbar) {
+    public static void applyToToolbar(@NonNull Context context, @NonNull androidx.appcompat.widget.Toolbar toolbar) {
         AppState state = FileSystem.loadStateData(context);
 
         // Получаем стандартный цвет иконки из темы (обычно черный или белый)

@@ -27,4 +27,7 @@ public interface ColorantDao {
 
     @Query("DELETE FROM colorant")
     void clear();
+
+    @Query("SELECT COUNT(*) FROM colorant")
+    int count();
 }

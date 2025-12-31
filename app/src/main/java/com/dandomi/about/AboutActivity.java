@@ -31,6 +31,7 @@ import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.dandomi.pufas.pufas.controllers.WebManager;
@@ -54,7 +55,7 @@ public class AboutActivity extends AppCompatActivity {
     private static final String SITE_IzzyOnDroid = "https://slavce14.github.io/redirect?link=jsonlist-izzy";
     private static final String SITE_PlayStore = "https://play.google.com/store/apps/details?id=com.sjapps.jsonlist";
     private static final String GITHUB_REPOSITORY_RELEASES = "https://github.com/SlaVcE14/JsonList/releases";
-    final String STORE_PACKAGE_NAME = "com.sjapps.sjstore";
+    final String STORE_PACKAGE_NAME = "com.dandomi.pufas";
     final String CONTACT_MAIL = "bezzubik46@gmail.com";
 
     ImageView logo;
@@ -94,6 +95,15 @@ public class AboutActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+        MaterialToolbar topBar = findViewById(R.id.topBar);
+        topBar.post(() -> {
+            View navButton = topBar.getChildAt(1); // navigation icon
+            if (navButton != null) {
+                ViewCompat.setTooltipText(navButton, null);
+            }
+        });
+        topBar.setNavigationOnClickListener(v -> finish());
+
     }
 
     private void setLayoutBounds() {
@@ -106,8 +116,7 @@ public class AboutActivity extends AppCompatActivity {
             layoutParams.leftMargin = insets.left + insetsN.left;
             layoutParams.topMargin = insets.top;
             layoutParams.rightMargin = insets.right + insetsN.right;
-            View scrollRL = findViewById(R.id.scrollRL);
-            scrollRL.setPadding(scrollRL.getPaddingLeft(),scrollRL.getPaddingTop(),scrollRL.getPaddingRight(),insets.bottom + insetsN.bottom);
+
             v.setLayoutParams(layoutParams);
             return WindowInsetsCompat.CONSUMED;
         });

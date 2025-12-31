@@ -25,4 +25,6 @@ public interface ColorDao {
     @Query("SELECT COUNT(*) FROM Color")
     int countColor();
 
+    @Query("SELECT COUNT(*) FROM color")
+    int count();
 }

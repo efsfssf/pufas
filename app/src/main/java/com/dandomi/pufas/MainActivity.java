@@ -3,7 +3,6 @@ import static android.content.ContentValues.TAG;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
@@ -21,7 +20,6 @@ import android.widget.AutoCompleteTextView;
 
 import com.dandomi.db.Basepaint;
 import com.dandomi.db.Formula;
-import com.dandomi.pufas.controllers.SizesEditorFragment;
 import com.dandomi.pufas.controllers.SizesRepository;
 import com.dandomi.pufas.pufas.AppState;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -43,10 +41,14 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.widget.NestedScrollView;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.room.PrimaryKey;
+
+import java.util.Objects;
 import java.util.Random;
-import com.google.android.material.appbar.MaterialToolbar;
+
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.color.MaterialColors;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.dandomi.about.AboutActivity;
 import com.dandomi.db.Color;
@@ -81,7 +83,8 @@ public class MainActivity extends AppCompatActivity {
     ShapeableImageView colorDot;
     TextView colorName;
     TextView colorData;
-    MaterialToolbar topAppBar;
+    androidx.appcompat.widget.Toolbar topAppBar;
+    MaterialButton togglePointsBtn;
 
     private TableLayout resultTable;
 
@@ -109,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
     private List<Color> mCurrentColors = new ArrayList<>();
     private List<Product> mCurrentProducts = new ArrayList<>();
 
+    private boolean hidePoints = false;
 
     private NestedScrollView nestedScrollView;
 
@@ -128,11 +132,206 @@ public class MainActivity extends AppCompatActivity {
                 "RAL 9005"
         };
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                this,
-                android.R.layout.simple_list_item_1,
-                colors
-        );
+        initViews();
+        setupListeners();
+
+        setupQuickSizeButtons();
+        setupStepperButtons();
+
+        observeData();
+
+        restoreCalculationStateIfAvailable();
+
+        clearAllFocus();
+
+        setSupportActionBar(topAppBar);
+
+        topAppBar.setNavigationIcon(R.drawable.menu_24px);
+
+        topAppBar.setNavigationOnClickListener(v -> {
+            showExpressiveMenu();
+        });
+
+        state = FileSystem.loadStateData(this);
+
+    }
+
+    private void applyThemeFromPrefs() {
+        SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
+        // По умолчанию 0 (DynamicColors проигнорирует 0 и использует системную, если не задано)
+        int seedColor = prefs.getInt(KEY_THEME_SEED, 0);
+
+        if (seedColor != 0) {
+            applyDynamicColorScheme(seedColor);
+        }
+    }
+
+    private void applyDynamicColorScheme(int seedColor) {
+        Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+        bitmap.setPixel(0, 0, seedColor);
+
+        DynamicColorsOptions options = new DynamicColorsOptions.Builder()
+                .setContentBasedSource(bitmap)
+                .build();
+
+        DynamicColors.applyToActivityIfAvailable(this, options);
+    }
+
+    // --- ЛОГИКА ВОССТАНОВЛЕНИЯ ДАННЫХ ---
+
+    private void restoreCalculationStateIfAvailable() {
+        // Если ViewModel содержит данные (значит, мы только что сделали recreate)
+        if (viewModel.hasCachedData()) {
+            // 1. Восстанавливаем переменные
+            this.selectedProduct = viewModel.cachedProduct;
+            this.selectedColor = viewModel.cachedColor;
+
+            // 2. Восстанавливаем UI ввода
+            if (viewModel.cachedSize != null) {
+                canSizeEdit.setText(viewModel.cachedSize);
+            }
+            if (selectedProduct != null) {
+                productDropdown.setText(selectedProduct.productName, false); // false чтобы не триггерить фильтр
+            }
+            if (selectedColor != null) {
+                colorDropdown.setText(selectedColor.colorCode, false);
+            }
+
+            // 3. Показываем таблицу результатов
+            showResult(viewModel.cachedResult, viewModel.cachedFormula);
+        }
+    }
+
+    private void checkDatabaseAndRedirectIfEmpty() {
+        viewModel.isDatabaseEmpty().observe(this, isEmpty -> {
+            if (isEmpty) {
+                importLauncher.launch(
+                        new Intent(this, ImportDatabaseActivity.class)
+                );
+            }
+        });
+    }
+
+    private final ActivityResultLauncher<Intent> importLauncher =
+            registerForActivityResult(
+                    new ActivityResultContracts.StartActivityForResult(),
+                    result -> {
+                        if (result.getResultCode() == Activity.RESULT_OK) {
+                            // ✅ Импорт завершён, база уже не пустая
+                            // тут можно обновить UI / ViewModel
+                            viewModel.reload(); // или любой твой метод
+                        }
+                    }
+            );
+
+
+    private int getMaxRecent() {
+        SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
+        return prefs.getInt(KEY_MAX_RECENT, DEFAULT_MAX_RECENT);
+    }
+
+    private int getMaxHistory() {
+        SharedPreferences prefs = getSharedPreferences(KEY_MAX_HISTORY, MODE_PRIVATE);
+        return prefs.getInt(KEY_MAX_HISTORY, DEFAULT_MAX_HISTORY);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_menu) {
+            showExpressiveMenu();
+            return true;
+        }
+        else if (id == R.id.action_hide_points) {
+
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void showExpressiveMenu() {
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
+        bottomSheetDialog.setContentView(R.layout.layout_bottom_sheet_menu);
+
+        NavigationView navigationView = bottomSheetDialog.findViewById(R.id.navigation_view);
+
+        if (navigationView != null) {
+
+            CrashUiHelper.applyToNavigationMenu(
+                    this,
+                    navigationView
+            );
+
+            navigationView.setNavigationItemSelectedListener(item -> {
+                int itemId = item.getItemId();
+
+                if (itemId == R.id.nav_history) {
+                    startActivity(new Intent(MainActivity.this, HistoryActivity.class));
+                } else if (itemId == R.id.nav_settings) {
+                    startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+                } else if (itemId == R.id.nav_about) {
+                    startActivity(new Intent(MainActivity.this, AboutActivity.class));
+                } else if (itemId == R.id.nav_log) {
+                    startActivity(new Intent(MainActivity.this, LogActivity.class));
+                }
+
+                bottomSheetDialog.dismiss();
+                return true;
+            });
+        }
+
+        bottomSheetDialog.show();
+
+    }
+
+    private void observeData() {
+        viewModel.getProducts().observe(this, products -> {
+            mCurrentProducts = products;
+            updateProductsAdapter();
+        });
+
+        viewModel.getColors().observe(this, colors -> {
+            mCurrentColors = colors;
+            updateColorAdapter();
+        });
+    }
+
+    public void updateProductsAdapter() {
+        SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
+        Set<String> recentProducts = prefs.getStringSet(KEY_RECENT_PRODUCTS, new LinkedHashSet<>());
+
+        List<Product> recent = new ArrayList<>();
+        List<Product> others = new ArrayList<>();
+
+        for (Product product : mCurrentProducts) {
+            if (recentProducts.contains(product.productName)) {
+                recent.add(product);
+            } else {
+                others.add(product);
+            }
+        }
+
+        List<Product> finalProducts = new ArrayList<>();
+
+        if (!recent.isEmpty()) {
+            finalProducts.add(ProductAdapter.DIVIDER_RECENT);
+            finalProducts.addAll(recent);
+            finalProducts.add(ProductAdapter.DIVIDER_OTHER);
+        }
+
+        finalProducts.addAll(others);
+
+        ProductAdapter adapter = new ProductAdapter(this, finalProducts);
+
+        MaterialAutoCompleteTextView actv = findViewById(R.id.actv_product);
+
+        actv.setAdapter(adapter);
+
+        // Хак, чтобы dropdown открывался сразу полным списком при нажатии
+        actv.setOnClickListener(v -> actv.showDropDown());
+    }
 
         colorDropdown.setAdapter(adapter);
 
@@ -150,29 +349,152 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // При клике также прокручиваем
-        colorDropdown.setOnClickListener(v -> {
-            scrollToView(v);
-            colorDropdown.showDropDown();
+        canSizeEdit.setOnFocusChangeListener((view, hasFocus) -> {
+            if (!hasFocus) {
+                String input = Objects.requireNonNull(canSizeEdit.getText()).toString().trim();
+                if (!input.isEmpty()) {
+                    try {
+                        double value = Double.parseDouble(input);
+                        if (value <= 0) {
+                            canSizeInput.setError("Введите положительное число");
+                        } else if (value > 200) {
+                            canSizeInput.setError("Значение не должно превышать 200");
+                        } else {
+                            canSizeInput.setError(null);
+                        }
+                    } catch (NumberFormatException e) {
+                        canSizeInput.setError("Введите корректное число");
+                    }
+                } else {
+                    canSizeInput.setError("Введите значение");
+                }
+            }
         });
 
-        // Отслеживаем появление клавиатуры
-        setupKeyboardListener();
+        togglePointsBtn.setOnClickListener(v -> {
+            hidePoints = togglePointsBtn.isChecked();
+
+            // если результат уже показан — просто перерисовываем таблицу
+            if (viewModel.hasCachedData()) {
+                showResult(viewModel.cachedResult, viewModel.cachedFormula);
+            }
+        });
     }
 
-    private void scrollToView(View view) {
-        nestedScrollView.post(() -> {
-            // Получаем позицию view
-            int[] location = new int[2];
-            view.getLocationInWindow(location);
+    private void clearAllFocus() {
+        View root = findViewById(android.R.id.content);
+        if (root != null) {
+            root.requestFocus();
+        }
+
+        if (productDropdown != null) {
+            productDropdown.clearFocus();
+            productDropdown.dismissDropDown();
+        }
+
+        if (colorDropdown != null) {
+            colorDropdown.clearFocus();
+            colorDropdown.dismissDropDown();
+        }
+    }
+
+    private void saveToHistory(Product selectedProduct, Color selectedColor, Basepaint selectedBase, String canSizeText, List<MainViewModel.FormulaItem> result) {
+        SharedPreferences prefs = getSharedPreferences(PREFS_HISTORY, MODE_PRIVATE);
+        Gson gson = new Gson();
+
+        String json = prefs.getString(KEY_HISTORY_LIST, "");
+        List<HistoryItem> historyList;
+
+        if (!(json.isEmpty() || json.equals("[]"))) {
+            Type type = new TypeToken<List<HistoryItem>>() {}.getType();
+            historyList = gson.fromJson(json, type);
+        } else {
+            historyList = new ArrayList<>();
+        }
+
+        HistoryItem newItem = new HistoryItem(
+                selectedProduct,
+                selectedColor,
+                Double.parseDouble(canSizeText),
+                selectedBase,
+                result
+        );
+
+        historyList.add(0, newItem);
+
+
+        if (historyList.size() > getMaxHistory()) {
+            historyList.remove(historyList.size() - 1);
+        }
+
+        String newJson = gson.toJson(historyList);
+        prefs.edit().putString(KEY_HISTORY_LIST, newJson).apply();
+
+        Log.d("History", "Saved calculation. Total items: " + historyList.size());
+    }
+
+    private void showNotFound() {
+        Snackbar.make(
+                findViewById(R.id.scrollView),
+                getString(R.string.error_not_found),
+                Toast.LENGTH_LONG
+        ).show();
+    }
 
             // Вычисляем сколько нужно прокрутить
             int viewTop = location[1];
             int scrollViewTop = nestedScrollView.getScrollY();
             int desiredPosition = viewTop + scrollViewTop - 200; // 200dp отступ сверху
 
-            nestedScrollView.smoothScrollTo(0, desiredPosition);
-        });
+        String litersView = canSizeEdit.getText() + " " + getString(R.string.liters);
+
+        // Заполняем данные о выбранном продукте
+        int color = 0xFF000000 | selectedColor.rgb;
+        baseWeight.setText(litersView);
+        colorDot.setBackgroundColor(color);
+        colorDot.setBackgroundTintList(ColorStateList.valueOf(color));
+        colorDot.setImageIcon(null);
+        colorName.setText(selectedColor.colorCode);
+        colorData.setText(String.format("#%08X", (color)));
+
+        selectedBase = viewModel.getBasepaint(formula);
+        if (selectedBase != null && selectedBase.baseCode != null) {
+            String base = "Base " + selectedBase.baseCode;
+            baseName.setText(base);
+        } else {
+            baseName.setText(getString(R.string.base_not_available));
+        }
+
+        resultTable.removeAllViews();
+
+        TableRow header = new TableRow(this);
+        header.setPadding(0,0,0,dp(8));
+
+        header.addView(createHeaderCell(getString(R.string.Code)));
+        header.addView(createHeaderCell(getString(R.string.Values_1L), 1, Gravity.END));
+        header.addView(createHeaderCell(getString(R.string.Result), 1, Gravity.END));
+
+        resultTable.addView(header);
+
+        for (MainViewModel.FormulaItem item : items)
+        {
+            double value1L = item.amount1L;
+            String result = String.format(Locale.US, "%.1f", item.amount);
+
+            if (hidePoints) {
+                result = result.replace(",", "");
+            }
+
+            TableRow row = createRow(
+                    String.valueOf(item.colorantCode),
+                    value1L,
+                    result
+            );
+
+            resultTable.addView(row);
+            resultTable.addView(createDivider());
+        }
+
     }
 
     private void setupKeyboardListener() {
@@ -183,19 +505,198 @@ public class MainActivity extends AppCompatActivity {
             int screenHeight = rootView.getRootView().getHeight();
             int keypadHeight = screenHeight - r.bottom;
 
-            if (keypadHeight > screenHeight * 0.15) { // Клавиатура видна
-                // Находим view в фокусе
-                View focusedView = getCurrentFocus();
-                if (focusedView != null && focusedView.getId() == R.id.colorDropdown) {
-                    focusedView.postDelayed(() -> scrollToView(focusedView), 100);
-                }
+    @SuppressLint("DefaultLocale")
+    private TableRow createRow(String code, double value1L, String result) {
+
+        TableRow row = new TableRow(this);
+        row.setPadding(0, dp(6), 0, dp(6));
+
+        TextView tvCode = new TextView(this);
+        tvCode.setText(code);
+        tvCode.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 2));
+        tvCode.setTextAppearance(this, R.style.DataCell_Text);
+
+        TextView tvValue1L = new TextView(this);
+        tvValue1L.setText(String.format("%.1f", value1L));
+        tvValue1L.setGravity(Gravity.END);
+        tvValue1L.setTextAppearance(this, R.style.DataCell_Num);
+
+        TextView tvResult = new TextView(this);
+        tvResult.setText(result);
+        tvResult.setGravity(Gravity.END);
+        tvResult.setTextAppearance(this, R.style.DataCell_Num);
+
+        row.addView(tvCode);
+        row.addView(tvValue1L);
+        row.addView(tvResult);
+
+        return row;
+    }
+
+    private View createHeaderCell(String text) {
+        return createHeaderCell(text, 2, Gravity.START);
+    }
+
+    private View createHeaderCell(String text, int weight, int gravity) {
+        TextView tv = new TextView(this);
+        tv.setText(text);
+        tv.setGravity(gravity);
+        tv.setLayoutParams(
+                new TableRow.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, weight)
+        );
+        tv.setTextAppearance(this, R.style.TextAppearance_Material3_LabelMedium);
+        tv.setTextColor(
+                MaterialColors.getColor(
+                        this,
+                        com.google.android.material.R.attr.colorOutline,
+                        android.graphics.Color.GRAY
+                )
+        );
+        return tv;
+    }
+
+    private int dp(int dp) {
+        return (int) (dp * getResources().getDisplayMetrics().density);
+    }
+
+    private void setupQuickSizeButtons() {
+        ChipGroup chipGroup = findViewById(R.id.chipGroupQuickSizes);
+
+        // 1. Список значений
+        List<String> sizes = SizesRepository.loadSizes(this);
+
+        // Очищаем группу перед заполнением (на случай перезагрузки настроек)
+        chipGroup.removeAllViews();
+
+        for (String size : sizes) {
+            Chip chip = new Chip(this);
+            chip.setTextAppearanceResource(com.google.android.material.R.style.TextAppearance_Material3_LabelLarge);
+            chip.setCheckable(false);
+
+            double value = Double.parseDouble(size);
+            String clear_size = "";
+            if (value == (long) value) {
+                clear_size = String.format(Locale.US, "%d", (long) value);
+            } else {
+                clear_size = String.format(Locale.US, "%.1f", value);
             }
         });
+    }
+
+    private int getCurrentStep(SharedPreferences prefs) {
+        if (prefs.getBoolean(STEPPER_BUTTONS, true)) {
+            return prefs.getInt(KEY_STEP_VALUE, 1);
+        }
+
+        return 1;
+    }
+
+    private void changeValue(TextInputEditText canSizeEdit, int step) {
+        String currentText = Objects.requireNonNull(canSizeEdit.getText()).toString();
+        double value = 0.0;
+
+        if (!TextUtils.isEmpty(currentText)) {
+            try {
+                value = Double.parseDouble(currentText.replace(",", "."));
+            } catch (NumberFormatException e) {
+                value = 0.0;
+            }
+        }
+
+        if (step >= 0 || value > 1)
+            value += step;
+
+        if (value <= 0) value = 1;
+
+        if (value > 200) value = 200;
+
+        if (value == (long) value) {
+            canSizeEdit.setText(String.format(Locale.US, "%d", (long) value));
+        } else {
+            canSizeEdit.setText(String.format(Locale.US, "%.1f", value));
+        }
+
+        canSizeEdit.setSelection(canSizeEdit.getText().length());
+
+    }
+
+    List<String> emojis = Arrays.asList(
+            "😀", "😂", "😍", "🤩", "😎",
+            "🤗", "🥳", "😜", "🤪", "😇",
+            "🤓", "🧐", "🤠", "🌈", "🥸",
+            "✅", "😳", "💫", "🥶", "🥴",
+            "😈", "👻", "👾", "🤖", "👋",
+            "👍", "👏", "🙌", "🤝", "🙏",
+            "💪", "🧠", "👀", "👂", "👄",
+            "❤️", "💖", "💙", "💚", "💛",
+            "🧡", "💜", "🖤", "🤍", "🤎",
+            "✨", "🌟", "⭐", "💥", "🔥",
+            "🌈", "🌞", "🌙", "🎯", "🎲",
+            "🎁", "🎉", "🎊", "🎈", "🪄",
+            "⚡", "💎", "👑", "🛡️", "⚔️",
+            "🎮", "🕹️", "🏆", "🏆", "🏅",
+            "🥇", "🥈", "🥉", "⚽", "🏀",
+            "🏈", "⚾", "🎾", "🏐", "🎱",
+            "🏓", "🏸", "🥊", "🥋", "🛹",
+            "🚲", "💥", "🚀", "✈️", "🛸",
+            "🚁", "🚤", "⛵", "⚓", "🧭",
+            "🏝️", "🌋", "🌌", "🌠", "🌊",
+            "🌳", "🌵", "🌷", "🌸", "🌹",
+            "🍀", "🍁", "🍂", "🍃", "🍄",
+            "🦀", "🦑", "🐙", "🐟", "🐬"
+    );
+    String rareEmoji = "🦄";
+    String ultraRareEmoji = "🥕🐇";
+    private void initViews() {
+        productInput = findViewById(R.id.productInput);
+        productDropdown = (AutoCompleteTextView) productInput.getEditText();
+        colorInput = findViewById(R.id.colorInput);
+        colorDropdown = (AutoCompleteTextView) colorInput.getEditText();
+        canSizeEdit = findViewById(R.id.canSizeEditText);
+        canSizeInput = findViewById(R.id.canSizeInput);
+        calcButton = findViewById(R.id.calcButton);
+        resultTable = findViewById(R.id.resultTable);
+        baseWeight = findViewById(R.id.baseWeight);
+        baseName = findViewById(R.id.baseName);
+        colorDot = findViewById(R.id.colorDot);
+        colorName = findViewById(R.id.colorName);
+        colorData = findViewById(R.id.colorData);
+        topAppBar = findViewById(R.id.topAppBar);
+        togglePointsBtn = findViewById(R.id.btn_toggle_points);
+        canSizeEdit.setText(R.string.default_value_size);
+
+        Random random = new Random();
+        String selected;
+
+        if (random.nextInt(100) == 0)
+        {
+            selected = rareEmoji;
+        } else if (random.nextInt(2000) == 0) {
+            selected = ultraRareEmoji;
+        } else {
+            selected = emojis.get(random.nextInt(emojis.size()));
+        }
+
+        colorData.append(selected);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        // Логика меню (как была)
+        Menu menu = topAppBar.getMenu();
+        CrashUiHelper.apply(this, menu);
+
+        // ДОБАВИТЬ ЭТУ СТРОКУ: Обновляем иконку бургера
+        CrashUiHelper.applyToToolbar(this, topAppBar);
+
+        // этот метод сработает, считает новые данные и перерисует кнопки.
+        setupQuickSizeButtons();
+
+        // обновляем частоиспользуемые цвета и продукты
+        updateColorAdapter();
+        updateProductsAdapter();
+
         Log.d(TAG, "onResume: resume");
     }
 }
