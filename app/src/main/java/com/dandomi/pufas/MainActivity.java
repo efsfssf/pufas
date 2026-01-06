@@ -24,6 +24,7 @@ import com.dandomi.db.Basepaint;
 import com.dandomi.db.Formula;
 import com.dandomi.pufas.controllers.SizesRepository;
 import com.dandomi.pufas.pufas.AppState;
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.chip.Chip;
@@ -77,6 +78,7 @@ import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
 
+    AppBarLayout appBarLayout;
     TextInputLayout productInput;
     AutoCompleteTextView productDropdown;
 
@@ -167,6 +169,8 @@ public class MainActivity extends AppCompatActivity {
 
         setAlternativeDesign();
 
+
+
     }
 
     public void setAlternativeDesign() {
@@ -199,47 +203,47 @@ public class MainActivity extends AppCompatActivity {
 
     // TODO: ПЕРЕДЕЛАТЬ. ВРЕМЕННЫЙ ФИКС ПЕРЕКРЫТИЯ КЛАВИАТУРОЙ ПОЛЯ ВВОДА
     private void scrollToViewImproved(View view) {
-        scrollView.post(() -> {
-            // Получаем координаты view относительно экрана
-            int[] viewLocation = new int[2];
-            view.getLocationOnScreen(viewLocation);
-
-            // Получаем координаты scrollView
-            int[] scrollLocation = new int[2];
-            scrollView.getLocationOnScreen(scrollLocation);
-
-            // Высота экрана
-            int screenHeight = getResources().getDisplayMetrics().heightPixels;
-
-            // Высота AppBar (учитываем CollapsingToolbar)
-            View appBar = findViewById(R.id.topAppBar);
-            int appBarHeight = appBar != null ? appBar.getHeight() : 0;
-
-            // Примерная высота клавиатуры (40% экрана)
-            int keyboardHeight = (int) (screenHeight * 0.4);
-
-            // Высота dropdown
-            int dropdownHeight = dpToPx(300);
-
-            // Вычисляем нужную позицию прокрутки
-            int viewTopRelativeToScroll = viewLocation[1] - scrollLocation[1];
-            int currentScroll = scrollView.getScrollY();
-
-            // Целевая позиция: view должен быть под AppBar с отступом
-            int targetPosition = currentScroll + viewTopRelativeToScroll - appBarHeight - dpToPx(16);
-
-            // Проверяем, поместится ли dropdown
-            int viewBottom = viewLocation[1] + view.getHeight();
-            int availableSpace = screenHeight - keyboardHeight - viewBottom;
-
-            if (availableSpace < dropdownHeight) {
-                // Dropdown не помещается - прокручиваем больше
-                targetPosition += (dropdownHeight - availableSpace);
-            }
-
-            // Плавная прокрутка
-            scrollView.smoothScrollTo(0, Math.max(0, targetPosition));
-        });
+//        scrollView.post(() -> {
+//            // Получаем координаты view относительно экрана
+//            int[] viewLocation = new int[2];
+//            view.getLocationOnScreen(viewLocation);
+//
+//            // Получаем координаты scrollView
+//            int[] scrollLocation = new int[2];
+//            scrollView.getLocationOnScreen(scrollLocation);
+//
+//            // Высота экрана
+//            int screenHeight = getResources().getDisplayMetrics().heightPixels;
+//
+//            // Высота AppBar (учитываем CollapsingToolbar)
+//            View appBar = findViewById(R.id.topAppBar);
+//            int appBarHeight = appBar != null ? appBar.getHeight() : 0;
+//
+//            // Примерная высота клавиатуры (40% экрана)
+//            int keyboardHeight = (int) (screenHeight * 0.4);
+//
+//            // Высота dropdown
+//            int dropdownHeight = dpToPx(300);
+//
+//            // Вычисляем нужную позицию прокрутки
+//            int viewTopRelativeToScroll = viewLocation[1] - scrollLocation[1];
+//            int currentScroll = scrollView.getScrollY();
+//
+//            // Целевая позиция: view должен быть под AppBar с отступом
+//            int targetPosition = currentScroll + viewTopRelativeToScroll - appBarHeight - dpToPx(16);
+//
+//            // Проверяем, поместится ли dropdown
+//            int viewBottom = viewLocation[1] + view.getHeight();
+//            int availableSpace = screenHeight - keyboardHeight - viewBottom;
+//
+//            if (availableSpace < dropdownHeight) {
+//                // Dropdown не помещается - прокручиваем больше
+//                targetPosition += (dropdownHeight - availableSpace);
+//            }
+//
+//            // Плавная прокрутка
+//            scrollView.smoothScrollTo(0, Math.max(0, targetPosition));
+//        });
     }
 
 
@@ -672,6 +676,9 @@ public class MainActivity extends AppCompatActivity {
                 showResult(viewModel.cachedResult, viewModel.cachedFormula);
             }
         });
+
+        setupDropdownScrolling(productDropdown);
+        setupDropdownScrolling(colorDropdown);
     }
 
     private void clearAllFocus() {
@@ -1026,6 +1033,58 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void setupDropdownScrolling(AutoCompleteTextView dropdown) {
+        dropdown.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                v.postDelayed(() -> {
+                    dropdown.showDropDown();
+                    scrollToDropdown(v);
+                }, 150);
+            }
+        });
+
+        dropdown.setOnClickListener(v -> {
+            dropdown.setFocusableInTouchMode(true);
+            dropdown.requestFocus();
+
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.showSoftInput(dropdown, InputMethodManager.SHOW_IMPLICIT);
+            }
+
+            dropdown.post(() -> {
+                dropdown.showDropDown();
+                scrollToDropdown(v);
+            });
+        });
+    }
+
+    private void scrollToDropdown(View view) {
+
+        view.postDelayed(() -> {
+            // 1. Сначала сворачиваем AppBar полностью
+            if (appBarLayout != null) {
+                appBarLayout.setExpanded(false, true); // false = свернуть, true = с анимацией
+            }
+
+            view.postDelayed(() -> {
+                Rect rect = new Rect();
+                view.getGlobalVisibleRect(rect);
+
+                int dropdownHeight = dpToPx(300);
+                int screenHeight = getResources().getDisplayMetrics().heightPixels;
+                int keyboardHeight = (int) (screenHeight * 0.4);
+
+                int availableSpace = screenHeight - keyboardHeight - rect.bottom;
+
+                if (availableSpace < dropdownHeight) {
+                    int scrollAmount = dropdownHeight - availableSpace + dpToPx(2);
+                    scrollView.smoothScrollBy(0, scrollAmount);
+                }
+            }, 300);
+        }, 200);
+    }
+
     List<String> emojis = Arrays.asList(
             "😀", "😂", "😍", "🤩", "😎",
             "🤗", "🥳", "😜", "🤪", "😇",
@@ -1054,6 +1113,7 @@ public class MainActivity extends AppCompatActivity {
     String rareEmoji = "🦄";
     String ultraRareEmoji = "🥕🐇";
     private void initViews() {
+        appBarLayout = findViewById(R.id.appBarLayout);
         productInput = findViewById(R.id.productInput);
         productDropdown = (AutoCompleteTextView) productInput.getEditText();
         colorInput = findViewById(R.id.colorInput);
