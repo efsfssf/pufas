@@ -1062,27 +1062,46 @@ public class MainActivity extends AppCompatActivity {
     private void scrollToDropdown(View view) {
 
         view.postDelayed(() -> {
-            // 1. Сначала сворачиваем AppBar полностью
+            AppBarLayout appBarLayout = findViewById(R.id.appBarLayout);
+
+            // Получаем текущее смещение AppBar
+            final int[] appBarOffset = {0};
+
             if (appBarLayout != null) {
-                appBarLayout.setExpanded(false, true); // false = свернуть, true = с анимацией
+                appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+                    @Override
+                    public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                        appBarOffset[0] = verticalOffset;
+                    }
+                });
+
+                // Сворачиваем AppBar
+                appBarLayout.setExpanded(false, true);
             }
 
+            // Ждём анимацию + прокручиваем
             view.postDelayed(() -> {
-                Rect rect = new Rect();
-                view.getGlobalVisibleRect(rect);
+                int[] location = new int[2];
+                view.getLocationOnScreen(location);
 
                 int dropdownHeight = dpToPx(300);
                 int screenHeight = getResources().getDisplayMetrics().heightPixels;
                 int keyboardHeight = (int) (screenHeight * 0.4);
 
-                int availableSpace = screenHeight - keyboardHeight - rect.bottom;
+                View toolbar = findViewById(R.id.topAppBar);
+                int toolbarHeight = toolbar != null ? toolbar.getHeight() : dpToPx(56);
+
+                // Вычисляем, сколько нужно прокрутить
+                int viewBottom = location[1] + view.getHeight();
+                int availableSpace = screenHeight - keyboardHeight - viewBottom - toolbarHeight;
 
                 if (availableSpace < dropdownHeight) {
-                    int scrollAmount = dropdownHeight - availableSpace + dpToPx(2);
-                    scrollView.smoothScrollBy(0, scrollAmount);
+                    int extraScroll = dropdownHeight - availableSpace;
+                    scrollView.smoothScrollBy(0, extraScroll);
                 }
-            }, 300);
-        }, 200);
+            }, 350);
+
+        }, 150);
     }
 
     List<String> emojis = Arrays.asList(
