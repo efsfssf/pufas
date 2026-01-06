@@ -146,6 +146,7 @@ public class MainActivity extends AppCompatActivity {
         initViews();
         setupListeners();
         setupKeyboardListener();
+        setupAppBarCollapseOnFocus();
 
 
         setupQuickSizeButtons();
@@ -580,6 +581,11 @@ public class MainActivity extends AppCompatActivity {
 
         calcButton.setOnClickListener(v -> {
 
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+            }
+
             if (selectedProduct == null || selectedColor == null) {
                 Snackbar.make(v, getString(R.string.select_product_color), Toast.LENGTH_SHORT).show();
                 return;
@@ -665,6 +671,7 @@ public class MainActivity extends AppCompatActivity {
                     canSizeInput.setError("Введите значение");
                 }
             }
+            scrollToDropdown(view);
         });
 
         togglePointsBtn.setOnClickListener(v -> {
@@ -1059,49 +1066,66 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void collapseAppBar() {
+        if (appBarLayout != null) {
+            appBarLayout.setExpanded(false, true); // true = с анимацией
+        }
+    }
+
+    private void setupAppBarCollapseOnFocus() {
+
+        View.OnFocusChangeListener listener = (v, hasFocus) -> {
+            if (hasFocus) {
+                collapseAppBar();
+            }
+        };
+
+        productDropdown.setOnFocusChangeListener(listener);
+        colorDropdown.setOnFocusChangeListener(listener);
+        canSizeEdit.setOnFocusChangeListener(listener);
+    }
+
     private void scrollToDropdown(View view) {
 
-        view.postDelayed(() -> {
-            AppBarLayout appBarLayout = findViewById(R.id.appBarLayout);
-
-            // Получаем текущее смещение AppBar
-            final int[] appBarOffset = {0};
-
-            if (appBarLayout != null) {
-                appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-                    @Override
-                    public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                        appBarOffset[0] = verticalOffset;
-                    }
-                });
-
-                // Сворачиваем AppBar
-                appBarLayout.setExpanded(false, true);
-            }
-
-            // Ждём анимацию + прокручиваем
-            view.postDelayed(() -> {
-                int[] location = new int[2];
-                view.getLocationOnScreen(location);
-
-                int dropdownHeight = dpToPx(300);
-                int screenHeight = getResources().getDisplayMetrics().heightPixels;
-                int keyboardHeight = (int) (screenHeight * 0.4);
-
-                View toolbar = findViewById(R.id.topAppBar);
-                int toolbarHeight = toolbar != null ? toolbar.getHeight() : dpToPx(56);
-
-                // Вычисляем, сколько нужно прокрутить
-                int viewBottom = location[1] + view.getHeight();
-                int availableSpace = screenHeight - keyboardHeight - viewBottom - toolbarHeight;
-
-                if (availableSpace < dropdownHeight) {
-                    int extraScroll = dropdownHeight - availableSpace;
-                    scrollView.smoothScrollBy(0, extraScroll);
-                }
-            }, 350);
-
-        }, 150);
+//        view.postDelayed(() -> {
+//            // Получаем текущее смещение AppBar
+//            final int[] appBarOffset = {0};
+//
+//            if (appBarLayout != null) {
+//                appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+//                    @Override
+//                    public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+//                        appBarOffset[0] = verticalOffset;
+//                    }
+//                });
+//
+//                // Сворачиваем AppBar
+//                appBarLayout.setExpanded(false, true);
+//            }
+//
+////            // Ждём анимацию + прокручиваем
+////            view.postDelayed(() -> {
+////                int[] location = new int[2];
+////                view.getLocationOnScreen(location);
+////
+////                int dropdownHeight = dpToPx(300);
+////                int screenHeight = getResources().getDisplayMetrics().heightPixels;
+////                int keyboardHeight = (int) (screenHeight * 0.4);
+////
+////                View toolbar = findViewById(R.id.topAppBar);
+////                int toolbarHeight = toolbar != null ? toolbar.getHeight() : dpToPx(56);
+////
+////                // Вычисляем, сколько нужно прокрутить
+////                int viewBottom = location[1] + view.getHeight();
+////                int availableSpace = screenHeight - keyboardHeight - viewBottom - toolbarHeight;
+////
+////                if (availableSpace < dropdownHeight) {
+////                    int extraScroll = dropdownHeight - availableSpace;
+////                    scrollView.smoothScrollBy(0, extraScroll);
+////                }
+////            }, 350);
+//
+//        }, 150);
     }
 
     List<String> emojis = Arrays.asList(
@@ -1193,6 +1217,8 @@ public class MainActivity extends AppCompatActivity {
         updateColorAdapter();
         updateProductsAdapter();
         setAlternativeDesign();
+
+        setupAppBarCollapseOnFocus();
 
         Log.d(TAG, "onResume: resume");
     }

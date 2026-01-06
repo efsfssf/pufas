@@ -75,7 +75,6 @@ public class AboutActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_about);
         initialize();
-        setLayoutBounds();
         Animation animation = AnimationUtils.loadAnimation(this, R.anim.slide_from_bottom);
         nestedScrollView.startAnimation(animation);
         PackageManager manager = getPackageManager();
@@ -105,22 +104,6 @@ public class AboutActivity extends AppCompatActivity {
         });
         topBar.setNavigationOnClickListener(v -> finish());
 
-    }
-
-    private void setLayoutBounds() {
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.rootView), (v, windowInsets) -> {
-            Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
-            Insets insetsN = windowInsets.getInsets(WindowInsetsCompat.Type.displayCutout());
-
-            ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
-
-            layoutParams.leftMargin = insets.left + insetsN.left;
-            layoutParams.topMargin = insets.top;
-            layoutParams.rightMargin = insets.right + insetsN.right;
-
-            v.setLayoutParams(layoutParams);
-            return WindowInsetsCompat.CONSUMED;
-        });
     }
 
     private void setupList(ArrayList<AboutListItem> items, @NonNull RecyclerView view) {

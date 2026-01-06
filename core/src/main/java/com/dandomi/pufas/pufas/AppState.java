@@ -6,7 +6,7 @@ public class AppState {
     boolean MIMEFilterDisabled;
     boolean syntaxHighlighting = true;
     boolean changeDynamicColor = true;
-    boolean alternativeDesign = false;
+    boolean alternativeDesign = true;
     boolean hidePoints = false;
     boolean autoCheckForUpdate;
     private int theme;

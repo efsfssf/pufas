@@ -89,7 +89,6 @@ public class SettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
 
         initialize();
-        setLayoutBounds();
 
         LoadData();
 
@@ -362,21 +361,6 @@ public class SettingsActivity extends AppCompatActivity {
                 1,                       // Мин. шаг
                 2                       // Макс. шаг
         );
-    }
-    private void setLayoutBounds() {
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.rootView), (v, windowInsets) -> {
-            Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
-            Insets insetsN = windowInsets.getInsets(WindowInsetsCompat.Type.displayCutout());
-
-            ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
-
-            layoutParams.leftMargin = insets.left + insetsN.left;
-            layoutParams.topMargin = insets.top;
-            layoutParams.rightMargin = insets.right + insetsN.right;
-            layoutParams.bottomMargin = insets.bottom;
-            v.setLayoutParams(layoutParams);
-            return WindowInsetsCompat.CONSUMED;
-        });
     }
 
     private void showSliderDialog(
